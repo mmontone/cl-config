@@ -1,0 +1,2 @@
+(defclass output-backend ()
+  ())

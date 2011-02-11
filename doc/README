@@ -1,0 +1,10 @@
+To build the manual:
+
+To generate from scratch, customize make.lisp and the do:
+sbcl --load make.lisp
+
+To build the manual that comes in the distribution:
+HTML: texi2html --css-include=cl-config.css cl-config.texinfo
+PDF:  texi2pdf cl-config.texinfo
+INFO: makeinfo cl-config.texinfo
+      sudo install-info --info-dir=/usr/share/info cl-config.info

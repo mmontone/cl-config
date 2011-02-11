@@ -1,0 +1,329 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename cl-config.info
+@settitle cl-config - A configuration library for Common Lisp
+
+@set VERSION 0.1
+@set DATE January 2011
+
+@c Version and Contact Info
+@set MAINTAINERSITE @uref{https://github.com/mmontone, maintainers webpage}
+@set AUTHOR Mariano Montone
+@set MAINTAINER Mariano Montone
+@set MAINTAINEREMAIL @email{marianomontone at gmail dot com}
+@set MAINTAINERCONTACT @uref{mailto:marianomontone at gmail dot com,contact the maintainer}
+@c %**end of header
+
+@ifinfo
+@format
+START-INFO-DIR-ENTRY
+* cl-config: (cl-config.info). A configuration library for Common Lisp.
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+
+@c Subheadings inside a table.
+@macro tsubheading{text}
+@ifinfo
+@subsubheading \text\
+@end ifinfo
+@ifnotinfo
+@item @b{\text\}
+@end ifnotinfo
+@end macro
+
+@copying
+
+This manual is for cl-config version @value{VERSION}.
+
+Copyright @copyright{} 2011 Mariano Montone
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU Manual,''
+and with the Back-Cover Texts as in (a) below.  A copy of the license
+is included in the section entitled ``GNU Free Documentation License.''
+
+(a) The FSF's Back-Cover Text is: ``You have the freedom to copy and
+modify this GNU manual.  Buying copies from the FSF supports it in
+developing GNU and promoting software freedom.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end quotation
+@end copying
+
+@titlepage
+@title cl-config
+@subtitle A configuration library for Common Lisp
+@subtitle Release @value{VERSION}
+@author by Mariano Montone
+
+@c Output the table of contents at the beginning.
+@contents
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@ifnottex
+@node Top
+@top cl-config - A configuration library for Common Lisp
+
+This is cl-config Common Lisp library documentation
+
+@end ifnottex
+
+@menu
+* Introduction::                What is cl-config?
+* Output backends::             Output backends
+* Examples::                    Gestalt applications examples
+* Configuration editing::       Tool for configuration editing
+* System reference::            System reference
+* References::                  Related work
+* Index::                       Complete index.
+@end menu
+
+@node Introduction
+@chapter Introduction
+@cindex introduction
+
+cl-config is a configuration library for Common Lisp
+
+You can get a copy and this manual at @url{http://common-lisp.net/project/cl-config}
+
+@menu
+* Summary::                     A brief summary of what cl-config is
+* Installation::                How to install cl-config
+* Feedback::                    Bug reports, ideas, patches etc.
+* Conventions::                 Type-setting conventions in the manual
+@end menu
+
+@node Summary
+@section Summary
+@cindex summary
+
+cl-config is a configuration library for Common Lisp
+
+@node Installation
+@section Installation
+@cindex installation
+
+To install cl-config, start a Common Lisp session and type the following:
+
+@example
+CL-USER> (require :asdf-install)
+CL-USER> (asdf-install:asdf-install 'cl-config)
+@end example
+
+@node Feedback
+@section Feedback
+@cindex feedback
+
+Mail marianomontone at gmail dot com with feedback
+
+@node Conventions
+@section Conventions
+@cindex conventions
+
+Hear are some coding conventions we'd like to follow:
+
+@itemize
+
+@bullet{We @emph{do} believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).}
+
+@bullet{We don't want functions to be shorter than the should nor longer than they should. There is no "every function should have at most ten lines of code" rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. Again, that your code is object oriented doesn't imply that your methods will ideally have two lines of code and dispatch to somewhere else; that is not always good at all. It may be good from an object oriented point of view, but it is too low level. We want to think in terms of languages, that is higher level,  instead of objects sending messages.}
+
+@bullet{Use destructuring-bind or let or a pattern-matching library instead of car, cdr, cadr, and the like to obtain more readable code.}
+
+@bullet{Use widely known Common Lisp coding guidelines: @url{http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm}}
+
+@end itemize
+
+@node Output backends
+@chapter Output backends
+@cindex backends
+
+There are two output backends: an sexp-backend and a xml-backend
+
+@node Examples
+@chapter Examples
+@cindex examples
+
+Example:
+
+@example
+(define-configuration 'database-configuration ()
+   (:title "Database configuration")
+   (:documentation "Database configuration")
+   (:section :database-configuration "Database configuration"
+      (:documentation "Section for configuring the database")
+      (:connection-type "Connection type"
+          (one-of (:socket "Socket"
+                       (:configuration 'db-socket-configuration))
+                  (:tcp "TCP"
+                       (:configuration 'db-tcp-configuration))))
+      (:username "Username" :text :documentation "The database engine username")
+      (:password "Password" :text :documentation "The database engine password")
+      (:database-name "Database name" :text)
+      (:database-parameters :text :default "" :advanced)))
+
+(define-configuration 'db-socket-configuration ()
+    (:title "Socket configuration")
+    (:section :db-socket-configuration "Socket configuration"
+        (:path "Socket" :text
+               :default "/tmp/socket.soc")))
+
+(define-configuration 'db-tcp-configuration ()
+    (:title "TCP configuration")
+    (:section "TCP configuration"
+        (:url "URL" :text
+              :default "localhost")))
+
+(define-configuration webapp-configuration (logging-configuration)
+    (:title "Web application configuration")
+    (:documentation "Web application configuration")
+    (:section :webapp-configuration "Web application configuration"
+        (:documentation "Web application configuration")
+        (:http-server "HTTP server"
+            (one-of (:apache "Apache" (:configuration 'apache-configuration))
+                    (:hunchentoot "Hunchentoot" (:configuration 'hunchentoot-configuration))))
+        (:host "Host" :text :default "localhost")))                    
+
+(define-configuration logging-configuration ()
+    (:title "Logging configuration")
+    (:documentation "Logging configuration")
+    (let-configuration*
+        ((output-logging ()
+            (output-location "Output location"
+                    (one-of (:standard-output "Standard output" :value '*standard-output*)
+                            (:file "File" :text :default "/tmp/log.log"))))
+        (debugging-layer (output-logging)
+            (debugging-levels "Debuggin levels" (list (:info "Info")
+                                                      (:warning "Warning")
+                                                      (:profile "Profile"))))
+        (database-layer (output-logging)
+           ...)))
+    (:section :logging-configuration "Logging configuration"
+        (:documentation "Logging configuration")
+        (:backend "Backend"
+            (:one-of (:log5 "Log5")))
+        (:active-layers "Active layers" (list (:debugging "Debugging" (:configuration debugging-layer))
+                                              (:database "Database" (:configuration database-layer))
+                                              (:control-flow "Control flow")
+                                              (:system "System")))))
+
+(define-configuration standard-configuration
+                        (webapp-configuration database-configuration)
+      (:documentation "Standard configuration for a Gestalt application")
+      (:page-title "Page title" :type :text :default "Gestalt application"))
+      
+@end example
+
+The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
+
+Configurations can inherit from several configurations (that act like mixins). The same as with classes or models or templates. So, for example, web-app-configuration inherits from logging-configuration. That means the web-app-configuration will have the sections defined in logging-configuration too.
+
+Documentation is used as a section or configuration help from the UI. From the UI, each section is shown collapsable and there's and option for showing/hiding advanced fields, and the help button.
+
+The user can define several configuration schemes for an application and switch between the configurations. For example, there will probably be a ``development configuration'', a ``deployment configuration'', a ``testing configuration'', and so on.
+
+There's no need for a GUI, although it is desirable. We can define configurations with files, for example:
+
+@example
+(define-configuration-scheme standard-configuration-scheme ()
+   (:configuration standard-configuration)
+   (:database-configuration
+       (:connection-type :socket
+           (:db-socket-configuration
+              (:path "/tmp/my-socket.soc")))
+       (:username "root")
+       (:password "root")
+       (:database-name "standard-database"))
+   (:webapp-configuration
+       (:host "localhost")
+       (:http-server :hunchentoot)))
+
+(define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
+    (:configuration standard-configuration)
+    (:database-configuration
+        (:database-name "debug-database"))
+    (:logging-configuration
+       (:output-location :file "/tmp/debug.log")
+       (:active-layers :debugging :database
+           (:debugging-levels :info :warning :error)))
+    (:documentation "Debugging configuration scheme"))
+
+(define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
+    (:configuration standard-configuration)
+    (:database-configuration
+        (:database-name "test-database"))
+    (:logging-configuration
+       (:output-location :file "/tmp/test.log")
+       (:active-layers :debugging :database
+           (:debugging-levels :warning :error)))
+    (:documentation "Testing configuration scheme"))
+@end example
+
+And then we attach the desired configuration to the application:
+
+@example
+(defapplication my-application (standard-application)
+   ...
+   (:configuration 'debug-configuration-scheme))
+@end example
+
+@node Configuration editing
+@chapter Configuration editing
+
+The web configuration editing tool
+
+@node System reference
+@chapter System reference
+
+@node References
+@chapter References
+@cindex reference
+
+ [Common Lisp Directory]
+ [Common Lisp Wiki]
+
+ [Common Lisp Directory]: http://common-lisp.net
+ [Common Lisp Wiki]: http://www.cliki.net
+
+@node Index
+@chapter Index
+@menu
+* Concept Index::          The concept index
+* Class Index::            The classes index
+* Function / Macro Index:: The functions and macros index
+* Variable Index::         The variables index
+@end menu
+
+@node Concept Index
+@section Concept Index
+
+@printindex cp
+
+@node Class Index
+@section Class Index
+
+@printindex tp
+
+@node Function / Macro Index
+@section Function / Macro Index
+     
+@printindex fn
+
+@node Variable Index
+@section Variable Index
+     
+@printindex vr
+
+@bye
