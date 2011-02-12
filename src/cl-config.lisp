@@ -77,6 +77,7 @@
 
 (defclass configuration-option-type ()
   ((default :initarg :default
+     :initform nil
      :accessor default
      :documentation "The default value if there is one")))
 
@@ -88,7 +89,8 @@
   )  
 
 (defclass one-of-configuration-option-type (configuration-option-type)
-  ((options :accessor options))
+  ((options :initarg :options
+	    :accessor options))
   (:documentation "Choose one of the options"))
 
 (defclass text-configuration-option-type (configuration-option-type)
@@ -123,7 +125,7 @@
   ((name :initarg :name
 	 :accessor name
 	 :initform (error "Provide the type-item name"))
-   (title :initarg title
+   (title :initarg :title
 	  :accessor title
 	  :initform (error "Provide the type-item title"))
    (configuration :initarg :configuration
@@ -132,7 +134,11 @@
 
 (defmacro one-of (options &rest args)
   `(make-instance 'one-of-configuration-option-type
-		  :options (list (mapcar #'make-configuration-type-item ',options))
+		  :options (list ,@(mapcar (lambda (option)
+					     (destructuring-bind (name title &rest args)
+						 option
+					       `(apply #'make-configuration-type-item ',name (cons ',title ',args))))
+					   options))
 		  ,@args))
 
 (defmacro some-of (options &rest args)
