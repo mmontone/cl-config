@@ -72,21 +72,36 @@
    (type :initarg :type
 	 :accessor option-type
 	 :initform (error "Provide the option type")
-	 :documentation "The option type"))
-  (:documentation "A configuration option"))
-
-(defclass configuration-option-type ()
-  ((default :initarg :default
+	 :documentation "The option type")
+   (default :initarg :default
      :initform nil
      :accessor default
-     :documentation "The default value if there is one")))
+     :documentation "The default value if there is one")
+   (advanced :initarg :advanced
+	     :initform nil
+	     :accessor advanced
+	     :documentation "t when this is an advanced option")
+   (documentation :initarg :documentation
+		  :initform nil
+		  :accessor documentation*
+		  :documentation "The option documentation string"))
+  (:documentation "A configuration option"))
+
+(defvar *option-types* (make-hash-table :test #'equal))
+
+(defmacro define-configuration-option-type (type args &body body)
+  `(setf (gethash ',type *option-types*)
+	 (lambda ,args ,@body)))
+
+(defclass configuration-option-type ()
+  ())
 
 (defun process-configuration-option-value (option)
   (%process-configuration-option-value (type option) option))
 
 (defmethod %process-configuration-option-value ((type configuration-option-type)
 						option)
-  )  
+  )
 
 (defclass one-of-configuration-option-type (configuration-option-type)
   ((options :initarg :options
@@ -132,31 +147,35 @@
 		  :accessor configuration
 		  :documentation "How to configure this item-type")))
 
-(defmacro one-of (options &rest args)
-  `(make-instance 'one-of-configuration-option-type
-		  :options (list ,@(mapcar (lambda (option)
-					     (destructuring-bind (name title &rest args)
-						 option
-					       `(apply #'make-configuration-type-item ',name (cons ',title ',args))))
-					   options))
-		  ,@args))
+(define-configuration-option-type :one-of (&rest options)
+  (make-instance
+   'one-of-configuration-option-type
+   :options (list (mapcar
+		   (lambda (option)
+		     (destructuring-bind (name title &rest args)
+			 option
+		       (apply #'make-configuration-type-item
+			      name (cons title args))))
+		   options))))
 
-(defmacro some-of (options &rest args)
-  `(make-instance 'list-configuration-option-type
-		  :options (list (mapcar #'make-configuration-type-item ',options))
-		  ,@args))
+(define-configuration-option-type :some-of (options &rest args)
+  (apply #'make-instance 'list-configuration-option-type
+	 (append
+	  (list
+	   :options (list (mapcar #'make-configuration-type-item options)))
+	 args)))
 
-(defmacro text (&rest args)
-  `(make-instance 'text-configuration-option-type
-		  ,@args))
+(define-configuration-option-type :text (&rest args)
+  (apply #'make-instance 'text-configuration-option-type
+	 args))
 
-(defmacro url (&rest args)
-  `(make-instance 'url-configuration-option-type
-		  ,@args))
+(define-configuration-option-type :url (&rest args)
+  (apply #'make-instance 'url-configuration-option-type
+	 args))
 
-(defmacro email (&rest args)
-  `(make-instance 'email-configuration-option-type
-		  ,@args))
+(define-configuration-option-type :email (&rest args)
+  (apply #'make-instance 'email-configuration-option-type
+	 args))
 
 (defmacro path-name (&rest args)
   `(make-instance 'pathname-configuration-option-type
@@ -216,15 +235,35 @@
 		   :name name
 		   :title title
 		   :documentation documentation
-		   :options (mapcar (lambda (option)
-				      (destructuring-bind (name title expr)
-					  option
-					(make-configuration-option name title expr)))
-				    options))))
+		   :options
+		   (mapcar
+		    (lambda (option)
+		      (destructuring-bind (name title type-spec &rest rest)
+			  option
+			(apply #'make-configuration-option
+			       (append (list name title type-spec)
+				       rest))))
+		    options))))
 
-(defun make-configuration-option (name title expr)
-  (make-instance 'configuration-option
-		 :name name
-		 :title title
-		 :type (eval expr)))
+(defun make-configuration-option (name title type-spec &rest args)
+  (apply #'make-instance 'configuration-option
+	 (append
+	  (list :name name
+		:title title
+		:type (make-configuration-option-type type-spec))
+	  args)))
+
+(defun make-configuration-option-type (type-spec)
+  (multiple-value-bind (key params)
+      (if (listp type-spec)
+	  (values
+	   (first type-spec)
+	   (rest type-spec))
+	  (values
+	   type-spec nil))
+    (multiple-value-bind (builder found)
+	(gethash key *option-types*)
+      (if (not found)
+	  (error "Found no definition for type ~A" key)
+	  (apply builder params)))))
 		 
