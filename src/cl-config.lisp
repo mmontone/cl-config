@@ -30,20 +30,21 @@
 (defvar *configuration-schemas* (make-hash-table :test #'equal))
 
 (defclass configuration-schema ()
-  ((parents :initarg :parents
-	    :accessor parents
-	    :initform '(standard-configuration-schema)
-	    :documentation "Configuration-Schema mixins")
-   (name :initarg :name
+  ((name :initarg :name
 	 :accessor name
 	 :initform (error "Provide a name for the configuration-schema")
 	 :documentation "The configuration-schema name")
+   (parents :initarg :parents
+	    :accessor parents
+	    :initform '(standard-configuration-schema)
+	    :documentation "Configuration-Schema mixins")
    (title :initarg :title
 	  :accessor title
 	  :initform (error "Provide a title for the configuration-schema")
 	  :documentation "Configuration-Schema title")
    (sections :initarg :sections
 	     :accessor sections
+	     :initform (make-hash-table :test #'equalp)
 	     :documentation "Configuration-Schema sections")
    (documentation :initarg :documentation
 		  :accessor documentation*
@@ -56,6 +57,13 @@
 	    (name configuration-schema)
 	    (title configuration-schema))))
 
+(defmethod initialize-instance :after ((configuration-schema configuration-schema) &rest initargs)
+  (let ((sections (make-hash-table :test #'equalp)))
+    (loop for section in (getf initargs :sections)
+	  do
+	 (setf (gethash (name section) sections) section))
+    (setf (sections configuration-schema) sections)))
+
 (defclass configuration-schema-section ()
   ((name :initarg :name
 	 :accessor name
@@ -64,7 +72,8 @@
 	  :accessor title
 	  :initform (error "Provide a title for the section"))
    (options :initarg :options
-	    :accessor options)
+	    :accessor options
+	    :initform (make-hash-table :test #'equalp))
    (documentation :initarg :documentation
 		  :accessor documentation*))
   (:documentation "A configuration-schema section"))
@@ -74,6 +83,13 @@
     (format stream "~A ~S"
 	    (name section)
 	    (title section))))
+
+(defmethod initialize-instance :after ((configuration-schema-section configuration-schema-section) &rest initargs)
+  (let ((options (make-hash-table :test #'equalp)))
+    (loop for option in (getf initargs :options)
+	  do
+	 (setf (gethash (name option) options) option))
+    (setf (options configuration-schema-section) options)))
 
 (defclass configuration-schema-option ()
   ((name :initarg :name
@@ -299,4 +315,3 @@
       (if (not found)
 	  (error "Found no definition for type ~A" key)
 	  (apply builder params)))))
-		 
