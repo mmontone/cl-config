@@ -42,10 +42,10 @@
 	  :accessor title
 	  :initform (error "Provide a title for the configuration-schema")
 	  :documentation "Configuration-Schema title")
-   (sections :initarg :sections
-	     :accessor sections
+   (direct-sections :initarg :direct-sections
+	     :accessor direct-sections
 	     :initform (make-hash-table :test #'equalp)
-	     :documentation "Configuration-Schema sections")
+	     :documentation "Configuration-Schema direct-sections")
    (documentation :initarg :documentation
 		  :accessor documentation*
 		  :documentation "Configuration-Schema documentation"))
@@ -58,11 +58,11 @@
 	    (title configuration-schema))))
 
 (defmethod initialize-instance :after ((configuration-schema configuration-schema) &rest initargs)
-  (let ((sections (make-hash-table :test #'equalp)))
-    (loop for section in (getf initargs :sections)
+  (let ((direct-sections (make-hash-table :test #'equalp)))
+    (loop for section in (getf initargs :direct-sections)
 	  do
-	 (setf (gethash (name section) sections) section))
-    (setf (sections configuration-schema) sections)))
+	 (setf (gethash (name section) direct-sections) section))
+    (setf (direct-sections configuration-schema) direct-sections)))
 
 (defclass configuration-schema-section ()
   ((name :initarg :name
@@ -71,8 +71,8 @@
    (title :initarg :title
 	  :accessor title
 	  :initform (error "Provide a title for the section"))
-   (options :initarg :options
-	    :accessor options
+   (direct-options :initarg :direct-options
+	    :accessor direct-options
 	    :initform (make-hash-table :test #'equalp))
    (documentation :initarg :documentation
 		  :accessor documentation*))
@@ -85,11 +85,11 @@
 	    (title section))))
 
 (defmethod initialize-instance :after ((configuration-schema-section configuration-schema-section) &rest initargs)
-  (let ((options (make-hash-table :test #'equalp)))
-    (loop for option in (getf initargs :options)
+  (let ((direct-options (make-hash-table :test #'equalp)))
+    (loop for option in (getf initargs :direct-options)
 	  do
-	 (setf (gethash (name option) options) option))
-    (setf (options configuration-schema-section) options)))
+	 (setf (gethash (name option) direct-options) option))
+    (setf (direct-options configuration-schema-section) direct-options)))
 
 (defclass configuration-schema-option ()
   ((name :initarg :name
@@ -253,7 +253,7 @@
 	  list :initial-value nil))
 
 (defmacro define-configuration-schema (name parents &rest args)
-  (let ((sections (filter (lambda (elem)
+  (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))
 	(title (first (filter (lambda (elem)
@@ -268,23 +268,23 @@
 		    :documentation ,(if documentation
 					documentation
 					"")
-		    :sections (mapcar (lambda (section)
+		    :direct-sections (mapcar (lambda (section)
 					(destructuring-bind (_ name title &rest body)
 					    section
 					  (declare (ignore _))
 					  (make-configuration-schema-section name title body)))
-				      ',sections)))))
+				      ',direct-sections)))))
 
 (defun make-configuration-schema-section (name title args)
   (let ((documentation (find :documentation args :key #'first))
-	(options (filter (lambda (elem)
+	(direct-options (filter (lambda (elem)
 			   (not (equalp (first elem) :documentation)))
 			 args)))
     (make-instance 'configuration-schema-section
 		   :name name
 		   :title title
 		   :documentation documentation
-		   :options
+		   :direct-options
 		   (mapcar
 		    (lambda (option)
 		      (destructuring-bind (name title type-spec &rest rest)
@@ -292,7 +292,7 @@
 			(apply #'make-configuration-schema-option
 			       (append (list name title type-spec)
 				       rest))))
-		    options))))
+		    direct-options))))
 
 (defun make-configuration-schema-option (name title type-spec &rest args)
   (apply #'make-instance 'configuration-schema-option
