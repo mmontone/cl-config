@@ -29,6 +29,13 @@
 
 (defvar *configuration-schemas* (make-hash-table :test #'equal))
 
+(defun find-configuration-schema (name)
+  (multiple-value-bind (configuration-schema found-p)
+      (gethash name *configuration-schemas*)
+    (if found-p
+	configuration-schema
+	(error "Configuration schema ~A not defined" name))))
+
 (defclass configuration-schema ()
   ((name :initarg :name
 	 :accessor name
@@ -36,7 +43,7 @@
 	 :documentation "The configuration-schema name")
    (parents :initarg :parents
 	    :accessor parents
-	    :initform '(standard-configuration-schema)
+	    :initform nil
 	    :documentation "Configuration-Schema mixins")
    (title :initarg :title
 	  :accessor title
@@ -62,7 +69,74 @@
     (loop for section in (getf initargs :direct-sections)
 	  do
 	 (setf (gethash (name section) direct-sections) section))
-    (setf (direct-sections configuration-schema) direct-sections)))
+    (setf (direct-sections configuration-schema) direct-sections))
+  (setf (parents configuration-schema) (mapcar #'find-configuration-schema (getf initargs :parents))))
+
+;; from Alexandria:
+(defun copy-hash-table (table &key key test size
+                                   rehash-size rehash-threshold)
+  "Returns a copy of hash table TABLE, with the same keys and values
+as the TABLE. The copy has the same properties as the original, unless
+overridden by the keyword arguments.
+
+Before each of the original values is set into the new hash-table, KEY
+is invoked on the value. As KEY defaults to CL:IDENTITY, a shallow
+copy is returned by default."
+  (setf key (or key 'identity))
+  (setf test (or test (hash-table-test table)))
+  (setf size (or size (hash-table-size table)))
+  (setf rehash-size (or rehash-size (hash-table-rehash-size table)))
+  (setf rehash-threshold (or rehash-threshold (hash-table-rehash-threshold table)))
+  (let ((copy (make-hash-table :test test :size size
+                               :rehash-size rehash-size
+                               :rehash-threshold rehash-threshold)))
+    (maphash (lambda (k v)
+               (setf (gethash k copy) (funcall key v)))
+             table)
+    copy))
+
+(defun merge-options (more-specific-options less-specific-options)
+  (let ((options (copy-hash-table less-specific-options)))
+    (maphash (lambda (name option)
+	       (setf (gethash name options) option))
+	     more-specific-options)
+    options))
+
+(defun merge-sections (more-specific-section less-specific-section)
+  (assert (equalp (name more-specific-section) (name less-specific-section)))
+  (let ((options (merge-options (direct-options more-specific-section)
+				(direct-options less-specific-section))))
+    (make-instance 'configuration-schema-section
+		   :name (name more-specific-section)
+		   :title (title more-specific-section)
+		   :documentation (documentation* more-specific-section)
+		   :direct-options (loop for option being the hash-values of options
+				      collect option))))
+
+(defun merge-section-tables (more-specific-section-table less-specific-section-table)
+  (let ((sections (copy-hash-table less-specific-section-table)))
+    (maphash (lambda (name section)
+	       (multiple-value-bind (parent-section found-p)
+		   (gethash name more-specific-section-table)
+		 (if found-p
+		     (setf (gethash name sections)
+			   (merge-sections section parent-section))
+		     (setf (gethash name sections)
+			   section))))
+	     more-specific-section-table)
+    sections))
+
+(defun flip (function)
+  (lambda (x y)
+    (funcall function y x)))
+
+(defmethod sections ((configuration-schema configuration-schema))
+  (let ((parent-sections (loop for parent in (parents configuration-schema)
+			    collect (sections parent))))
+    (if parent-sections
+	(merge-section-tables (direct-sections configuration-schema)
+			      (reduce (flip #'merge-section-tables) parent-sections))
+	(direct-sections configuration-schema))))
 
 (defclass configuration-schema-section ()
   ((name :initarg :name
@@ -263,7 +337,7 @@
     `(setf (gethash ',name *configuration-schemas*)
 	   (make-instance 'configuration-schema
 		    :name ',name
-		    :parents (list ,@parents)
+		    :parents  ',parents
 		    :title ,(second title)
 		    :documentation ,(if documentation
 					documentation
