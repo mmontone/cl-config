@@ -15,40 +15,42 @@
 	 :target target
 	 :error-msg error-msg))
 
-(defgeneric %validate-configuration-option
-    (type configuration-option))
+(defgeneric %validate-configuration-schema-option
+    (type configuration-schema-option))
 
-(defun validate-configuration-option (option)
-  (%validate-configuration-option (type option) option))
+(defun validate-configuration-schema-option (option)
+  (%validate-configuration-schema-option (type option) option))
 
-(defgeneric %process-configuration-option-value
-    (type configuration-option))
+(defgeneric %process-configuration-schema-option-value
+    (type configuration-schema-option))
 
-(defclass standard-configuration ()
+(defclass standard-configuration-schema ()
   ())
 
-(defclass configuration ()
+(defvar *configuration-schemas* (make-hash-table :test #'equal))
+
+(defclass configuration-schema ()
   ((parents :initarg :parents
 	    :accessor parents
-	    :initform '(standard-configuration)
-	    :documentation "Configuration mixins")
+	    :initform '(standard-configuration-schema)
+	    :documentation "Configuration-Schema mixins")
    (name :initarg :name
 	 :accessor name
-	 :initform (error "Provide a name for the configuration")
-	 :documentation "The configuration name")
+	 :initform (error "Provide a name for the configuration-schema")
+	 :documentation "The configuration-schema name")
    (title :initarg :title
 	  :accessor title
-	  :initform (error "Provide a title for the configuration")
-	  :documentation "Configuration title")
+	  :initform (error "Provide a title for the configuration-schema")
+	  :documentation "Configuration-Schema title")
    (sections :initarg :sections
 	     :accessor sections
-	     :documentation "Configuration sections")
+	     :documentation "Configuration-Schema sections")
    (documentation :initarg :documentation
 		  :accessor documentation*
-		  :documentation "Configuration documentation"))
-  (:documentation "A configuration"))
+		  :documentation "Configuration-Schema documentation"))
+  (:documentation "A configuration-schema"))
 
-(defclass configuration-section ()
+(defclass configuration-schema-section ()
   ((name :initarg :name
 	 :accessor name
 	 :initform (error "Provide a name for the section"))
@@ -59,9 +61,9 @@
 	    :accessor options)
    (documentation :initarg :documentation
 		  :accessor documentation*))
-  (:documentation "A configuration section"))
+  (:documentation "A configuration-schema section"))
 
-(defclass configuration-option ()
+(defclass configuration-schema-option ()
   ((name :initarg :name
 	 :accessor name
 	 :initform (error "Provide a name for the option")
@@ -85,58 +87,58 @@
 		  :initform nil
 		  :accessor documentation*
 		  :documentation "The option documentation string"))
-  (:documentation "A configuration option"))
+  (:documentation "A configuration-schema option"))
 
 (defvar *option-types* (make-hash-table :test #'equal))
 
-(defmacro define-configuration-option-type (type args &body body)
+(defmacro define-configuration-schema-option-type (type args &body body)
   `(setf (gethash ',type *option-types*)
 	 (lambda ,args ,@body)))
 
-(defclass configuration-option-type ()
+(defclass configuration-schema-option-type ()
   ())
 
-(defun process-configuration-option-value (option)
-  (%process-configuration-option-value (type option) option))
+(defun process-configuration-schema-option-value (option)
+  (%process-configuration-schema-option-value (type option) option))
 
-(defmethod %process-configuration-option-value ((type configuration-option-type)
+(defmethod %process-configuration-schema-option-value ((type configuration-schema-option-type)
 						option)
   )
 
-(defclass one-of-configuration-option-type (configuration-option-type)
+(defclass one-of-configuration-schema-option-type (configuration-schema-option-type)
   ((options :initarg :options
 	    :accessor options))
   (:documentation "Choose one of the options"))
 
-(defclass text-configuration-option-type (configuration-option-type)
+(defclass text-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in some text"))
 
-(defclass list-configuration-option-type (configuration-option-type)
+(defclass list-configuration-schema-option-type (configuration-schema-option-type)
   ((options :accessor options))
   (:documentation "Choose a list of options"))
 
-(defclass email-configuration-option-type (configuration-option-type)
+(defclass email-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill an email address"))
 
-(defclass url-configuration-option-type (configuration-option-type)
+(defclass url-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in an URL"))
 
-(defclass pathname-configuration-option-type (configuration-option-type)
+(defclass pathname-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in a pathaname"))
 
-(defclass configuration-option-value ()
+(defclass configuration-schema-option-value ()
   ((option :initarg :option
 	   :documentation "The option referenced")
    (value :initarg :value
 	  :accessor value
 	  :documentation "The option value"))
-  (:documentation "The value of a configuration option"))
+  (:documentation "The value of a configuration-schema option"))
 
-(defclass configuration-option-type-item ()
+(defclass configuration-schema-option-type-item ()
   ((name :initarg :name
 	 :accessor name
 	 :initform (error "Provide the type-item name"))
@@ -147,55 +149,55 @@
 		  :accessor configuration
 		  :documentation "How to configure this item-type")))
 
-(define-configuration-option-type :one-of (&rest options)
+(define-configuration-schema-option-type :one-of (&rest options)
   (make-instance
-   'one-of-configuration-option-type
+   'one-of-configuration-schema-option-type
    :options (list (mapcar
 		   (lambda (option)
 		     (destructuring-bind (name title &rest args)
 			 option
-		       (apply #'make-configuration-type-item
+		       (apply #'make-configuration-schema-type-item
 			      name (cons title args))))
 		   options))))
 
-(define-configuration-option-type :some-of (options &rest args)
-  (apply #'make-instance 'list-configuration-option-type
+(define-configuration-schema-option-type :some-of (options &rest args)
+  (apply #'make-instance 'list-configuration-schema-option-type
 	 (append
 	  (list
-	   :options (list (mapcar #'make-configuration-type-item options)))
+	   :options (list (mapcar #'make-configuration-schema-type-item options)))
 	 args)))
 
-(define-configuration-option-type :text (&rest args)
-  (apply #'make-instance 'text-configuration-option-type
+(define-configuration-schema-option-type :text (&rest args)
+  (apply #'make-instance 'text-configuration-schema-option-type
 	 args))
 
-(define-configuration-option-type :url (&rest args)
-  (apply #'make-instance 'url-configuration-option-type
+(define-configuration-schema-option-type :url (&rest args)
+  (apply #'make-instance 'url-configuration-schema-option-type
 	 args))
 
-(define-configuration-option-type :email (&rest args)
-  (apply #'make-instance 'email-configuration-option-type
+(define-configuration-schema-option-type :email (&rest args)
+  (apply #'make-instance 'email-configuration-schema-option-type
 	 args))
 
 (defmacro path-name (&rest args)
-  `(make-instance 'pathname-configuration-option-type
+  `(make-instance 'pathname-configuration-schema-option-type
 		  ,@args))
 
-(defun make-configuration-type-item (name title &rest args)
-  (apply #'make-instance 'configuration-option-type-item
+(defun make-configuration-schema-type-item (name title &rest args)
+  (apply #'make-instance 'configuration-schema-option-type-item
 		 (append (list :name name
 			       :title title)
 			 args)))
 
-(defmethod %validate-configuration-option ((type text-configuration-option-type)
+(defmethod %validate-configuration-schema-option ((type text-configuration-schema-option-type)
 					  option)
   (if (not (stringp (value option)))
       (validation-error option
 			(format nil "~A should be a string for ~A" option type))))
 
-(defmethod initialize-instance :after ((option configuration-option-value) &rest initargs)
+(defmethod initialize-instance :after ((option configuration-schema-option-value) &rest initargs)
   (declare (ignore initargs))
-  (validate-configuration-option option))
+  (validate-configuration-schema-option option))
 
 (defun filter (predicate list)
   (reduce (lambda (result elem)
@@ -204,7 +206,7 @@
 		result))
 	  list :initial-value nil))
 
-(defmacro define-configuration (name parents &rest args)
+(defmacro define-configuration-schema (name parents &rest args)
   (let ((sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))
@@ -212,7 +214,8 @@
 				(equalp (first elem) :title))
 			      args)))
 	(documentation (first (find :documentation args :key #'first))))
-    `(make-instance 'configuration
+    `(setf (gethash ',name *configuration-schemas*)
+	   (make-instance 'configuration-schema
 		    :name ',name
 		    :parents (list ,@parents)
 		    :title ,(second title)
@@ -223,15 +226,15 @@
 					(destructuring-bind (_ name title &rest body)
 					    section
 					  (declare (ignore _))
-					  (make-configuration-section name title body)))
-				      ',sections))))
+					  (make-configuration-schema-section name title body)))
+				      ',sections)))))
 
-(defun make-configuration-section (name title args)
+(defun make-configuration-schema-section (name title args)
   (let ((documentation (find :documentation args :key #'first))
 	(options (filter (lambda (elem)
 			   (not (equalp (first elem) :documentation)))
 			 args)))
-    (make-instance 'configuration-section
+    (make-instance 'configuration-schema-section
 		   :name name
 		   :title title
 		   :documentation documentation
@@ -240,20 +243,20 @@
 		    (lambda (option)
 		      (destructuring-bind (name title type-spec &rest rest)
 			  option
-			(apply #'make-configuration-option
+			(apply #'make-configuration-schema-option
 			       (append (list name title type-spec)
 				       rest))))
 		    options))))
 
-(defun make-configuration-option (name title type-spec &rest args)
-  (apply #'make-instance 'configuration-option
+(defun make-configuration-schema-option (name title type-spec &rest args)
+  (apply #'make-instance 'configuration-schema-option
 	 (append
 	  (list :name name
 		:title title
-		:type (make-configuration-option-type type-spec))
+		:type (make-configuration-schema-option-type type-spec))
 	  args)))
 
-(defun make-configuration-option-type (type-spec)
+(defun make-configuration-schema-option-type (type-spec)
   (multiple-value-bind (key params)
       (if (listp type-spec)
 	  (values
