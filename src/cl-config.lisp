@@ -50,6 +50,12 @@
 		  :documentation "Configuration-Schema documentation"))
   (:documentation "A configuration-schema"))
 
+(defmethod print-object ((configuration-schema configuration-schema) stream)
+  (print-unreadable-object (configuration-schema stream :type t :identity t)
+    (format stream "~A ~S"
+	    (name configuration-schema)
+	    (title configuration-schema))))
+
 (defclass configuration-schema-section ()
   ((name :initarg :name
 	 :accessor name
@@ -63,6 +69,12 @@
 		  :accessor documentation*))
   (:documentation "A configuration-schema section"))
 
+(defmethod print-object ((section configuration-schema-section) stream)
+  (print-unreadable-object (section stream :type t :identity t)
+    (format stream "~A ~S"
+	    (name section)
+	    (title section))))
+
 (defclass configuration-schema-option ()
   ((name :initarg :name
 	 :accessor name
@@ -75,6 +87,10 @@
 	 :accessor option-type
 	 :initform (error "Provide the option type")
 	 :documentation "The option type")
+   (optional :initarg :optional
+	     :initform nil
+	     :accessor optional
+	     :documentation "t when the parameter is optional")
    (default :initarg :default
      :initform nil
      :accessor default
@@ -83,11 +99,25 @@
 	     :initform nil
 	     :accessor advanced
 	     :documentation "t when this is an advanced option")
+   (validate :initarg :validate
+	     :initform #'validate-configuration-schema-option
+	     :accessor validate
+	     :documentation "Function to use to validate the option")
+   (error-msg :initarg :error-msg
+	      :initform nil
+	      :accessor error-msg
+	      :documentation "The error message to show when the option is not valid")
    (documentation :initarg :documentation
 		  :initform nil
 		  :accessor documentation*
 		  :documentation "The option documentation string"))
   (:documentation "A configuration-schema option"))
+
+(defmethod print-object ((option configuration-schema-option) stream)
+  (print-unreadable-object (option stream :type t :identity t)
+    (format stream "~A ~S"
+	    (name option)
+	    (title option))))
 
 (defvar *option-types* (make-hash-table :test #'equal))
 
