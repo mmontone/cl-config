@@ -267,6 +267,7 @@ copy is returned by default."
 	  :initform (error "Provide the type-item title"))
    (configuration :initarg :configuration
 		  :accessor configuration
+		  :initform nil
 		  :documentation "How to configure this item-type")))
 
 (define-configuration-schema-option-type :one-of (&rest options)
@@ -330,15 +331,13 @@ copy is returned by default."
   (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))
-	(title (first (filter (lambda (elem)
-				(equalp (first elem) :title))
-			      args)))
-	(documentation (first (find :documentation args :key #'first))))
+	(title (second (find :title args :key #'first)))
+	(documentation (second (find :documentation args :key #'first))))
     `(setf (gethash ',name *configuration-schemas*)
 	   (make-instance 'configuration-schema
 		    :name ',name
 		    :parents  ',parents
-		    :title ,(second title)
+		    :title ,title
 		    :documentation ,(if documentation
 					documentation
 					"")
@@ -350,7 +349,7 @@ copy is returned by default."
 				      ',direct-sections)))))
 
 (defun make-configuration-schema-section (name title args)
-  (let ((documentation (find :documentation args :key #'first))
+  (let ((documentation (second (find :documentation args :key #'first)))
 	(direct-options (filter (lambda (elem)
 			   (not (equalp (first elem) :documentation)))
 			 args)))
