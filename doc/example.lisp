@@ -64,7 +64,8 @@
       (:page-title "Page title" :type :text :default "Gestalt application"))
 
 (define-configuration-scheme standard-configuration-scheme ()
-   (:configuration standard-configuration)
+  (:title "Standard configuration")
+  (:configuration standard-configuration)
    (:database-configuration
        (:connection-type :socket
            (:db-socket-configuration

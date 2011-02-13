@@ -37,6 +37,13 @@ OTHER DEALINGS IN THE SOFTWARE."
   :long-description "A library for specifying configurations and editing them."
   :components
   ((:module :src
+	    :components
 	    ((:file "package")
-	     (:file "cl-config"))
+	     (:file "cl-config")
+	     (:file "error")
+	     (:file "configuration-schema")
+	     (:file "configuration")
+	     (:file "backend")
+	     (:file "sexp-backend")
+	     (:file "xml-backend"))
 	    :serial t)))
