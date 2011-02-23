@@ -163,9 +163,9 @@ copy is returned by default."
 	     :accessor advanced
 	     :documentation "t when this is an advanced option")
    (validate :initarg :validate
-	     :initform #'validate-configuration-schema-option
+	     :initform #'validate-configuration-option
 	     :accessor validate
-	     :documentation "Function to use to validate the option")
+	     :documentation "Function to use to validate the configuration option")
    (error-msg :initarg :error-msg
 	      :initform nil
 	      :accessor error-msg
@@ -268,6 +268,9 @@ copy is returned by default."
 			       :title title)
 			 args)))
 
+(defmethod %validate-configuration-option ((type configuration-schema-option-type) option)
+  t)
+
 (defmethod %validate-configuration-option ((type text-configuration-schema-option-type)
 					   option)
   (if (not (stringp (value option)))
@@ -345,19 +348,22 @@ copy is returned by default."
 
 (defun find-configuration-schema-section (configuration-schema section-name)
   (multiple-value-bind (section found)
-      (gethash section-name (sections configuration))
+      (gethash section-name (sections configuration-schema))
     (if (not found)
-	(error "Section ~A not found in ~A" section-name configuration)
+	(error "Section ~A not found in ~A" section-name configuration-schema)
 	section)))
 
 (defun find-configuration-schema-section-option (configuration-schema-section option-name)
   (multiple-value-bind (option found)
-      (gethash section-name configuration-schema-section)
+      (gethash option-name (direct-options configuration-schema-section))
     (if (not found)
-	(error "Option ~A not found in ~A" option-name section)
+	(error "Option ~A not found in ~A" option-name configuration-schema-section)
 	option)))
 
-(defun find-configuation-schema-option (configuration-schema option-path)
+(defun find-configuration-schema-option (configuration-schema option-path)
   (destructuring-bind (section-name option-name) option-path
-    (let ((section (find-configuration-section configuration section-name)))
-      (find-configuration-section-option section option-name))))
+    (let ((section (find-configuration-schema-section
+		    configuration-schema
+		    section-name)))
+      (find-configuration-schema-section-option section
+						option-name))))

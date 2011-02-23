@@ -38,6 +38,7 @@
 
 (defclass configuration-option ()
   ((schema-option :initarg :schema-option
+		  :accessor schema-option
 		  :initform (error "Set up the schema-option")
 		  :documentation "The schema option referenced")
    (value :initarg :value
@@ -50,17 +51,24 @@
     (type configuration-option))
 
 (defun validate-configuration-option (option)
-  (%validate-configuration-option (type option) option))
+  (%validate-configuration-option (option-type (schema-option option)) option))
 
 (defgeneric %process-configuration-option
     (type configuration-option))
 
 (defun process-configuration-option (option)
-  (%process-configuration-option (type option) option))
+  (%process-configuration-option (option-type (schema-option option)) option))
 
 (defmethod %process-configuration-option ((type configuration-schema-option-type)
 					  option)
   )
+
+(defvar *configuration* nil)
+
+(defmethod initialize-instance :around ((configuration configuration) &rest initargs)
+  (declare (ignore initargs))
+  (let ((*configuration* configuration))
+    (call-next-method)))
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
   (declare (ignore initargs))
@@ -72,9 +80,9 @@
     (loop for (name value) in (getf initargs :options)
 	 do (setf (gethash name options)
 		  (make-instance 'configuration-option
-				 :option (find-configuration-schema-option
-					  (list (name section) name)
-					  (configuration-schema (configuration section)))
+				 :schema-option (find-configuration-schema-option
+						 (configuration-schema *configuration*)
+						 (list (name section) name))
 				 :value value)))
     (setf (options section) options)))
 
@@ -87,7 +95,7 @@
 
 (defun find-configuration-section-option (configuration-section option-name)
   (multiple-value-bind (option found)
-      (gethash section-name configuration-section)
+      (gethash option-name (options configuration-section))
     (if (not found)
 	(error "Option ~A not found in ~A" option-name configuration-section)
 	option)))
@@ -108,21 +116,24 @@
   )
 
 (defmethod initialize-instance :after ((configuration configuration) &rest initargs)
-  (setf (sections configuration)
-	(loop for section-spec in (getf initargs :sections)
-	   for section = (make-configuration-section section-spec)
+  (setf (direct-sections configuration)
+	(loop for section-spec in (getf initargs :direct-sections)
+	   for section = (destructuring-bind (_ name &rest options) section-spec
+			   (declare (ignore _))
+			   (make-instance 'configuration-section
+					  :name name
+					  :options options))
 	   collect section))
   (validate-configuration configuration))
 
 (defvar *configurations* (make-hash-table :test #'equalp))
 
 (defmacro define-configuration (name parents &rest args)
-  (let ((sections (filter (lambda (elem)
+  (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))
-	(title (first (filter (lambda (elem)
-				(equalp (first elem) :title))
-			      args)))
+	(title (second (find :title args :key #'first)))
+	(configuration-schema (second (find :configuration-schema args :key #'first)))
 	(documentation (second (find :documentation args :key #'first))))
     `(setf (gethash ',name *configurations*)
 	   (make-instance 'configuration
@@ -130,9 +141,8 @@
 			  :parents ',parents
 			  :title ,title
 			  :configuration-schema (find-configuration-schema ',configuration-schema)
-			  :sections ',sections
+			  :direct-sections ',direct-sections
 			  :documentation ,documentation))))
-
 			       
 (defun get-option-value (option-path configuration)
   (assert (listp option-path))
@@ -153,3 +163,22 @@
 	    (return-from get-section-option-value
 	      (values (second section-option) t)))))
   (values nil nil))
+
+(defun make-configuration-section (name options)
+  (make-instance 'configuration-section
+		 :name name
+		 :options
+		 (mapcar
+		  (lambda (option)
+		    (destructuring-bind (name value)
+			option
+		      (make-configuration-option name value)))
+		  options)))
+
+(defun make-configuration-option (name title type-spec &rest args)
+  (apply #'make-instance 'configuration-schema-option
+	 (append
+	  (list :name name
+		:title title
+		:type (make-configuration-schema-option-type type-spec))
+	  args)))
