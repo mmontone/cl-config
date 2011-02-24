@@ -41,6 +41,7 @@ OTHER DEALINGS IN THE SOFTWARE."
 	    ((:file "package")
 	     (:file "cl-config")
 	     (:file "error")
+	     (:file "option-types")
 	     (:file "configuration-schema")
 	     (:file "configuration")
 	     (:file "backend")

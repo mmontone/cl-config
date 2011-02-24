@@ -47,6 +47,10 @@
 	  :documentation "The option value"))
   (:documentation "The value of a configuration-schema option"))
 
+(defmethod print-object ((option configuration-option) stream)
+  (print-unreadable-object (option stream :type t :identity t)
+    (format stream "~A ~A" (schema-option option) (value option))))
+
 (defgeneric %validate-configuration-option
     (type configuration-option))
 
