@@ -42,8 +42,7 @@
     (loop for section in (getf initargs :direct-sections)
 	  do
 	 (setf (gethash (name section) direct-sections) section))
-    (setf (direct-sections configuration-schema) direct-sections))
-  (setf (parents configuration-schema) (mapcar #'find-configuration-schema (getf initargs :parents))))
+    (setf (direct-sections configuration-schema) direct-sections)))
 
 ;; from Alexandria:
 (defun copy-hash-table (table &key key test size
@@ -104,7 +103,8 @@ copy is returned by default."
     (funcall function y x)))
 
 (defmethod sections ((configuration-schema configuration-schema))
-  (let ((parent-sections (loop for parent in (parents configuration-schema)
+  (let ((parent-sections (loop for parent in
+			      (mapcar #'find-configuration-schema (parents configuration-schema))
 			    collect (sections parent))))
     (if parent-sections
 	(merge-section-tables (direct-sections configuration-schema)
@@ -274,5 +274,6 @@ copy is returned by default."
 						option-name))))
 
 (defmethod ordered-parents ((configuration-schema configuration-schema))
-  (loop for parents in (parents configuration-schema)
+  (loop for parents in (mapcar #'find-configuration-schema
+			       (parents configuration-schema))
         appending parents))

@@ -1,3 +1,4 @@
 (defpackage :cl-config
   (:nicknames :cfg)
-  (:use :cl))
+  (:use :cl)
+  (:export #:cfg))

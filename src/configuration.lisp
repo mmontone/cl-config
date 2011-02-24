@@ -74,8 +74,6 @@
 					  option)
   )
 
-(defvar *configuration* nil)
-
 (defmethod initialize-instance :around ((configuration configuration) &rest initargs)
   (declare (ignore initargs))
   (let ((*configuration* configuration))
@@ -91,9 +89,7 @@
 		 (make-instance 'configuration-section
 				:name name
 				:options options))))
-    (setf (direct-sections configuration) direct-sections))
-  (setf (parents configuration)
-	(mapcar #'find-configuration (getf initargs :parents))))
+    (setf (direct-sections configuration) direct-sections)))
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
   (declare (ignore initargs))
@@ -177,5 +173,5 @@
   (values nil nil))
 
 (defmethod ordered-parents ((configuration configuration))
-  (loop for parents in (parents configuration)
+  (loop for parents in (mapcar #'find-configuration (parents configuration))
        appending parents))
