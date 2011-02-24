@@ -123,3 +123,21 @@
      for opt in (options (option-type (schema-option option)))
      collect (name opt))
   option)
+
+(defun valid-mail-address-p (address)
+  "Simple e-mail address validation.  Given ADDRESS, as a string,
+returns non-NIL if it appears to be valid."
+  (declare (type string address))
+  (if (and (>= (length address) 6)
+	   (every (lambda (char)
+		    (or (alphanumericp char)
+			(find char "+-.@_")))
+		  address)
+	   (find #\@ address))
+      t
+      nil))
+
+(define-option-validator email-configuration-schema-option-type
+    (value option)
+  (valid-mail-address-p value)
+  "~A is not a valid email address in ~A" value option)
