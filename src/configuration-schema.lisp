@@ -272,3 +272,7 @@ copy is returned by default."
 		    section-name)))
       (find-configuration-schema-section-option section
 						option-name))))
+
+(defmethod ordered-parents ((configuration-schema configuration-schema))
+  (loop for parents in (parents configuration-schema)
+        appending parents))

@@ -1,5 +1,12 @@
 (in-package :cl-config)
 
+(defun find-configuration (name)
+  (multiple-value-bind (configuration found-p)
+      (gethash name *configurations*)
+    (if found-p
+	configuration
+	(error "Configuration ~A not defined" name))))
+
 (defclass configuration ()
   ((name :initarg :name
 	 :accessor name
@@ -74,6 +81,20 @@
   (let ((*configuration* configuration))
     (call-next-method)))
 
+(defmethod initialize-instance :after ((configuration configuration) &rest initargs)
+  (let ((direct-sections (make-hash-table :test #'equalp)))
+    (loop for section-spec in (getf initargs :direct-sections)
+	  do
+	 (destructuring-bind (_ name &rest options) section-spec
+	   (declare (ignore _))
+	   (setf (gethash name direct-sections)
+		 (make-instance 'configuration-section
+				:name name
+				:options options))))
+    (setf (direct-sections configuration) direct-sections))
+  (setf (parents configuration)
+	(mapcar #'find-configuration (getf initargs :parents))))
+
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
   (declare (ignore initargs))
   (process-configuration-option option)
@@ -119,17 +140,6 @@
   "Validates a configuration against its schema"
   )
 
-(defmethod initialize-instance :after ((configuration configuration) &rest initargs)
-  (setf (direct-sections configuration)
-	(loop for section-spec in (getf initargs :direct-sections)
-	   for section = (destructuring-bind (_ name &rest options) section-spec
-			   (declare (ignore _))
-			   (make-instance 'configuration-section
-					  :name name
-					  :options options))
-	   collect section))
-  (validate-configuration configuration))
-
 (defvar *configurations* (make-hash-table :test #'equalp))
 
 (defmacro define-configuration (name parents &rest args)
@@ -152,13 +162,11 @@
   (assert (listp option-path))
   (let ((section-name (first option-path))
 	(option-name (second option-path)))
-    (let ((sections (find-sections section-name configuration)))
-      (loop for section in sections
-	   do (multiple-value-bind (value found)
-		  (get-section-option-value option-name section)
-		(if found
-		    (return-from get-option-value (values value t)))))))
-  (values nil nil))
+    (loop for conf in (cons configuration (ordered-parents configuration))
+	  for section = (gethash section-name (direct-sections conf))
+	  when (and section (gethash option-name (options section)))
+	  do (return-from get-option-value (value (gethash option-name (options section)))))
+    (error "Value not found for option ~A in ~A" option-path configuration)))
 
 (defun get-section-option-value (option section)
   (loop for section-option in section
@@ -168,21 +176,6 @@
 	      (values (second section-option) t)))))
   (values nil nil))
 
-(defun make-configuration-section (name options)
-  (make-instance 'configuration-section
-		 :name name
-		 :options
-		 (mapcar
-		  (lambda (option)
-		    (destructuring-bind (name value)
-			option
-		      (make-configuration-option name value)))
-		  options)))
-
-(defun make-configuration-option (name title type-spec &rest args)
-  (apply #'make-instance 'configuration-schema-option
-	 (append
-	  (list :name name
-		:title title
-		:type (make-configuration-schema-option-type type-spec))
-	  args)))
+(defmethod ordered-parents ((configuration configuration))
+  (loop for parents in (parents configuration)
+       appending parents))
