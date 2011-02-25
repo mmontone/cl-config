@@ -16,7 +16,14 @@
 	   (if (not ,result)
 	       (validation-error ,option
 				 ,error-msg ,@args)
-	       t)))))))
+	       t))))))
+
+  (defmacro define-option-processor (type (value &optional (option (gensym "OPTION-")))
+				     &body body)
+    `(defmethod %process-configuration-option ((type ,type) ,option)
+       (let ((,value (value ,option)))
+	 (setf (value ,option)
+	       (progn ,@body))))))
 
 (defclass configuration-schema-option-type ()
   ())
@@ -141,3 +148,12 @@ returns non-NIL if it appears to be valid."
     (value option)
   (valid-mail-address-p value)
   "~A is not a valid email address in ~A" value option)
+
+(define-option-processor pathname-configuration-schema-option-type
+    (value)
+  (pathname value))
+
+(define-option-validator pathname-configuration-schema-option-type
+    (value)
+  (pathnamep value)
+  "~A is not a pathname" value)
