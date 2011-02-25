@@ -47,4 +47,5 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "backend")
 	     (:file "sexp-backend")
 	     (:file "xml-backend"))
-	    :serial t)))
+	    :serial t))
+  :depends-on (:xml-emitter))
