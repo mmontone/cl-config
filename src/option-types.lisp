@@ -15,7 +15,7 @@
 	 (let ((,result ,condition))
 	   (if (not ,result)
 	       (validation-error ,option
-				 (format nil ,error-msg ,@args))
+				 ,error-msg ,@args)
 	       t)))))))
 
 (defclass configuration-schema-option-type ()

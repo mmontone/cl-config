@@ -92,7 +92,8 @@
 		 (make-instance 'configuration-section
 				:name name
 				:options options))))
-    (setf (direct-sections configuration) direct-sections)))
+    (setf (direct-sections configuration) direct-sections)
+    (validate-configuration configuration)))
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
   (declare (ignore initargs))
@@ -137,9 +138,21 @@
 
 (defun validate-configuration (configuration)
   "Validates a configuration against its schema"
-  )
-
-(defvar *configurations* (make-hash-table :test #'equalp))
+  (loop for schema-section being the hash-values of
+       (sections (configuration-schema configuration))
+       do (loop for option-schema being the hash-values of
+	       (direct-options schema-section)
+	       do (if (not (optional option-schema))
+		      (let ((option-path (list (name schema-section)
+					       (name option-schema))))
+			(handler-case
+			    (get-option-value
+			     option-path
+			     configuration)
+			  (option-value-not-found-error ()
+			    (validation-error configuration
+					      "Value for ~A not found"
+					      option-path))))))))
 
 (defmacro define-configuration (name parents &rest args)
   (let ((direct-sections (filter (lambda (elem)
@@ -165,7 +178,7 @@
 	  for section = (gethash section-name (direct-sections conf))
 	  when (and section (gethash option-name (options section)))
 	  do (return-from get-option-value (value (gethash option-name (options section)))))
-    (error "Value not found for option ~A in ~A" option-path configuration)))
+    (option-value-not-found-error option-path configuration)))
 
 (defun get-section-option-value (option section)
   (loop for section-option in section
