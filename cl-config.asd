@@ -39,11 +39,11 @@ OTHER DEALINGS IN THE SOFTWARE."
   ((:module :src
 	    :components
 	    ((:file "package")
-	     (:file "cl-config")
 	     (:file "error")
 	     (:file "option-types")
 	     (:file "configuration-schema")
 	     (:file "configuration")
+	     (:file "cl-config")
 	     (:file "backend")
 	     (:file "sexp-backend")
 	     (:file "xml-backend"))

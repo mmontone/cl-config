@@ -1,5 +1,8 @@
 (in-package :cl-config)
 
+(defvar *configuration* nil "The current configuration")
+(defvar *configurations* (make-hash-table :test #'equalp))
+
 (defun find-configuration (name)
   (multiple-value-bind (configuration found-p)
       (gethash name *configurations*)
