@@ -38,7 +38,8 @@
   (:documentation "Fill in some text"))
 
 (defclass list-configuration-schema-option-type (configuration-schema-option-type)
-  ((options :accessor options))
+  ((options :initarg :options
+	    :accessor options))
   (:documentation "Choose a list of options"))
 
 (defclass email-configuration-schema-option-type (configuration-schema-option-type)

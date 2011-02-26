@@ -163,9 +163,9 @@ copy is returned by default."
 	     :accessor advanced
 	     :documentation "t when this is an advanced option")
    (validate :initarg :validate
-	     :initform #'validate-configuration-option
+	     :initform 'validate-configuration-option
 	     :accessor validate
-	     :documentation "Function to use to validate the configuration option")
+	     :documentation "Function name to use to validate the configuration option")
    (error-msg :initarg :error-msg
 	      :initform nil
 	      :accessor error-msg
