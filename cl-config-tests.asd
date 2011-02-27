@@ -37,7 +37,8 @@ OTHER DEALINGS IN THE SOFTWARE."
   :long-description "A library for specifying configurations and editing them."
   :components
   ((:module :tests
+	    :components
 	    ((:file "package")
 	     (:file "tests"))
 	    :serial t))
-  (:depends-on :fiveam))
+  :depends-on (:fiveam))
