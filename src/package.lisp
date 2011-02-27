@@ -10,4 +10,8 @@
 	   #:sexp-reader
 	   #:serialize
 	   #:find-configuration
-	   #:find-configuration-schema))
+	   #:find-configuration-schema
+	   #:serialize
+	   #:unserialize
+	   #:serialize-configuration-schemas
+	   #:serialize-configurations))
