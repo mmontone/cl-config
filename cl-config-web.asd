@@ -37,7 +37,8 @@ OTHER DEALINGS IN THE SOFTWARE."
   :long-description "A web application for editing cl-config configurations."
   :components
   ((:module :web
+	    :components
 	    ((:file "package")
 	     (:file "cl-config-web"))
 	    :serial t))
-  (:depends-on :cl-config))
+  :depends-on (:cl-config :hunchentoot :cl-who :parenscript))
