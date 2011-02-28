@@ -46,6 +46,29 @@
 	    :accessor options
 	    :initform (make-hash-table :test #'equalp))))
 
+(defmethod initialize-instance :after ((section configuration-section) &rest initargs)
+  (declare (ignore initargs))
+  (process-configuration-section (name section) section)
+  (validate-configuration-section (name section) section))
+
+(defgeneric process-configuration-section (name section)
+  (:method (name section)
+    t))
+
+(defgeneric validate-configuration-section (name section)
+  (:method (name section)
+    t))
+
+(defmacro define-configuration-section-processor (name (section) &body body)
+  (let ((name-var (gensym "NAME-")))
+    `(defmethod process-configuration-section ((,name-var (eql ',name)) ,section)
+       ,@body)))
+
+(defmacro define-configuration-section-validator (name (section) &body body)
+  (let ((name-var (gensym "NAME-")))
+    `(defmethod validate-configuration-section ((,name-var (eql ',name)) ,section)
+       ,@body)))
+
 (defclass configuration-option ()
   ((schema-option :initarg :schema-option
 		  :accessor schema-option
