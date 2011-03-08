@@ -28,6 +28,12 @@
 (defclass configuration-schema-option-type ()
   ())
 
+(defclass maybe-configuration-schema-option-type (configuration-schema-option-type)
+  ((type :initarg :type
+	 :accessor type*
+	 :initform (error "Provide the type")))
+  (:documentation "Maybe the type"))
+	  
 (defclass one-of-configuration-schema-option-type (configuration-schema-option-type)
   ((options :initarg :options
 	    :accessor options))
@@ -81,6 +87,10 @@
 			name (cons title args))))
 	     options)))
 
+(define-configuration-schema-option-type :maybe (type &rest args)
+  (apply #'make-instance 'maybe-configuration-schema-option-type
+	 (append `(:type ,type) args)))
+
 (define-configuration-schema-option-type :some-of (options &rest args)
   (apply #'make-instance 'list-configuration-schema-option-type
 	 (append
@@ -112,6 +122,13 @@
 
 (defmethod %validate-configuration-option ((type configuration-schema-option-type) option)
   t)
+
+(define-option-validator maybe-configuration-schema-option-type
+    (value option)
+  (or (null value)
+      (%validate-configuration-option (type* (option-type option))
+				      option))
+  "Error")
 
 (define-option-validator text-configuration-schema-option-type
     (value option)
