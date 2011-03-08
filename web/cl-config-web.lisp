@@ -10,7 +10,7 @@
   (with-output-to-string (s)
     (with-html-output (s)
       (htm
-       (:p "Configurations editor"))
+       (:h1 "Configurations editor"))
       (edit-configuration-schema
        (find-configuration-schema 'cfg::database-configuration-schema)
        s))))
@@ -26,8 +26,7 @@
     (htm
      (:div :class "configuration-schema-editor"
 	   (:div :class "title"
-		 (:h1 (fmt "~A editor" (cfg::title configuration-schema))))
-	   :br
+		 (:h2 (fmt "~A editor" (cfg::title configuration-schema))))
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration-schema))
 		  (loop for section being the hash-values of
 		       (cfg::sections configuration-schema)
@@ -48,7 +47,7 @@
      (:div :class "section"
 	   :id (format nil "section#~A" (cfg::name section))
 	   (:div :class "title"
-		 (:h1 (str (cfg::title section))))
+		 (:h3 (str (cfg::title section))))
 	   (:table :class "section"
 		   (:tbody
 		    (loop for option being the hash-values of (cfg::direct-options section)
