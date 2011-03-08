@@ -28,6 +28,10 @@
 (defclass configuration-schema-option-type ()
   ())
 
+(defclass boolean-configuration-schema-option-type (configuration-schema-option-type)
+  ()
+  (:documentation "The possible values are nil or t"))
+
 (defclass maybe-configuration-schema-option-type (configuration-schema-option-type)
   ((type :initarg :type
 	 :accessor type*
@@ -87,9 +91,13 @@
 			name (cons title args))))
 	     options)))
 
-(define-configuration-schema-option-type :maybe (type &rest args)
-  (apply #'make-instance 'maybe-configuration-schema-option-type
-	 (append `(:type ,type) args)))
+(define-configuration-schema-option-type :maybe (&rest args)
+  (make-instance 'maybe-configuration-schema-option-type
+		 :type (apply #'make-configuration-schema-option-type args)))  
+
+(define-configuration-schema-option-type :boolean (&rest args)
+  (declare (ignore args))
+  (make-instance 'boolean-configuration-schema-option-type))
 
 (define-configuration-schema-option-type :some-of (options &rest args)
   (apply #'make-instance 'list-configuration-schema-option-type
@@ -128,12 +136,17 @@
   (or (null value)
       (%validate-configuration-option (type* (option-type option))
 				      option))
-  "Error")
+  "Maybe type error")
+
+(define-option-validator boolean-configuration-schema-option-type
+    (value)
+  (or (null value) (equalp t value))
+  "~A should be nil or t" value)
 
 (define-option-validator text-configuration-schema-option-type
     (value option)
   (stringp value)
-  "~A should be a string for ~A" value option)
+  "~A should be a string" value)
 
 (define-option-validator one-of-configuration-schema-option-type
     (value option)

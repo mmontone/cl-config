@@ -85,9 +85,12 @@
 (defmethod render-schema-option-editor ((type cfg::text-configuration-schema-option-type)
 					option
 					stream)
-  (with-html-output (stream)
-    (:input :type "text"
-	    :name (cfg::name option))))
+  (if option
+      (with-html-output (stream)
+	(:input :type "text"
+		:name (cfg::name option)))
+      (with-html-output (stream)
+	(:input :type "text"))))
 
 (defmethod render-schema-option-editor ((type cfg::one-of-configuration-schema-option-type)
 					option
@@ -116,10 +119,36 @@
 					option
 					stream)
   (with-html-output (stream)
-    (htm
-     (:input :name (cfg::name option)
-	     :type "checkbox"
-	     (render-schema-option-editor (cfg::type* option) stream)))))
+    (if (cfg::default option)
+	(htm
+	 (:input :name (cfg::name option)
+		 :checked "checked"
+		 :type "checkbox"
+		 (:div :class "maybe-option"
+		       (render-schema-option-editor (cfg::type* type)
+						    nil
+						    stream))))
+	(htm
+	 (:input :name (cfg::name option)
+		 :type "checkbox"
+		 (:div :class "maybe-option, disabled"
+		       (render-schema-option-editor (cfg::type* type)
+						    nil
+						    stream))))
+	)))
+
+(defmethod render-schema-option-editor ((type cfg::boolean-configuration-schema-option-type)
+					option
+					stream)
+  (with-html-output (stream)
+    (if (cfg::default option)
+	(htm
+	 (:input :name (cfg::name option)
+		 :type "checkbox"
+		 :checked "checked"))
+	(htm
+	 (:input :name (cfg::name option)
+		 :type "checkbox")))))
 
 (defmethod render-schema-option-editor ((type cfg::pathname-configuration-schema-option-type)
 					option
