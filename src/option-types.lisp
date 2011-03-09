@@ -32,6 +32,10 @@
   ()
   (:documentation "The possible values are nil or t"))
 
+(defclass sexp-configuration-schema-option-type (configuration-schema-option-type)
+  ()
+  (:documentation "An sexp as configuration"))
+
 (defclass maybe-configuration-schema-option-type (configuration-schema-option-type)
   ((type :initarg :type
 	 :accessor type*
@@ -98,6 +102,10 @@
 (define-configuration-schema-option-type :boolean (&rest args)
   (declare (ignore args))
   (make-instance 'boolean-configuration-schema-option-type))
+
+(define-configuration-schema-option-type :sexp (&rest args)
+  (declare (ignore args))
+  (make-instance 'sexp-configuration-schema-option-type))
 
 (define-configuration-schema-option-type :some-of (options &rest args)
   (apply #'make-instance 'list-configuration-schema-option-type
@@ -188,3 +196,10 @@ returns non-NIL if it appears to be valid."
     (value)
   (pathnamep value)
   "~A is not a pathname" value)
+
+(define-option-processor sexp-configuration-schema-option-type
+    (value)
+  (with-input-from-string (s value)
+    (let ((val (read s)))
+      (lambda ()
+	(eval val)))))

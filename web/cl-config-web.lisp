@@ -162,3 +162,9 @@
   (with-html-output (stream)
     (:input :type "text"
 	    :name (cfg::name option))))
+
+(defmethod render-schema-option-editor ((type cfg::sexp-configuration-schema-option-type)
+					option
+					stream)
+  (with-html-output (stream)
+    (:textarea :name (cfg::name option))))
