@@ -193,7 +193,7 @@
 			  :direct-sections ',direct-sections
 			  :documentation ,documentation))))
 			       
-(defun get-option-value (option-path configuration)
+(defun get-option-value (option-path configuration &optional (option-not-found :error))
   (assert (listp option-path))
   (let ((section-name (first option-path))
 	(option-name (second option-path)))
@@ -201,7 +201,9 @@
 	  for section = (gethash section-name (direct-sections conf))
 	  when (and section (gethash option-name (options section)))
 	  do (return-from get-option-value (value (gethash option-name (options section)))))
-    (option-value-not-found-error option-path configuration)))
+    (if (equalp option-not-found :error)
+	(option-value-not-found-error option-path configuration)
+	nil)))
 
 (defun get-section-option-value (option section)
   (loop for section-option in section
