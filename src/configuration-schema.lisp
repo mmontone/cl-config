@@ -26,6 +26,9 @@
 	     :accessor direct-sections
 	     :initform (make-hash-table :test #'equalp)
 	     :documentation "Configuration-Schema direct-sections")
+   (partial :initarg :partial
+	    :reader partial
+	    :initform nil)
    (documentation :initarg :documentation
 		  :accessor documentation*
 		  :documentation "Configuration-Schema documentation"))

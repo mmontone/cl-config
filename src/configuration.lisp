@@ -28,9 +28,6 @@
    (direct-sections :initarg :direct-sections
 		    :accessor direct-sections
 		    :initform (error "Provide the direct-sections"))
-   (partial :initarg :partial
-	    :accessor partial
-	    :initform (error "Whether is partial or not. Partial configurations shouldn't be instantiated but used as parent configurations. Partial configurations are not validated upon creation, but when a child configuration is validated"))
    (documentation :initarg :documentation
 		  :accessor documentation*
 		  :initform "")))
@@ -104,7 +101,6 @@
   )
 
 (defmethod initialize-instance :around ((configuration configuration) &rest initargs)
-  (declare (ignore initargs))
   (let ((*configuration* configuration))
     (call-next-method)))
 
@@ -119,7 +115,7 @@
 				:name name
 				:options options))))
     (setf (direct-sections configuration) direct-sections)
-    (if (not (partial configuration))
+    (if (not (partial (configuration-schema configuration)))
 	(validate-configuration configuration))))
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
