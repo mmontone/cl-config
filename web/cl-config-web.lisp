@@ -18,7 +18,8 @@
 		:src "cl-config.css"))
 	(:body
 	 (configurations-editor s)
-	 (new-configuration s)))))))
+	 (new-configuration s)
+	 (show-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)))))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
@@ -44,8 +45,39 @@
 		     (:td (str (cfg::title option)))
 		     (:td (str value))))))))))))
 	  
-(defun show-configuration-schema (configuration-schema)
-  (declare (ignore configuration-schema)))
+(defun show-configuration-schema (configuration-schema stream)
+  (with-html-output (stream)
+    (htm
+     (:h2 (str (cfg::title configuration-schema)))
+     (loop for section being the hash-values of
+	  (cfg::sections configuration-schema)
+	do
+	  (htm
+	   (:h3 (str (cfg::title section)))
+	   (:table
+	    (:thead
+	     (:td (str "Name"))
+	     (:td (str "Title"))
+	     (:td (str "Type"))
+	     (:td (str "Optional"))
+	     (:td (str "Default"))
+	     (:td (str "Advanced"))
+	     (:td (str "Documentation")))
+	    (:tbody
+	     (loop for option-schema being the hash-values of (cfg::direct-options section)
+		do (htm
+		    (:tr
+		     (:td (str (cfg::name option-schema)))
+		     (:td (str (cfg::title option-schema)))
+		     (:td (str (class-name (class-of (cfg::option-type option-schema)))))
+		     (:td (str (if (cfg::optional option-schema)
+				   "Yes" "No")))
+		     (:td (str (if (cfg::default option-schema)
+				   (cfg::default option-schema)
+				   "--")))
+		     (:td (str (if (cfg::advanced option-schema)
+				   "Yes" "No")))
+		     (:td (str (cfg::documentation* option-schema)))))))))))))
 
 (defvar *odd-even* :odd)
 
