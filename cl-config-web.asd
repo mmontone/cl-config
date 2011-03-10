@@ -40,6 +40,7 @@ OTHER DEALINGS IN THE SOFTWARE."
 	    :components
 	    ((:file "package")
 	     (:file "cl-config-web")
-	     (:file "configuration-editor"))
+	     (:file "configuration-editor")
+	     (:file "configuration-schema-editor"))
 	    :serial t))
   :depends-on (:cl-config :hunchentoot :cl-who :parenscript))

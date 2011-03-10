@@ -19,7 +19,8 @@
 	(:body
 	 (configurations-editor s)
 	 (new-configuration s)
-	 (show-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)))))))
+	 (show-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)
+	 (edit-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)))))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
