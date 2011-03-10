@@ -25,6 +25,8 @@
   (with-html-output (stream)
     (htm
      (:h2 (str (cfg::title configuration)))
+     (:p (str (cfg::documentation* configuration)))
+     (:p (fmt "Parents: ~A" (slot-value configuration 'cfg::parents)))
      (loop for section being the hash-values of
 	  (cfg::sections (cfg::configuration-schema configuration))
 	do
@@ -49,6 +51,8 @@
   (with-html-output (stream)
     (htm
      (:h2 (str (cfg::title configuration-schema)))
+     (:p (str (cfg::documentation* configuration-schema)))
+     (:p (fmt "Parents: ~A" (slot-value configuration-schema 'cfg::parents)))
      (loop for section being the hash-values of
 	  (cfg::sections configuration-schema)
 	do

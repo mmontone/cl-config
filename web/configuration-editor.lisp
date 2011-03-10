@@ -35,8 +35,12 @@
 				  (loop for configuration being the hash-values of *configurations*
 				     do (htm
 					 (:option :name (cfg::name configuration)
-						  (str (cfg::title configuration))))))))))
-		 (:input :type "submit" :value "Create")))))))
+						  (str (cfg::title configuration))))))))
+		   (:tr
+		    (:td (str "Documentation:"))
+		    (:td (:textarea :name "documentation")))
+		    )))
+		 (:input :type "submit" :value "Create"))))))
 
 (defun configurations-editor (stream)
   (with-html-output (stream)
@@ -75,6 +79,8 @@
 	   (:div :class "name"
 		 (:p (fmt "Name: ~A" (cfg::name configuration))))
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
+		  (:p "Documentation:") (:textarea :name "documentation"
+						   (str (cfg::documentation* configuration)))
 		  (loop for section being the hash-values of
 		       (cfg::sections (cfg::configuration-schema configuration))
 		     do (edit-configuration-section configuration section stream))
