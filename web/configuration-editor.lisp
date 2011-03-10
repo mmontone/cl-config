@@ -81,6 +81,22 @@
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
 		  (:p "Documentation:") (:textarea :name "documentation"
 						   (str (cfg::documentation* configuration)))
+		  (:p "Parents:")
+		  (:select :id "parents"
+			   :name "parents"
+			   :multiple "true"
+			   (loop for conf being the hash-values of *configurations*
+			      do (if (find (cfg::name conf)
+					   (cfg::parents configuration)
+					   :key #'cfg::name)
+				     (htm
+				      (:option :name (cfg::name configuration)
+					       :selected "selected"
+					       (str (cfg::title conf))))
+				     (htm
+				      (:option :name (cfg::name configuration)
+					       (str (cfg::title conf))))
+				     )))
 		  (loop for section being the hash-values of
 		       (cfg::sections (cfg::configuration-schema configuration))
 		     do (edit-configuration-section configuration section stream))
