@@ -26,47 +26,74 @@
 	       (progn ,@body))))))
 
 (defclass configuration-schema-option-type ()
-  ())
+  (()))
 
 (defclass boolean-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "The possible values are nil or t"))
 
+(defmethod title ((type boolean-configuration-schema-option-type))
+  "Boolean")
+
 (defclass sexp-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "An sexp as configuration"))
+
+(defmethod title ((type sexp-configuration-schema-option-type))
+  "SEXP")
 
 (defclass maybe-configuration-schema-option-type (configuration-schema-option-type)
   ((type :initarg :type
 	 :accessor type*
 	 :initform (error "Provide the type")))
   (:documentation "Maybe the type"))
+
+(defmethod title ((type maybe-configuration-schema-option-type))
+  "Maybe")
 	  
 (defclass one-of-configuration-schema-option-type (configuration-schema-option-type)
   ((options :initarg :options
 	    :accessor options))
   (:documentation "Choose one of the options"))
 
+(defmethod title ((type one-of-configuration-schema-option-type))
+  "One of")
+
 (defclass text-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in some text"))
+
+(defmethod title ((type text-configuration-schema-option-type))
+  "Text")
 
 (defclass list-configuration-schema-option-type (configuration-schema-option-type)
   ((options :initarg :options
 	    :accessor options))
   (:documentation "Choose a list of options"))
 
+(defmethod title ((type list-configuration-schema-option-type))
+  "List")
+
 (defclass email-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill an email address"))
+
+(defmethod title ((type email-configuration-schema-option-type))
+  "Email")
 
 (defclass url-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in an URL"))
 
+(defmethod title ((type url-configuration-schema-option-type))
+  "URL")
+
 (defclass pathname-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Fill in a pathaname"))
+
+(defmethod title ((type pathname-configuration-schema-option-type))
+  "Pathname")
 
 (defclass configuration-schema-option-type-item ()
   ((name :initarg :name

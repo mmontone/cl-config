@@ -69,7 +69,7 @@
 		    (:tr
 		     (:td (str (cfg::name option-schema)))
 		     (:td (str (cfg::title option-schema)))
-		     (:td (str (class-name (class-of (cfg::option-type option-schema)))))
+		     (:td (str (cfg::title (cfg::option-type option-schema))))
 		     (:td (str (if (cfg::optional option-schema)
 				   "Yes" "No")))
 		     (:td (str (if (cfg::default option-schema)
