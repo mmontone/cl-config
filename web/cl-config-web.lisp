@@ -24,36 +24,39 @@
   (with-html-output (stream)
     (htm
      (:h2 (str "New configuration"))
-     (:form :action "/newconf"
-	   :id "newconf"
-	   (:table
-	    (:tbody
-	     (:tr
-	      (:td (str "Name:"))
-	      (:td (:input :type "text"
-			   :name "name")))
-	     (:tr
-	      (:td (str "Title:"))
-	      (:td (:input :type "text"
-			   :name "title")))
-	     (:tr
-	      (:td (str "Schema:"))
-	      (:td (:select :id "schema"
-			    :name "schema"
-			    (loop for configuration-schema being the hash-values of *configuration-schemas*
-				 do (htm
-				     (:option :name (cfg::name configuration-schema)
-					      (str (cfg::title configuration-schema))))))))
-	     (:tr
-	      (:td (str "Parents:"))
-	      (:td (:select :id "parents"
-			    :name "parents"
-			    :multiple "true"
-			    (loop for configuration being the hash-values of *configurations*
-				 do (htm
-				     (:option :name (cfg::name configuration)
-					      (str (cfg::title configuration))))))))))
-	   (:input :type "submit" :value "Create")))))
+     (if (zerop (hash-table-count *configuration-schemas*))
+	 (htm (:p "No configuration schemas available to create configurations from"))
+	 (htm
+	  (:form :action "/newconf"
+		 :id "newconf"
+		 (:table
+		  (:tbody
+		   (:tr
+		    (:td (str "Name:"))
+		    (:td (:input :type "text"
+				 :name "name")))
+		   (:tr
+		    (:td (str "Title:"))
+		    (:td (:input :type "text"
+				 :name "title")))
+		   (:tr
+		    (:td (str "Schema:"))
+		    (:td (:select :id "schema"
+				  :name "schema"
+				  (loop for configuration-schema being the hash-values of *configuration-schemas*
+				     do (htm
+					 (:option :name (cfg::name configuration-schema)
+						  (str (cfg::title configuration-schema))))))))
+		   (:tr
+		    (:td (str "Parents:"))
+		    (:td (:select :id "parents"
+				  :name "parents"
+				  :multiple "true"
+				  (loop for configuration being the hash-values of *configurations*
+				     do (htm
+					 (:option :name (cfg::name configuration)
+						  (str (cfg::title configuration))))))))))
+		 (:input :type "submit" :value "Create")))))))
 
 (defun configurations-editor (stream)
   (with-html-output (stream)
@@ -101,17 +104,17 @@
 		     do (edit-configuration-section configuration section stream))
 		  (:input :type "submit" :value "Save"))))))
 
-(defun edit-configuration-schema (configuration-schema stream)
-  (with-html-output (stream)
-    (htm
-     (:div :class "configuration-schema-editor"
-	   (:div :class "title"
-		 (:h2 (fmt "~A editor" (cfg::title configuration-schema))))
-	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration-schema))
-		  (loop for section being the hash-values of
-		       (cfg::sections configuration-schema)
-		     do (edit-configuration-schema-section section stream))
-		  (:input :type "submit" :value "Save"))))))
+;; (defun edit-configuration-schema (configuration-schema stream)
+;;   (with-html-output (stream)
+;;     (htm
+;;      (:div :class "configuration-schema-editor"
+;; 	   (:div :class "title"
+;; 		 (:h2 (fmt "~A editor" (cfg::title configuration-schema))))
+;; 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration-schema))
+;; 		  (loop for section being the hash-values of
+;; 		       (cfg::sections configuration-schema)
+;; 		     do (edit-configuration-schema-section section stream))
+;; 		  (:input :type "submit" :value "Save"))))))
 
 (defvar *odd-even* :odd)
 
