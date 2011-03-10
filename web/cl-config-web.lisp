@@ -43,7 +43,16 @@
 			    (loop for configuration-schema being the hash-values of *configuration-schemas*
 				 do (htm
 				     (:option :name (cfg::name configuration-schema)
-					      (str (cfg::title configuration-schema))))))))))
+					      (str (cfg::title configuration-schema))))))))
+	     (:tr
+	      (:td (str "Parents:"))
+	      (:td (:select :id "parents"
+			    :name "parents"
+			    :multiple "true"
+			    (loop for configuration being the hash-values of *configurations*
+				 do (htm
+				     (:option :name (cfg::name configuration)
+					      (str (cfg::title configuration))))))))))
 	   (:input :type "submit" :value "Create")))))
 
 (defun configurations-editor (stream)
