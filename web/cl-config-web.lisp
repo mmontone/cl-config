@@ -18,18 +18,12 @@
      (:html
       (:head
        (:script :type "text/javascript"
-		:src  (asdf:system-relative-pathname 
-		       :cl-config-web 
-		       #p"web/static/jquery-1.5.1.min.js"))
+		:src  "/static/jquery-1.5.1.min.js")
        (:script :type "text/javascript"
-		:src  (asdf:system-relative-pathname 
-		       :cl-config-web 
-		       #p"web/static/cl-config.js"))
+		:src  "/static/cl-config.js")
        (:link :type "text/css"
 	      :rel "stylesheet"
-	      :href (asdf:system-relative-pathname
-		     :cl-config-web
-		     "web/static/cl-config.css")))
+	      :href "/static/cl-config.css"))
       (:body
        (esc (funcall body stream)))))))
 
@@ -37,6 +31,12 @@
   (with-output-to-string (s)
     (with-main-page (s)
       (configurations-editor s))))
+
+(push (create-folder-dispatcher-and-handler "/static/"
+					    (asdf:system-relative-pathname
+					     :cl-config-web
+					     "web/static/"))
+      *dispatch-table*)
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
