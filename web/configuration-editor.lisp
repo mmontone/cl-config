@@ -65,7 +65,6 @@
 		  (:p "Configuration:")
 		  (:select :id "configuration-select"
 			   :name "configuration-select"
-			   :onclick (format nil "javascript:window.location='/?conf=' + $('#configuration-select').value());")
 			   (loop for conf being the hash-values of *configurations*
 			    do (if (eql conf selected-conf)
 				   (htm
