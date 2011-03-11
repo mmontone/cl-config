@@ -42,14 +42,24 @@
 		    )))
 		 (:input :type "submit" :value "Create"))))))
 
-(defun configurations-editor (stream)
+(defun hash-table-values (hash-table &optional sort-predicate key)
+  (let ((values nil))
+    (maphash (lambda (key value)
+	       (push value values))
+	     hash-table)
+    (if sort-predicate
+	(sort values sort-predicate :key key)
+	values)))
+
+(defun configurations-editor (stream &optional selected-configuration)
   (with-html-output (stream)
     (htm
      (:h1 "Configurations editor")
      (if (zerop (hash-table-count *configurations*))
 	 (htm
 	  (:p "There are no configurations"))
-	 (progn
+	 (let ((selected-conf (or selected-configuration
+				  (first (hash-table-values *configurations*)))))
 	   (htm
 	    (:div :id "configuration-selector"
 		  (:p "Configuration:")
@@ -57,18 +67,16 @@
 			   :name "configuration-select"
 			   :onclick (format nil "javascript:window.location('/?conf=2');")
 			   (loop for conf being the hash-values of *configurations*
-			    do
-				(htm
-				 (:option :name (cfg::name conf)
-					  (str (cfg::title conf))))))))
-	   (maphash (lambda (name config)
-		      (declare (ignore name))
-		      (return-from configurations-editor
-			(progn
-			  (edit-configuration config stream)
-			  (show-configuration config stream))))
-		    *configurations*
-		    ))))))
+			    do (if (eql conf selected-conf)
+				   (htm
+				    (:option :name (cfg::name conf)
+					     :selected "selected"
+					     (str (cfg::title conf))))
+				   (htm
+				    (:option :name (cfg::name conf)
+					     (str (cfg::title conf)))))))))
+	   (edit-configuration selected-conf stream)))))
+  (new-configuration stream))
 
 (defun edit-configuration (configuration stream)
   (with-html-output (stream)

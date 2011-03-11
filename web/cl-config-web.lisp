@@ -1,26 +1,42 @@
 (in-package :cfg.web)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defmacro with-main-page ((stream) &body body)
+    `(render-main-page ,stream (lambda (,stream)
+				 (with-html-output (,stream)
+				   (htm
+				    ,@body))))))
+
 (setf hunchentoot::*catch-errors-p* nil) 
 
 (defun start-configuration-editor ()
   (start (make-instance 'acceptor :port 4242)))
 
-(define-easy-handler (main :uri "/")
-    ()
+(defun render-main-page (stream body)
+  (with-html-output (stream)
+    (htm
+     (:html
+      (:head
+       (:script :type "text/javascript"
+		:src  (asdf:system-relative-pathname 
+		       :cl-config-web 
+		       #p"web/static/jquery-1.5.1.min.js"))
+       (:script :type "text/javascript"
+		:src  (asdf:system-relative-pathname 
+		       :cl-config-web 
+		       #p"web/static/cl-config.js"))
+       (:link :type "text/css"
+	      :rel "stylesheet"
+	      :href (asdf:system-relative-pathname
+		     :cl-config-web
+		     "web/static/cl-config.css")))
+      (:body
+       (esc (funcall body stream)))))))
+
+(define-easy-handler (main :uri "/") ()
   (with-output-to-string (s)
-    (with-html-output (s)
-      (htm
-       (:html
-	(:head
-	 (:script :type "text/javascript"
-		  :src "cl-config.js")
-	 (:link :type "text/css"
-		:src "cl-config.css"))
-	(:body
-	 (configurations-editor s)
-	 (new-configuration s)
-	 (show-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)
-	 (edit-configuration-schema (cfg::find-configuration-schema 'cfg::database-configuration-schema) s)))))))
+    (with-main-page (s)
+      (configurations-editor s))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
