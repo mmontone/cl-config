@@ -25,7 +25,7 @@
 	      :rel "stylesheet"
 	      :href "/static/cl-config.css"))
       (:body
-       (esc (funcall body stream)))))))
+       (funcall body stream))))))
 
 (define-easy-handler (main :uri "/") ()
   (with-output-to-string (s)

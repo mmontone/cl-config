@@ -39,8 +39,8 @@
 		   (:tr
 		    (:td (str "Documentation:"))
 		    (:td (:textarea :name "documentation")))
-		    )))
-		 (:input :type "submit" :value "Create"))))))
+		    ))
+		 (:input :type "submit" :value "Create")))))))
 
 (defun hash-table-values (hash-table &optional sort-predicate key)
   (let ((values nil))
