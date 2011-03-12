@@ -2,6 +2,14 @@
 
 (defvar *configuration* nil "The current configuration")
 (defvar *configurations* (make-hash-table :test #'equalp))
+(defvar *schema-validation* t)
+
+(defun %with-schema-validation (value func)
+  (let ((*schema-validation* value))
+    (funcall func)))
+
+(defmacro with-schema-validation ((value) &body body)
+  `(%with-schema-validation ,value (lambda () ,@body)))
 
 (defun find-configuration (name)
   (multiple-value-bind (configuration found-p)
@@ -48,8 +56,9 @@
 
 (defmethod initialize-instance :after ((section configuration-section) &rest initargs)
   (declare (ignore initargs))
-  (process-configuration-section (name section) section)
-  (validate-configuration-section (name section) section))
+  (when *schema-validation*
+    (process-configuration-section (name section) section)
+    (validate-configuration-section (name section) section)))
 
 (defgeneric process-configuration-section (name section)
   (:method (name section)

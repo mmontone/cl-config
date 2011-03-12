@@ -4,6 +4,7 @@
   (with-html-output (stream)
     (htm
      (:form :action "editschema"
+	    :method "post"
 	    (:p "Title:")
 	    (:input :type "text"
 		    :value (str (cfg::title configuration-schema)))

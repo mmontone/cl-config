@@ -8,6 +8,7 @@
 	 (htm (:p "No configuration schemas available to create configurations from"))
 	 (htm
 	  (:form :action "/newconf"
+		 :method "post"
 		 :id "newconf"
 		 (:table
 		  (:tbody
@@ -25,7 +26,7 @@
 				  :name "schema"
 				  (loop for configuration-schema being the hash-values of *configuration-schemas*
 				     do (htm
-					 (:option :name (cfg::name configuration-schema)
+					 (:option :value (cfg::name configuration-schema)
 						  (str (cfg::title configuration-schema))))))))
 		   (:tr
 		    (:td (str "Parents:"))
@@ -34,7 +35,7 @@
 				  :multiple "true"
 				  (loop for configuration being the hash-values of *configurations*
 				     do (htm
-					 (:option :name (cfg::name configuration)
+					 (:option :value (cfg::name configuration)
 						  (str (cfg::title configuration))))))))
 		   (:tr
 		    (:td (str "Documentation:"))
@@ -86,6 +87,7 @@
 	   (:div :class "name"
 		 (:p (fmt "Name: ~A" (cfg::name configuration))))
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
+		  :method "post"
 		  (:p "Documentation:") (:textarea :name "documentation"
 						   (str (cfg::documentation* configuration)))
 		  (:p "Parents:")

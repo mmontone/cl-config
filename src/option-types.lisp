@@ -26,7 +26,7 @@
 	       (progn ,@body))))))
 
 (defclass configuration-schema-option-type ()
-  (()))
+  ())
 
 (defclass boolean-configuration-schema-option-type (configuration-schema-option-type)
   ()

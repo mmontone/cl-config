@@ -9,8 +9,13 @@
 
 (setf hunchentoot::*catch-errors-p* nil) 
 
-(defun start-configuration-editor ()
-  (start (make-instance 'acceptor :port 4242)))
+(defun start-cl-config-web ()
+  (start (make-instance 'acceptor :port 4242))
+  (push (create-folder-dispatcher-and-handler "/static/"
+					    (asdf:system-relative-pathname
+					     :cl-config-web
+					     "web/static/"))
+      *dispatch-table*))
 
 (defun render-main-page (stream body)
   (with-html-output (stream)
@@ -32,11 +37,65 @@
     (with-main-page (s)
       (configurations-editor s))))
 
-(push (create-folder-dispatcher-and-handler "/static/"
-					    (asdf:system-relative-pathname
-					     :cl-config-web
-					     "web/static/"))
-      *dispatch-table*)
+(define-condition validation-error ()
+  ((target :initarg :target
+	   :reader target
+	   :initform (error "Provide the target"))
+   (error-msg :initarg :error-msg
+	      :reader error-msg
+	      :initform (error "Provide the error message")))
+  (:report (lambda (c s)
+	     (format s "~A in ~A"
+		   (error-msg c)
+		   (target c)))))
+
+(defun validation-error (target error-msg &rest args)
+  (with-simple-restart (:continue "Continue")
+    (error 'validation-error
+	   :target target
+	   :error-msg (format nil error-msg args))))
+
+(defun %collecting-validation-errors (func)
+  (let ((errors nil))
+    (handler-bind
+	((validation-error
+	  (lambda (c)
+	    (push `(:error-msg ,(error-msg c)
+		    :target ,(target c))
+		  errors)
+	    (continue))))
+      (funcall func))))
+
+(defmacro collecting-validation-errors ((errors found-p) expr &body body)
+  `(let ((,errors (%collecting-validation-errors (lambda () ,expr)))
+	 (,found-p (plusp (length ,errors))))
+     ,@body))
+
+(define-easy-handler (newconf :uri "/newconf")
+    ((name :parameter-type 'string)
+     (title :parameter-type 'string)
+     (schema :parameter-type 'intern)
+     (parents :parameter-type 'list)
+     (documentation :parameter-type 'string))
+  
+  (collecting-validation-errors (errors found-p)
+      (progn
+	(if (zerop (length name))
+	    (validation-error 'name "Name cannot be empty"))
+	(if (zerop (title name))
+	    (validation-error 'title "Enter a title")))
+    (with-output-to-string (s)
+      (with-main-page (s)
+	(if found-p
+	    (new-configuration s errors)
+	    (let ((configuration
+		   (cfg::with-schema-validation (nil)
+		     (make-instance 'cfg::configuration
+						:name name
+						:title title
+						:configuration-schema (find-configuration-schema schema)
+						:documentation documentation))))
+	      (edit-configuration configuration stream)))))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
@@ -51,7 +110,8 @@
 	   (:h3 (str (cfg::title section)))
 	   (:table
 	    (:tbody
-	     (loop for option being the hash-values of (cfg::direct-options section)
+	     (loop for option being the hash-values of
+		  (cfg::direct-options section)
 		  for value = (or
 			       (cfg::get-option-value
 				(list (cfg::name section)
