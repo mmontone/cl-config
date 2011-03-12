@@ -211,6 +211,20 @@
      collect (name opt))
   option)
 
+(define-option-validator list-configuration-schema-option-type
+    (value option)
+  (some (lambda (v)
+	  (find v value))
+	(loop
+	   for opt in (options (option-type (schema-option option)))
+	   collect (name opt)))
+  "~A value should be one of ~A"
+  value
+  (loop
+     for opt in (options (option-type (schema-option option)))
+     collect (name opt))
+  option)
+
 (defun valid-mail-address-p (address)
   "Simple e-mail address validation.  Given ADDRESS, as a string,
 returns non-NIL if it appears to be valid."

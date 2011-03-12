@@ -85,7 +85,7 @@
   (:section :logging-configuration
 	    (:active-layers (:debugging))
 	    (:output-location :standard-output)
-	    (:debugging-level :info)
+	    (:debugging-level (:info))
 	    (:backend :log5)))
 
 (define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
