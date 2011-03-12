@@ -175,7 +175,8 @@
        (sections (configuration-schema configuration))
        do (loop for option-schema being the hash-values of
 	       (direct-options schema-section)
-	       do (if (not (optional option-schema))
+	       do (if (not (or (optional option-schema)
+			       (default option-schema)))
 		      (let ((option-path (list (name schema-section)
 					       (name option-schema))))
 			(handler-case
