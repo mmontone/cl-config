@@ -1,31 +1,56 @@
-(define-configuration 'database-configuration ()
+(in-package :cfg)
+
+(define-configuration-schema database-configuration ()
    (:title "Database configuration")
    (:documentation "Database configuration")
    (:section :database-configuration "Database configuration"
       (:documentation "Section for configuring the database")
       (:connection-type "Connection type"
-          (one-of (:socket "Socket"
-                       (:configuration 'db-socket-configuration))
-                  (:tcp "TCP"
-                       (:configuration 'db-tcp-configuration))))
+          (:one-of (:socket "Socket"
+			    :configuration 'db-socket-configuration)
+		   (:tcp "TCP"
+			 :configuration 'db-tcp-configuration)))
       (:username "Username" :text :documentation "The database engine username")
       (:password "Password" :text :documentation "The database engine password")
       (:database-name "Database name" :text)
-      (:database-parameters :text :default "" :advanced)))
+      (:database-parameters "Database parameters" :text :default "" :advanced t)))
 
-(define-configuration 'db-socket-configuration ()
+(define-configuration-schema db-socket-configuration ()
     (:title "Socket configuration")
     (:section :db-socket-configuration "Socket configuration"
-        (:path "Socket" :text
+        (:path "Socket" :pathname
                :default "/tmp/socket.soc")))
 
-(define-configuration 'db-tcp-configuration ()
+(define-configuration-schema db-tcp-configuration ()
     (:title "TCP configuration")
     (:section "TCP configuration"
-        (:url "URL" :text
+        (:url "URL" :url
               :default "localhost")))
 
-(define-configuration webapp-configuration (logging-configuration)
+(define-configuration-schema logging-configuration ()
+    (:title "Logging configuration")
+    (:documentation "Logging configuration")
+    (:section :logging-configuration "Logging configuration"
+        (:documentation "Logging configuration")
+        (:backend "Backend"
+            (:one-of (:log5 "Log5")))
+	(:debugging-level "Debugging level" (:list (:info "Info")
+						   (:warning "Warning")
+						   (:profile "Profile")))
+	(:output-location "Output location"
+                    (:one-of (:standard-output "Standard output"
+					       :default *standard-output*)
+			     (:file "File" :default "/tmp/log.log")))
+        (:active-layers "Active layers"
+			(:list
+			 (:debugging "Debugging"
+				     :configuration 'debugging-layer)
+			 (:database "Database"
+				    :configuration database-layer)
+			 (:control-flow "Control flow")
+			 (:system "System")))))
+
+(define-configuration-schema webapp-configuration (logging-configuration)
     (:title "Web application configuration")
     (:documentation "Web application configuration")
     (:section :webapp-configuration "Web application configuration"
@@ -35,35 +60,13 @@
                     (:hunchentoot "Hunchentoot" (:configuration 'hunchentoot-configuration))))
         (:host "Host" :text :default "localhost")))                    
 
-(define-configuration logging-configuration ()
-    (:title "Logging configuration")
-    (:documentation "Logging configuration")
-    (let-configuration*
-        ((output-logging ()
-            (output-location "Output location"
-                    (one-of (:standard-output "Standard output" :value '*standard-output*)
-                            (:file "File" :text :default "/tmp/log.log"))))
-        (debugging-layer (output-logging)
-            (debugging-levels "Debuggin levels" (list (:info "Info")
-                                                      (:warning "Warning")
-                                                      (:profile "Profile"))))
-        (database-layer (output-logging)
-           ...)))
-    (:section :logging-configuration "Logging configuration"
-        (:documentation "Logging configuration")
-        (:backend "Backend"
-            (:one-of (:log5 "Log5")))
-        (:active-layers "Active layers" (list (:debugging "Debugging" (:configuration debugging-layer))
-                                              (:database "Database" (:configuration database-layer))
-                                              (:control-flow "Control flow")
-                                              (:system "System")))))
 
-(define-configuration standard-configuration
+(define-configuration-schema standard-configuration
                         (webapp-configuration database-configuration)
       (:documentation "Standard configuration for a Gestalt application")
       (:page-title "Page title" :type :text :default "Gestalt application"))
 
-(define-configuration-scheme standard-configuration-scheme ()
+(define-configuration standard-configuration ()
   (:title "Standard configuration")
   (:configuration standard-configuration)
    (:database-configuration

@@ -102,6 +102,9 @@
    (title :initarg :title
 	  :accessor title
 	  :initform (error "Provide the type-item title"))
+   (default :initarg :default
+     :accessor default
+     :initform nil)
    (configuration :initarg :configuration
 		  :accessor configuration
 		  :initform nil
@@ -114,6 +117,17 @@
 (define-configuration-schema-option-type :one-of (&rest options)
   (make-instance
    'one-of-configuration-schema-option-type
+   :options (mapcar
+	     (lambda (option)
+	       (destructuring-bind (name title &rest args)
+		   option
+		 (apply #'make-configuration-schema-type-item
+			name (cons title args))))
+	     options)))
+
+(define-configuration-schema-option-type :list (&rest options)
+  (make-instance
+   'list-configuration-schema-option-type
    :options (mapcar
 	     (lambda (option)
 	       (destructuring-bind (name title &rest args)
