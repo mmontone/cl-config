@@ -56,15 +56,17 @@
     (:section :webapp-configuration "Web application configuration"
         (:documentation "Web application configuration")
         (:http-server "HTTP server"
-            (one-of (:apache "Apache" (:configuration 'apache-configuration))
-                    (:hunchentoot "Hunchentoot" (:configuration 'hunchentoot-configuration))))
+            (:one-of (:apache "Apache"
+			      :configuration 'apache-configuration)
+                    (:hunchentoot "Hunchentoot"
+				  :configuration 'hunchentoot-configuration)))
         (:host "Host" :text :default "localhost")))                    
-
 
 (define-configuration-schema standard-configuration
                         (webapp-configuration database-configuration)
+      (:title "Standard configuration")
       (:documentation "Standard configuration for a Gestalt application")
-      (:page-title "Page title" :type :text :default "Gestalt application"))
+      (:page-title "Page title" :text :default "Gestalt application"))
 
 (define-configuration standard-configuration ()
   (:title "Standard configuration")
