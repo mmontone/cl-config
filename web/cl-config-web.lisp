@@ -89,7 +89,6 @@
 	    (validation-error 'name "Name cannot be empty"))
 	(if (zerop (length title))
 	    (validation-error 'title "Enter a title")))
-    (break "~A ~A" errors found-p)
     (with-output-to-string (s)
       (with-main-page (s)
 	(if found-p
@@ -102,7 +101,6 @@
 						:configuration-schema (find-configuration-schema schema)
 						:direct-sections nil
 						:documentation documentation))))
-	      (break "~A" configuration)
 	      (edit-configuration configuration s)))))))
 
 (defun show-configuration (configuration stream)
