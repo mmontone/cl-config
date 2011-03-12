@@ -5,7 +5,12 @@
     `(render-main-page ,stream (lambda (,stream)
 				 (with-html-output (,stream)
 				   (htm
-				    ,@body))))))
+				    ,@body)))))
+  (defmacro collecting-validation-errors ((errors found-p) expr &body body)
+  `(multiple-value-bind (,errors ,found-p)
+       (%collecting-validation-errors
+	(lambda () ,expr))
+     ,@body)))
 
 (setf hunchentoot::*catch-errors-p* nil) 
 
@@ -50,7 +55,7 @@
 		   (target c)))))
 
 (defun validation-error (target error-msg &rest args)
-  (with-simple-restart (:continue "Continue")
+  (with-simple-restart (continue "Continue")
     (error 'validation-error
 	   :target target
 	   :error-msg (format nil error-msg args))))
@@ -64,17 +69,17 @@
 		    :target ,(target c))
 		  errors)
 	    (continue))))
-      (funcall func))))
+      (funcall func))
+    (values errors (plusp (length errors)))))
 
-(defmacro collecting-validation-errors ((errors found-p) expr &body body)
-  `(let ((,errors (%collecting-validation-errors (lambda () ,expr)))
-	 (,found-p (plusp (length ,errors))))
-     ,@body))
+(defun schema-symbol (string)
+  (intern string 'cfg))
 
 (define-easy-handler (newconf :uri "/newconf")
     ((name :parameter-type 'string)
      (title :parameter-type 'string)
-     (schema :parameter-type 'intern)
+     ;(schema :parameter-type 'intern)
+     (schema :parameter-type 'schema-symbol)
      (parents :parameter-type 'list)
      (documentation :parameter-type 'string))
   
@@ -82,8 +87,9 @@
       (progn
 	(if (zerop (length name))
 	    (validation-error 'name "Name cannot be empty"))
-	(if (zerop (title name))
+	(if (zerop (length title))
 	    (validation-error 'title "Enter a title")))
+    (break "~A ~A" errors found-p)
     (with-output-to-string (s)
       (with-main-page (s)
 	(if found-p
@@ -94,8 +100,10 @@
 						:name name
 						:title title
 						:configuration-schema (find-configuration-schema schema)
+						:direct-sections nil
 						:documentation documentation))))
-	      (edit-configuration configuration stream)))))))
+	      (break "~A" configuration)
+	      (edit-configuration configuration s)))))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)

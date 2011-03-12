@@ -124,7 +124,8 @@
 				:name name
 				:options options))))
     (setf (direct-sections configuration) direct-sections)
-    (if (not (partial (configuration-schema configuration)))
+    (if (and *schema-validation*
+	     (not (partial (configuration-schema configuration))))
 	(validate-configuration configuration))))
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)

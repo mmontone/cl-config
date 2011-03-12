@@ -1,6 +1,6 @@
 (in-package :cfg.web)
 
-(defun new-configuration (stream)
+(defun new-configuration (stream &optional errors)
   (with-html-output (stream)
     (htm
      (:h2 (str "New configuration"))
@@ -15,11 +15,20 @@
 		   (:tr
 		    (:td (str "Name:"))
 		    (:td (:input :type "text"
-				 :name "name")))
+				 :name "name"))
+		    (let ((error (find 'name errors :key (lambda (item)
+							   (getf item :target)))))
+		      (if error
+			(htm (:td (str (getf error :error-msg))))))
+		    )
 		   (:tr
 		    (:td (str "Title:"))
 		    (:td (:input :type "text"
-				 :name "title")))
+				 :name "title"))
+		    (let ((error (find 'title errors :key (lambda (item)
+							   (getf item :target)))))
+		      (if error
+			(htm (:td (str (getf error :error-msg)))))))
 		   (:tr
 		    (:td (str "Schema:"))
 		    (:td (:select :id "schema"
