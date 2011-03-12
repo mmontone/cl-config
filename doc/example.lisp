@@ -40,7 +40,8 @@
 	(:output-location "Output location"
                     (:one-of (:standard-output "Standard output"
 					       :default *standard-output*)
-			     (:file "File" :default "/tmp/log.log")))
+			     (:file "File" :default "/tmp/log.log"))
+		    :default '*standard-output)
         (:active-layers "Active layers"
 			(:list
 			 (:debugging "Debugging"
@@ -70,17 +71,22 @@
 
 (define-configuration standard-configuration ()
   (:title "Standard configuration")
-  (:configuration standard-configuration)
-   (:database-configuration
-       (:connection-type :socket
-           (:db-socket-configuration
-              (:path "/tmp/my-socket.soc")))
-       (:username "root")
-       (:password "root")
-       (:database-name "standard-database"))
-   (:webapp-configuration
-       (:host "localhost")
-       (:http-server :hunchentoot)))
+  (:configuration-schema standard-configuration)
+  (:section :database-configuration
+	    (:connection-type :socket
+			      (:db-socket-configuration
+			       (:path "/tmp/my-socket.soc")))
+	    (:username "root")
+	    (:password "root")
+	    (:database-name "standard-database"))
+  (:section :webapp-configuration
+	    (:host "localhost")
+	    (:http-server :hunchentoot))
+  (:section :logging-configuration
+	    (:active-layers (:debugging))
+	    (:output-location :standard-output)
+	    (:debugging-level :info)
+	    (:backend :log5)))
 
 (define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
     (:configuration standard-configuration)
