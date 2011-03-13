@@ -95,6 +95,8 @@
 		 (:h2 (fmt "~A editor" (cfg::title configuration))))
 	   (:div :class "name"
 		 (:p (fmt "Name: ~A" (cfg::name configuration))))
+	   (:div :class "schema"
+		 (:p (fmt "Schema: ~A" (cfg::title (cfg::configuration-schema configuration)))))
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
 		  :method "post"
 		  (:p "Documentation:") (:textarea :name "documentation"
