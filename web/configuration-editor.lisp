@@ -105,8 +105,7 @@
 			   :multiple "true"
 			   (loop for conf being the hash-values of *configurations*
 			      do (if (find (cfg::name conf)
-					   (cfg::parents configuration)
-					   :key #'cfg::name)
+					   (cfg::parents configuration))
 				     (htm
 				      (:option :name (cfg::name configuration)
 					       :selected "selected"
@@ -214,7 +213,7 @@
     (htm
      (:select :name (cfg::name option)
 	      :multiple "multiple"
-	      (loop for opt in (cfg::options option)
+	      (loop for opt in (cfg::options type)
 		 do (if (equalp value (cfg::name opt))
 			(htm
 			 (:option :value (cfg::name opt)
