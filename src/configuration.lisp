@@ -215,7 +215,10 @@
     (loop for conf in (cons configuration (ordered-parents configuration))
 	  for section = (gethash section-name (direct-sections conf))
 	  when (and section (gethash option-name (options section)))
-	  do (return-from get-option-value (value (gethash option-name (options section)))))
+	  do (return-from get-option-value (values (value
+						    (gethash option-name
+							     (options section)))
+						   conf)))
     (if (equalp option-not-found :error)
 	(option-value-not-found-error option-path configuration)
 	nil)))
