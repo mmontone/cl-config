@@ -277,6 +277,7 @@ copy is returned by default."
 						option-name))))
 
 (defmethod ordered-parents ((configuration-schema configuration-schema))
-  (loop for parents in (mapcar #'find-configuration-schema
-			       (parents configuration-schema))
-        appending parents))
+  (let ((parents (mapcar #'find-configuration
+			 (parents configuration))))
+    (append parents
+	    (apply #'append (mapcar #'ordered-parents parents)))))

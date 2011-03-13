@@ -197,12 +197,16 @@
 	(documentation (second (find :documentation args :key #'first))))
     `(setf (gethash ',name *configurations*)
 	   (make-instance 'configuration
-			  :name ',name
+			  ,@(if name
+				`(:name ',name))
 			  :parents ',parents
-			  :title ,title
-			  :configuration-schema (find-configuration-schema ',configuration-schema)
+			  ,@(if title
+				`(:title ,title))
+			  ,@(if configuration-schema
+				`(:configuration-schema (find-configuration-schema ',configuration-schema)))
 			  :direct-sections ',direct-sections
-			  :documentation ,documentation))))
+			  ,@(if documentation
+				`(:documentation ,documentation))))))
 			       
 (defun get-option-value (option-path configuration &optional (option-not-found :error))
   (assert (listp option-path))
@@ -225,5 +229,7 @@
   (values nil nil))
 
 (defmethod ordered-parents ((configuration configuration))
-  (loop for parents in (mapcar #'find-configuration (parents configuration))
-       appending parents))
+  (let ((parents (mapcar #'find-configuration
+			 (parents configuration))))
+    (append parents
+	    (apply #'append (mapcar #'ordered-parents parents)))))
