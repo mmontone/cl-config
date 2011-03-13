@@ -34,9 +34,9 @@
         (:documentation "Logging configuration")
         (:backend "Backend"
             (:one-of (:log5 "Log5")))
-	(:debugging-level "Debugging level" (:list (:info "Info")
-						   (:warning "Warning")
-						   (:profile "Profile")))
+	(:debugging-levels "Debugging levels" (:list (:info "Info")
+						     (:warning "Warning")
+						     (:profile "Profile")))
 	(:output-location "Output location"
                     (:one-of (:standard-output "Standard output"
 					       :default *standard-output*)
@@ -85,21 +85,23 @@
   (:section :logging-configuration
 	    (:active-layers (:debugging))
 	    (:output-location :standard-output)
-	    (:debugging-level (:info))
+	    (:debugging-levels (:info))
 	    (:backend :log5)))
 
-(define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
-    (:database-configuration
+(define-configuration debug-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title "Debug configuration")
+    (:section :database-configuration
         (:database-name "debug-database"))
-    (:logging-configuration
-       (:output-location :file "/tmp/debug.log")
-       (:active-layers :debugging :database
-           (:debugging-levels :info :warning :error)))
+    (:section :logging-configuration
+       (:output-location :standard-output)
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:info :warning :error)))
     (:documentation "Debugging configuration scheme"))
 
-(define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
+(define-configuration test-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title "Test configuration")
     (:database-configuration
         (:database-name "test-database"))
     (:logging-configuration
@@ -108,7 +110,7 @@
            (:debugging-levels :warning :error)))
     (:documentation "Testing configuration scheme"))
 
-(defapplication my-application (standard-application)
-   ...
-   (:configuration 'debug-configuration-scheme))
+;; (defapplication my-application (standard-application)
+;;    ...
+;;    (:configuration 'debug-configuration-scheme))
 
