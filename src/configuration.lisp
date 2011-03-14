@@ -219,9 +219,17 @@
 						    (gethash option-name
 							     (options section)))
 						   conf)))
-    (if (equalp option-not-found :error)
-	(option-value-not-found-error option-path configuration)
-	nil)))
+    ;; Try default
+    (let ((section
+	      (gethash (first option-path)
+		       (sections (configuration-schema configuration)))))
+	 (let ((option (gethash (second option-path) (cfg::direct-options section))))
+	   (if (default option)
+	       (values (default option) :default)
+	       (case option-not-found
+		 (:error
+		  (option-value-not-found-error option-path configuration))
+		 (t nil)))))))
 
 (defun get-section-option-value (option section)
   (loop for section-option in section
