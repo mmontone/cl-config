@@ -190,13 +190,10 @@
 				 option
 				 value
 				 stream)
-  (if value
-      (with-html-output (stream)
-	(:input :type "text"
-		:name (cfg::name option)
-		:value value))
-      (with-html-output (stream)
-	(:input :type "text"))))
+  (with-html-output (stream)
+    (:input :type "text"
+	    :name (if value (cfg::name option))
+	    :value (if value value))))
 
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
 				 option
@@ -206,15 +203,11 @@
     (htm
      (:select :name (cfg::name option)
 	      (loop for opt in (cfg::options type)
-		 do
-		   (if (equalp value (cfg::name opt))
-		       (htm
-			(:option :value (cfg::name opt)
-				 :selected "selected"
-				 (str (cfg::title opt))))
-		       (htm
-			(:option :value (cfg::name opt)
-				 (str (cfg::title opt))))))))))
+		 do (htm
+		     (:option :value (cfg::name opt)
+			      :selected (if (equalp value (cfg::name opt))
+					    "selected")
+			      (str (cfg::title opt)))))))))
 
 (defmethod render-option-editor ((type cfg::list-configuration-schema-option-type)
 				 option
@@ -225,14 +218,11 @@
      (:select :name (cfg::name option)
 	      :multiple "multiple"
 	      (loop for opt in (cfg::options type)
-		 do (if (equalp value (cfg::name opt))
-			(htm
-			 (:option :value (cfg::name opt)
-				  :selected "selected"
-				  (str (cfg::title opt))))
-			(htm
-			 (:option :value (cfg::name opt)
-				  (str (cfg::title opt))))))))))
+		 do (htm
+		     (:option :value (cfg::name opt)
+			      :selected (if (equalp value (cfg::name opt))
+					    "selected")
+			      (str (cfg::title opt)))))))))
 
 ;; (defmethod render-schema-option-editor ((type cfg::maybe-configuration-schema-option-type)
 ;; 					option
@@ -261,64 +251,45 @@
 				 value
 				 stream)
   (with-html-output (stream)
-    (if value
-	(htm
-	 (:input :name (cfg::name option)
-		 :type "checkbox"
-		 :checked "checked"))
-	(htm
-	 (:input :name (cfg::name option)
-		 :type "checkbox")))))
+    (htm
+     (:input :name (cfg::name option)
+	     :type "checkbox"
+	     :checked (if value "checked")))))
 
 (defmethod render-option-editor ((type cfg::pathname-configuration-schema-option-type)
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
-    (if value
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option)
-		 :value value))
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option))))))
+    (htm
+     (:input :type "text"
+	     :name (cfg::name option)
+	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
-    (if value
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option)
-		 :value value))
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option))))))
+    (htm
+     (:input :type "text"
+	     :name (cfg::name option)
+	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
-    (if value
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option)
-		 :value value))
-	(htm
-	 (:input :type "text"
-		 :name (cfg::name option))))))
+    (htm
+     (:input :type "text"
+	     :name (cfg::name option)
+	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::sexp-configuration-schema-option-type)
 				 option
 				 value
 				 stream)
-  (if value
-      (with-html-output (stream)
-	(:textarea :name (cfg::name option)
-		   (str value)))
-      (with-html-output (stream)
-	(:textarea :name (cfg::name option)))))
+  (with-html-output (stream)
+    (:textarea :name (cfg::name option)
+	       (if value (str value)))))
