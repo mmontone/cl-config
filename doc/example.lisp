@@ -74,8 +74,9 @@
   (:configuration-schema standard-configuration)
   (:section :database-configuration
 	    (:connection-type :socket
-			      (:db-socket-configuration
-			       (:path "/tmp/my-socket.soc")))
+			      :value2
+			      '(:db-socket-configuration
+				(:path "/tmp/my-socket.soc")))
 	    (:username "root")
 	    (:password "root")
 	    (:database-name "standard-database"))
@@ -104,8 +105,8 @@
     (:section :database-configuration
         (:database-name "test-database"))
     (:section :logging-configuration
-       (:output-location :file "/tmp/test.log")
-       (:active-layers (:debugging :database))
+       (:output-location :file :value2 "/tmp/test.log")
+       (:active-layers (:debugging :database) :inherit t)
        (:debugging-levels (:warning :error)))
     (:documentation "Testing configuration scheme"))
 

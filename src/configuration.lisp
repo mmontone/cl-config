@@ -89,9 +89,41 @@
 	  :documentation "The option value"))
   (:documentation "The value of a configuration-schema option"))
 
+(defclass standard-configuration-option (configuration-option)
+  ())
+
+(defclass list-configuration-option (configuration-option)
+  ((inherit :initarg :inherit
+	    :accessor inherit
+	    :initform nil
+	    :documentation "Whether to inherit or not list elements from parent option")))
+
+(defclass one-of-configuration-option (configuration-option)
+  ((value2 :initarg :value2
+	   :accessor value2
+	   :initform nil
+	   :documentation "Chosen option value")))
+
+(defgeneric option-class (option-type)
+  (:method ((option-type configuration-schema-option-type))
+    'standard-configuration-option))
+
+(defmethod option-class ((option-type list-configuration-schema-option-type))
+  'list-configuration-option)
+
+(defmethod option-class ((option-type one-of-configuration-schema-option-type))
+  'one-of-configuration-option)
+
 (defmethod print-object ((option configuration-option) stream)
   (print-unreadable-object (option stream :type t :identity t)
     (format stream "~A ~A" (schema-option option) (value option))))
+
+(defmethod print-object ((option list-configuration-option) stream)
+  (print-unreadable-object (option stream :type t :identity t)
+    (format stream "~A ~A inherit: ~A"
+	    (schema-option option)
+	    (value option)
+	    (inherit option))))
 
 (defgeneric %validate-configuration-option
     (type configuration-option))
@@ -135,14 +167,20 @@
 
 (defmethod initialize-instance :after ((section configuration-section) &rest initargs)
   (let ((options (make-hash-table :test #'equalp)))
-    (loop for (name value) in (getf initargs :options)
-	 do (setf (gethash name options)
-		  (make-instance 'configuration-option
-				 :schema-option (find-configuration-schema-option
-						 (configuration-schema *configuration*)
-						 (list (name section) name))
-				 :value value)))
-    (setf (options section) options)))
+    (loop for opt in (getf initargs :options)
+       do (destructuring-bind (name value &rest args) opt
+	    (let ((schema-option
+		   (find-configuration-schema-option
+		    (configuration-schema *configuration*)
+		    (list (name section) name))))
+	      (setf (gethash name options)
+		    (apply #'make-instance
+			   (option-class (option-type schema-option))
+			   (append
+			    (list :schema-option schema-option
+				  :value value)
+			    args)))))
+    (setf (options section) options))))
 
 (defun find-configuration-section (configuration section-name)
   (multiple-value-bind (section found)
