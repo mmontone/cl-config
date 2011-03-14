@@ -80,7 +80,6 @@
 	    (:password "root")
 	    (:database-name "standard-database"))
   (:section :webapp-configuration
-	    (:host "localhost")
 	    (:http-server :hunchentoot))
   (:section :logging-configuration
 	    (:active-layers (:debugging))
@@ -102,12 +101,12 @@
 (define-configuration test-configuration (standard-configuration)
     (:configuration-schema standard-configuration)
     (:title "Test configuration")
-    (:database-configuration
+    (:section :database-configuration
         (:database-name "test-database"))
-    (:logging-configuration
+    (:section :logging-configuration
        (:output-location :file "/tmp/test.log")
-       (:active-layers :debugging :database
-           (:debugging-levels :warning :error)))
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:warning :error)))
     (:documentation "Testing configuration scheme"))
 
 ;; (defapplication my-application (standard-application)
