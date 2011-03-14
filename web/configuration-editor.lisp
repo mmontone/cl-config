@@ -154,6 +154,11 @@
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"
 			"even")))
+    (multiple-value-bind (value origin)
+	(cfg::get-option-value
+	  (list (cfg::name section)
+		(cfg::name option))
+	  configuration nil)
     (with-html-output (stream)
       (htm
        (:tr :class (format nil "option,~A~{,~A~}~{,~A~}"
@@ -165,13 +170,17 @@
 	    (:td :class "title"
 		 (str (cfg::title option)))
 	    (:td :class "editor"
-		 (render-option-editor (cfg::option-type option)
-				       option
-				       (cfg::get-option-value
-					(list (cfg::name section)
-					      (cfg::name option))
-					configuration nil)
-				       stream)))))))
+		 (when value
+		   (render-option-editor (cfg::option-type option)
+					 option
+					 value
+					 stream)))
+	    (:td :class "origin"
+		 (when origin
+		   (fmt "(~A)"
+			(if (equalp origin :default)
+			    "Default"
+			    (cfg::title origin)))))))))))
 
 (defgeneric render-option-editor (type option value stream)
   )
