@@ -61,7 +61,8 @@
 			      :configuration 'apache-configuration)
                     (:hunchentoot "Hunchentoot"
 				  :configuration 'hunchentoot-configuration)))
-        (:host "Host" :text :default "localhost")))                    
+        (:host "Host" :text :default "localhost")
+	(:port "Port" :integer :default 8080)))                    
 
 (define-configuration-schema standard-configuration
                         (webapp-configuration database-configuration)
