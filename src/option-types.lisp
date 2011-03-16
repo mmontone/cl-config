@@ -61,10 +61,17 @@
 
 (defclass text-configuration-schema-option-type (configuration-schema-option-type)
   ()
-  (:documentation "Fill in some text"))
+  (:documentation "Text type"))
 
 (defmethod title ((type text-configuration-schema-option-type))
   "Text")
+
+(defclass integer-configuration-schema-option-type (configuration-schema-option-type)
+  ()
+  (:documentation "Integer type"))
+
+(defmethod title ((type integer-configuration-schema-option-type))
+  "Integer")
 
 (defclass list-configuration-schema-option-type (configuration-schema-option-type)
   ((options :initarg :options
@@ -144,6 +151,10 @@
   (declare (ignore args))
   (make-instance 'boolean-configuration-schema-option-type))
 
+(define-configuration-schema-option-type :integer (&rest args)
+  (declare (ignore args))
+  (make-instance 'integer-configuration-schema-option-type))
+
 (define-configuration-schema-option-type :sexp (&rest args)
   (declare (ignore args))
   (make-instance 'sexp-configuration-schema-option-type))
@@ -196,6 +207,11 @@
     (value option)
   (stringp value)
   "~A should be a string" value)
+
+(define-option-validator integer-configuration-schema-option-type
+    (value option)
+  (integerp value)
+  "~A should be an integer" value)
 
 (define-option-validator one-of-configuration-schema-option-type
     (value option)
