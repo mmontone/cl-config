@@ -15,4 +15,12 @@
 	   #:serialize
 	   #:unserialize
 	   #:serialize-configuration-schemas
-	   #:serialize-configurations))
+	   #:serialize-configurations
+	   #:define-configuration-schema
+	   #:define-configuration
+	   #:make-configuration
+	   #:name
+	   #:title
+	   #:get-option-value
+	   #:read-configuration-option
+	   ))
