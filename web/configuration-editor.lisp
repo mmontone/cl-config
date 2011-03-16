@@ -195,6 +195,15 @@
 	    :name (if value (cfg::name option))
 	    :value (if value value))))
 
+(defmethod render-option-editor ((type cfg::integer-configuration-schema-option-type)
+				 option
+				 value
+				 stream)
+  (with-html-output (stream)
+    (:input :type "text"
+	    :name (if value (cfg::name option))
+	    :value (if value value))))
+
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
 				 option
 				 value
