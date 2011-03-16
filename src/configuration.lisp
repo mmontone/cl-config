@@ -226,7 +226,28 @@
 					      "Value for ~A not found"
 					      option-path))))))))
 
+(defmacro make-configuration (name parents &rest args)
+  "Create a configuration without registering globally"
+  (let ((direct-sections (filter (lambda (elem)
+			    (equalp (first elem) :section))
+			  args))
+	(title (second (find :title args :key #'first)))
+	(configuration-schema (second (find :configuration-schema args :key #'first)))
+	(documentation (second (find :documentation args :key #'first))))
+    `(make-instance 'configuration
+		    ,@(if name
+			  `(:name ',name))
+		    :parents ',parents
+		    ,@(if title
+			  `(:title ,title))
+		    ,@(if configuration-schema
+			  `(:configuration-schema (find-configuration-schema ',configuration-schema)))
+		    :direct-sections ',direct-sections
+		    ,@(if documentation
+			  `(:documentation ,documentation)))))
+
 (defmacro define-configuration (name parents &rest args)
+  "Create and register a configuration"
   (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))
