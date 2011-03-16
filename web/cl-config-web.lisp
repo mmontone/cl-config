@@ -12,15 +12,26 @@
 	(lambda () ,expr))
      ,@body)))
 
-(setf hunchentoot::*catch-errors-p* nil) 
+(setf hunchentoot::*catch-errors-p* nil)
 
-(defun start-cl-config-web ()
-  (start (make-instance 'acceptor :port 4242))
-  (push (create-folder-dispatcher-and-handler "/static/"
-					    (asdf:system-relative-pathname
-					     :cl-config-web
-					     "web/static/"))
-      *dispatch-table*))
+(defvar *configuration* nil)
+
+(defun start-cl-config-web (&optional configuration)
+  (push (create-folder-dispatcher-and-handler
+	 "/static/"
+	 (asdf:system-relative-pathname
+	  :cl-config-web
+	  "web/static/"))
+	*dispatch-table*)
+  (setf *configuration*
+	(or configuration
+	    (make-configuration cl-config-web-default-configuration ()
+				(:title "CL-CONFIG Web Default Configuration")
+				(:configuration-schema cl-config-web-configuration))))
+  (start (make-instance 'acceptor
+			:address (cfg (:webapp-configuration :host) *configuration*)
+			:port (cfg (:webapp-configuration :port) *configuration*)))
+  )
 
 (defun render-main-page (stream body)
   (with-html-output (stream)

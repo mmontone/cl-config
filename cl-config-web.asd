@@ -39,6 +39,7 @@ OTHER DEALINGS IN THE SOFTWARE."
   ((:module :web
 	    :components
 	    ((:file "package")
+	     (:file "config")
 	     (:file "cl-config-web")
 	     (:file "configuration-editor")
 	     (:file "configuration-schema-editor"))
