@@ -2,6 +2,7 @@
   (:nicknames :cfg)
   (:use :cl)
   (:export #:cfg
+	   #:cfg*
 	   #:*configurations*
 	   #:*configuration-schemas*
 	   #:xml-writer

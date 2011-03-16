@@ -11,3 +11,6 @@
 
 (defmacro cfg (path &optional (configuration '*configuration*))
   `(read-configuration-option ',path ,configuration))
+
+(defun cfg* (path &optional (configuration *configuration*))
+  (read-configuration-option path configuration))
