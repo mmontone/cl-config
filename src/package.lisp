@@ -23,4 +23,6 @@
 	   #:title
 	   #:get-option-value
 	   #:read-configuration-option
+	   #:define-configurable-function
+	   #:with-configuration-values
 	   ))

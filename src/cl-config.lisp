@@ -14,3 +14,23 @@
 
 (defun cfg* (path &optional (configuration *configuration*))
   (read-configuration-option path configuration))
+
+(defmacro define-configurable-function (name args &body body)
+  (let ((pos (position '&configuration args)))
+    (let ((conf-spec (when pos
+		       (nth (1+ pos) args))))
+      (if (not (listp conf-spec))
+	  (error "Configuration spec not valid"))
+      (destructuring-bind (conf-var conf-type) conf-spec
+	(let ((new-args (remove '&configuration
+				(remove (nth (1+ pos) args) args)))
+	      (conf-args (gensym "CONF-ARGS-")))
+	  `(defun ,name (,@new-args &rest ,conf-args)
+	     (let ((,conf-var (apply #'make-configuration ',conf-type
+				     ,conf-args)))
+	       ,@body)))))))
+
+(defmacro with-configuration-values (values configuration &body body)
+  `(let ,(loop for (var option-path) in values
+	      collect (list var `(cfg ,option-path ,configuration)))
+     ,@body))
