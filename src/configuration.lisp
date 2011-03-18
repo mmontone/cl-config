@@ -266,11 +266,27 @@
 			  :direct-sections ',direct-sections
 			  ,@(if documentation
 				`(:documentation ,documentation))))))
-			       
+
+(defun option-path-section (option-path)
+  (cond
+    ((listp option-path) (first option-path))
+    ((symbolp option-path) (intern (subseq (symbol-name option-path) 0
+					   (position #\. (symbol-name option-path)))
+				    :keyword))
+    (t (error "Invalid option path ~A" option-path))))
+
+(defun option-path-option (option-path)
+  (cond
+    ((listp option-path) (second option-path))
+    ((symbolp option-path) (intern (subseq (symbol-name option-path)
+					   (1+ (position #\. (symbol-name option-path))))
+				   :keyword))
+    (t (error "Invalid option path ~A" option-path))))
+
 (defun get-option-value (option-path configuration &optional (option-not-found :error))
   (assert (listp option-path))
-  (let ((section-name (first option-path))
-	(option-name (second option-path)))
+  (let ((section-name (option-path-section option-path))
+	(option-name (option-path-option option-path)))
     (loop for conf in (cons configuration (ordered-parents configuration))
 	  for section = (gethash section-name (direct-sections conf))
 	  when (and section (gethash option-name (options section)))
