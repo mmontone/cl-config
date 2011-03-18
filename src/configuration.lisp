@@ -284,7 +284,6 @@
     (t (error "Invalid option path ~A" option-path))))
 
 (defun get-option-value (option-path configuration &optional (option-not-found :error))
-  (assert (listp option-path))
   (let ((section-name (option-path-section option-path))
 	(option-name (option-path-option option-path)))
     (loop for conf in (cons configuration (ordered-parents configuration))
