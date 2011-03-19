@@ -76,14 +76,24 @@
 		  (:select :id "configuration-select"
 			   :name "configuration-select"
 			   (loop for conf being the hash-values of *configurations*
-			    do (if (eql conf selected-conf)
-				   (htm
-				    (:option :name (cfg::name conf)
-					     :selected "selected"
-					     (str (cfg::title conf))))
-				   (htm
-				    (:option :name (cfg::name conf)
-					     (str (cfg::title conf)))))))))
+			      do  (htm
+				    (:option :value (cfg::name conf)
+					     :selected (if (eql conf selected-conf)
+							   "selected")
+					     (str (cfg::title conf))))))
+		  (:script :type "text/javascript"
+			   :language "javascript"
+			   (str
+			    (ps
+			     (chain ($ document)
+				    (ready (lambda ()
+					     (chain ($ "#configuration-select")
+						    (change (lambda ()
+							      (setf (@ window location)
+								    (concatenate 'string "/?conf="
+										 (chain ($ "#configuration-select") (val))))
+							      t)))
+					     t))))))))
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
@@ -175,6 +185,9 @@
 					 option
 					 value
 					 stream)))
+	    (:td :class "unset"
+		 (if (eql origin configuration)
+		     (htm (:input :type "checkbox" :name "unset"))))
 	    (:td :class "origin"
 		 (when origin
 		   (fmt "(~A)"

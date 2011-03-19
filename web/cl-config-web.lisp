@@ -48,10 +48,13 @@
       (:body
        (funcall body stream))))))
 
-(define-easy-handler (main :uri "/") ()
+(define-easy-handler (main :uri "/") (conf)
   (with-output-to-string (s)
     (with-main-page (s)
-      (configurations-editor s))))
+      (apply #'configurations-editor
+	     s
+	     (when conf
+	       (list (find-configuration (intern conf :cfg))))))))
 
 (define-condition validation-error ()
   ((target :initarg :target
