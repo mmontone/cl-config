@@ -129,7 +129,14 @@
 		  (loop for section being the hash-values of
 		       (cfg::sections (cfg::configuration-schema configuration))
 		     do (edit-configuration-section configuration section stream))
-		  (:input :type "submit" :value "Save"))))))
+		  (:input :type "submit" :value "Save")
+		  (:div
+		   (:table
+		    (:tbody
+		     (:tr
+		      (:td (:p "Name: ")) (:td (:input :type "text" :name "save-as-name")))
+		     (:tr (:td (:p "Title: ")) (:td (:input :type "text" :name "save-as-title"))))))
+		  (:input :type "submit" :value "Save as new"))))))
 
 ;; (defun edit-configuration-schema (configuration-schema stream)
 ;;   (with-html-output (stream)
