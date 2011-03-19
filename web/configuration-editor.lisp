@@ -164,7 +164,7 @@
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"
 			"even")))
-    (multiple-value-bind (value origin)
+    (multiple-value-bind (value option-instance section-instance origin)
 	(cfg::get-option-value
 	  (list (cfg::name section)
 		(cfg::name option))
@@ -183,6 +183,7 @@
 		 (when value
 		   (render-option-editor (cfg::option-type option)
 					 option
+					 option-instance
 					 value
 					 stream)))
 	    (:td :class "unset"
@@ -195,35 +196,38 @@
 			    "Default"
 			    (cfg::title origin)))))))))))
 
-(defgeneric render-option-editor (type option value stream)
+(defgeneric render-option-editor (type option-schema option value stream)
   )
 
 
 (defmethod render-option-editor ((type cfg::text-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (:input :type "text"
-	    :name (if value (cfg::name option))
+	    :name (if value (cfg::name option-schema))
 	    :value (if value value))))
 
 (defmethod render-option-editor ((type cfg::integer-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (:input :type "text"
-	    :name (if value (cfg::name option))
+	    :name (if value (cfg::name option-schema))
 	    :value (if value value))))
 
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (htm
-     (:select :name (cfg::name option)
+     (:select :name (cfg::name option-schema)
 	      (loop for opt in (cfg::options type)
 		 do (htm
 		     (:option :value (cfg::name opt)
@@ -232,12 +236,13 @@
 			      (str (cfg::title opt)))))))))
 
 (defmethod render-option-editor ((type cfg::list-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (htm
-     (:select :name (cfg::name option)
+     (:select :name (cfg::name option-schema)
 	      :multiple "multiple"
 	      (loop for opt in (cfg::options type)
 		 do (htm
@@ -246,7 +251,11 @@
 						    (equalp val (cfg::name opt)))
 						  value)
 					    "selected")
-			      (str (cfg::title opt)))))))))
+			      (str (cfg::title opt))))))
+     (:input :type "checkbox"
+	     :name "inherit"
+	     :checked (if (cfg::inherit option)
+			  "checked")))))
 
 ;; (defmethod render-schema-option-editor ((type cfg::maybe-configuration-schema-option-type)
 ;; 					option
@@ -271,16 +280,29 @@
 ;; 	)))
 
 (defmethod render-option-editor ((type cfg::boolean-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (htm
-     (:input :name (cfg::name option)
+     (:input :name (cfg::name option-schema)
 	     :type "checkbox"
 	     :checked (if value "checked")))))
 
 (defmethod render-option-editor ((type cfg::pathname-configuration-schema-option-type)
+				 option-schema
+				 option
+				 value
+				 stream)
+  (with-html-output (stream)
+    (htm
+     (:input :type "text"
+	     :name (cfg::name option-schema)
+	     :value (if value value)))))
+
+(defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
@@ -291,29 +313,21 @@
 	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
     (htm
      (:input :type "text"
-	     :name (cfg::name option)
-	     :value (if value value)))))
-
-(defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
-				 option
-				 value
-				 stream)
-  (with-html-output (stream)
-    (htm
-     (:input :type "text"
-	     :name (cfg::name option)
+	     :name (cfg::name option-schema)
 	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::sexp-configuration-schema-option-type)
+				 option-schema
 				 option
 				 value
 				 stream)
   (with-html-output (stream)
-    (:textarea :name (cfg::name option)
+    (:textarea :name (cfg::name option-schema)
 	       (if value (str value)))))

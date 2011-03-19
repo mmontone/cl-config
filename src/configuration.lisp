@@ -89,6 +89,9 @@
 	  :documentation "The option value"))
   (:documentation "The value of a configuration-schema option"))
 
+(defmethod name ((option configuration-option))
+  (name (schema-option option)))
+
 (defclass standard-configuration-option (configuration-option)
   ())
 
@@ -283,16 +286,16 @@
 				   :keyword))
     (t (error "Invalid option path ~A" option-path))))
 
-(defun get-option-value (option-path configuration &optional (option-not-found :error))
+(defun get-option-value (option-path configuration
+			 &optional (option-not-found :error))
   (let ((section-name (option-path-section option-path))
 	(option-name (option-path-option option-path)))
     (loop for conf in (cons configuration (ordered-parents configuration))
 	  for section = (gethash section-name (direct-sections conf))
 	  when (and section (gethash option-name (options section)))
-	  do (return-from get-option-value (values (value
-						    (gethash option-name
-							     (options section)))
-						   conf)))
+	  do (let ((option (gethash option-name (options section))))
+	       (return-from get-option-value
+		 (values (value option) option section conf))))
     ;; Try default
     (let ((section
 	      (gethash section-name
@@ -301,17 +304,18 @@
 	  (error "Could not find section ~A in schema ~A"
 		 section-name
 		 (configuration-schema configuration))
-	  (let ((option (gethash (second option-path) (cfg::direct-options section))))
+	  (let ((option (gethash (second option-path)
+				 (cfg::direct-options section))))
 	    (if (not option)
 		(error "Could not find option ~A in schema section ~A"
 		 option-name
 		 section)
 		(if (default option)
-		    (values (default option) :default)
+		    (values (default option) nil section :default)
 		    (case option-not-found
 		      (:error
 		       (option-value-not-found-error option-path configuration))
-		      (t nil)))))))))
+		      (t (values nil nil nil nil))))))))))
 
 (defun get-section-option-value (option section)
   (loop for section-option in section
