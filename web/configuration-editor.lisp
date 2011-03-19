@@ -35,7 +35,7 @@
 				  :name "schema"
 				  (loop for configuration-schema being the hash-values of *configuration-schemas*
 				     do (htm
-					 (:option :value (cfg::name configuration-schema)
+					 (:option :value (cfg::complete-symbol-name (cfg::name configuration-schema))
 						  (str (cfg::title configuration-schema))))))))
 		   (:tr
 		    (:td (str "Parents:"))
@@ -44,7 +44,7 @@
 				  :multiple "true"
 				  (loop for configuration being the hash-values of *configurations*
 				     do (htm
-					 (:option :value (cfg::name configuration)
+					 (:option :value (cfg::complete-symbol-name (cfg::name configuration))
 						  (str (cfg::title configuration))))))))
 		   (:tr
 		    (:td (str "Documentation:"))
@@ -77,7 +77,7 @@
 			   :name "configuration-select"
 			   (loop for conf being the hash-values of *configurations*
 			      do  (htm
-				    (:option :value (cfg::name conf)
+				    (:option :value (cfg::complete-symbol-name (cfg::name conf))
 					     :selected (if (eql conf selected-conf)
 							   "selected")
 					     (str (cfg::title conf))))))
@@ -104,12 +104,12 @@
 	   (:div :class "title"
 		 (:h2 (fmt "~A editor" (cfg::title configuration))))
 	   (:div :class "name"
-		 (:p (fmt "Name: ~A" (cfg::name configuration))))
+		 (:p (fmt "Name: ~A" (cfg::complete-symbol-name (cfg::name configuration)))))
 	   (:div :class "schema"
 		 (:span (:p (str "Schema:")))
-		 (:span (:a :href (format nil "/showsc?schema=~A" (cfg::name (cfg::configuration-schema configuration)))
+		 (:span (:a :href (format nil "/showsc?schema=~A" (cfg::complete-symbol-name (cfg::name (cfg::configuration-schema configuration))))
 			    (str (cfg::title (cfg::configuration-schema configuration))))))
-	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
+	   (:form :action (format nil "/editcs?name=~A" (cfg::complete-symbol-name (cfg::name configuration)))
 		  :method "post"
 		  (:p "Documentation:") (:textarea :name "documentation"
 						   (str (cfg::documentation* configuration)))
@@ -121,11 +121,11 @@
 			      do (if (find (cfg::name conf)
 					   (cfg::parents configuration))
 				     (htm
-				      (:option :name (cfg::name configuration)
+				      (:option :name (cfg::complete-symbol-name (cfg::name configuration))
 					       :selected "selected"
 					       (str (cfg::title conf))))
 				     (htm
-				      (:option :name (cfg::name configuration)
+				      (:option :name (cfg::complete-symbol-name (cfg::name configuration))
 					       (str (cfg::title conf))))
 				     )))
 		  (loop for section being the hash-values of
@@ -156,7 +156,7 @@
   (with-html-output (stream)
     (htm
      (:div :class "section"
-	   :id (format nil "section#~A" (cfg::name section))
+	   :id (format nil "section#~A" (cfg::complete-symbol-name (cfg::name section)))
 	   (:div :class "title"
 		 (:h3 (str (cfg::title section))))
 	   (:table :class "section"
@@ -216,7 +216,7 @@
 				 stream)
   (with-html-output (stream)
     (:input :type "text"
-	    :name (if value (cfg::name option-schema))
+	    :name (if value (cfg::complete-symbol-name (cfg::name option-schema)))
 	    :value (if value value))))
 
 (defmethod render-option-editor ((type cfg::integer-configuration-schema-option-type)
@@ -226,7 +226,7 @@
 				 stream)
   (with-html-output (stream)
     (:input :type "text"
-	    :name (if value (cfg::name option-schema))
+	    :name (if value (cfg::complete-symbol-name (cfg::name option-schema)))
 	    :value (if value value))))
 
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
@@ -236,10 +236,10 @@
 				 stream)
   (with-html-output (stream)
     (htm
-     (:select :name (cfg::name option-schema)
+     (:select :name (cfg::complete-symbol-name (cfg::name option-schema))
 	      (loop for opt in (cfg::options type)
 		 do (htm
-		     (:option :value (cfg::name opt)
+		     (:option :value (cfg::complete-symbol-name (cfg::name opt))
 			      :selected (if (equalp value (cfg::name opt))
 					    "selected")
 			      (str (cfg::title opt)))))))))
@@ -251,11 +251,11 @@
 				 stream)
   (with-html-output (stream)
     (htm
-     (:select :name (cfg::name option-schema)
+     (:select :name (cfg::complete-symbol-name (cfg::name option-schema))
 	      :multiple "multiple"
 	      (loop for opt in (cfg::options type)
 		 do (htm
-		     (:option :value (cfg::name opt)
+		     (:option :value (cfg::complete-symbol-name (cfg::name opt))
 			      :selected (if (some (lambda (val)
 						    (equalp val (cfg::name opt)))
 						  value)
@@ -295,7 +295,7 @@
 				 stream)
   (with-html-output (stream)
     (htm
-     (:input :name (cfg::name option-schema)
+     (:input :name (cfg::complete-symbol-name (cfg::name option-schema))
 	     :type "checkbox"
 	     :checked (if value "checked")))))
 
@@ -307,7 +307,7 @@
   (with-html-output (stream)
     (htm
      (:input :type "text"
-	     :name (cfg::name option-schema)
+	     :name (cfg::complete-symbol-name (cfg::name option-schema))
 	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
@@ -318,7 +318,7 @@
   (with-html-output (stream)
     (htm
      (:input :type "text"
-	     :name (cfg::name option)
+	     :name (cfg::complete-symbol-name (cfg::name option))
 	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
@@ -329,7 +329,7 @@
   (with-html-output (stream)
     (htm
      (:input :type "text"
-	     :name (cfg::name option-schema)
+	     :name (cfg::complete-symbol-name (cfg::name option-schema))
 	     :value (if value value)))))
 
 (defmethod render-option-editor ((type cfg::sexp-configuration-schema-option-type)
@@ -338,5 +338,5 @@
 				 value
 				 stream)
   (with-html-output (stream)
-    (:textarea :name (cfg::name option-schema)
+    (:textarea :name (cfg::complete-symbol-name (cfg::name option-schema))
 	       (if value (str value)))))

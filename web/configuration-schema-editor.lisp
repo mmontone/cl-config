@@ -16,7 +16,7 @@
 		     :multiple "multiple"
 		     (loop for parent in (cfg::parents configuration-schema)
 			do (htm
-			    (:option :value (cfg::name parent)
+			    (:option :value (cfg::complete-symbol-name )(cfg::name parent)
 				     (str (cfg::title parent))))))
 	    (loop for section being the hash-values of
 		 (cfg::sections configuration-schema)
@@ -38,7 +38,7 @@
 			   (:tr
 			    (:td (:input :type "text"
 				  :name "name"
-				  :value (cfg::name option-schema)))
+				  :value (cfg::complete-symbol-name (cfg::name option-schema))))
 			    (:td (:input :type "text"
 					 :name "title"
 					 :value (cfg::title option-schema)))

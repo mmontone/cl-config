@@ -54,7 +54,7 @@
       (apply #'configurations-editor
 	     s
 	     (when conf
-	       (list (find-configuration (intern conf :cfg))))))))
+	       (list (find-configuration (cfg::read-symbol conf))))))))
 
 (define-condition validation-error ()
   ((target :initarg :target
@@ -87,12 +87,11 @@
     (values errors (plusp (length errors)))))
 
 (defun schema-symbol (string)
-  (intern string 'cfg))
+  (cfg::read-symbol string))
 
 (define-easy-handler (newconf :uri "/newconf")
     ((name :parameter-type 'string)
      (title :parameter-type 'string)
-     ;(schema :parameter-type 'intern)
      (schema :parameter-type 'schema-symbol)
      (parents :parameter-type 'list)
      (documentation :parameter-type 'string))
@@ -184,7 +183,7 @@
   (with-output-to-string (s)
     (with-main-page (s)
       (show-configuration-schema (find-configuration-schema
-				  (intern schema :cfg))
+				  (cfg::read-symbol schema))
 				 s))))
 
 (defvar *odd-even* :odd)

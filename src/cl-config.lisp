@@ -34,3 +34,12 @@
   `(let ,(loop for (var option-path) in values
 	      collect (list var `(cfg ,option-path ,configuration)))
      ,@body))
+
+(defun complete-symbol-name (symbol)
+  (format nil "~A::~A" 
+	  (package-name (symbol-package symbol))
+	  (symbol-name symbol)))
+
+(defun read-symbol (string)
+  (with-input-from-string (s string)
+    (read s)))
