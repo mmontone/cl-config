@@ -242,7 +242,9 @@
 	      (loop for opt in (cfg::options type)
 		 do (htm
 		     (:option :value (cfg::name opt)
-			      :selected (if (equalp value (cfg::name opt))
+			      :selected (if (some (lambda (val)
+						    (equalp val (cfg::name opt)))
+						  value)
 					    "selected")
 			      (str (cfg::title opt)))))))))
 
