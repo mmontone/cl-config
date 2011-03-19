@@ -101,6 +101,13 @@ copy is returned by default."
 	     more-specific-section-table)
     sections))
 
+(defun direct-sub-schemas (configuration-schema)
+  (loop for cs being the hash-values of *configuration-schemas*
+       when (some (lambda (parent-name)
+		    (equalp parent-name (name configuration-schema)))
+		  (parents cs))
+       collect cs))
+
 (defun flip (function)
   (lambda (x y)
     (funcall function y x)))

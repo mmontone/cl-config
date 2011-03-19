@@ -148,7 +148,26 @@
     (htm
      (:h2 (str (cfg::title configuration-schema)))
      (:p (str (cfg::documentation* configuration-schema)))
-     (:p (fmt "Parents: ~A" (slot-value configuration-schema 'cfg::parents)))
+     (:p (str "Parents: "))
+     (let ((parents (slot-value configuration-schema 'cfg::parents)))
+       (if parents
+	   (loop for parent-name in parents
+	      do
+		(let ((parent (cfg::find-configuration-schema parent-name)))
+		  (htm (:p (:a :href (format nil "/showsc?schema=~A"
+					     (cfg::complete-symbol-name parent-name))
+			       (str (cfg::title parent)))))))
+	   (htm (:p "No parents"))))
+     (:p (str "Direct sub-schemas: "))
+     (let ((sub-schemas (cfg::direct-sub-schemas configuration-schema)))
+       (if sub-schemas
+	   (loop for sub-schema in sub-schemas
+	      do
+		(htm (:p (:a :href (format nil "/showsc?schema=~A"
+					     (cfg::complete-symbol-name
+					      (cfg::name sub-schema)))
+			     (str (cfg::title sub-schema))))))
+	   (htm (:p "No direct sub-schemas"))))
      (loop for section being the hash-values of
 	  (cfg::sections configuration-schema)
 	do
