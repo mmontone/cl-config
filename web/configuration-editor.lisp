@@ -106,7 +106,9 @@
 	   (:div :class "name"
 		 (:p (fmt "Name: ~A" (cfg::name configuration))))
 	   (:div :class "schema"
-		 (:p (fmt "Schema: ~A" (cfg::title (cfg::configuration-schema configuration)))))
+		 (:span (:p (str "Schema:")))
+		 (:span (:a :href (format nil "/showsc?schema=~A" (cfg::name (cfg::configuration-schema configuration)))
+			    (str (cfg::title (cfg::configuration-schema configuration))))))
 	   (:form :action (format nil "/editcs?name=~A" (cfg::name configuration))
 		  :method "post"
 		  (:p "Documentation:") (:textarea :name "documentation"

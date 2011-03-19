@@ -180,6 +180,13 @@
 				   "Yes" "No")))
 		     (:td (str (cfg::documentation* option-schema)))))))))))))
 
+(define-easy-handler (showsc :uri "/showsc") (schema)
+  (with-output-to-string (s)
+    (with-main-page (s)
+      (show-configuration-schema (find-configuration-schema
+				  (intern schema :cfg))
+				 s))))
+
 (defvar *odd-even* :odd)
 
 (defun switch-odd-even ()
