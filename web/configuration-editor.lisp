@@ -39,13 +39,12 @@
 						  (str (cfg::title configuration-schema))))))))
 		   (:tr
 		    (:td (str "Parents:"))
-		    (:td (:select :id "parents"
-				  :name "parents"
-				  :multiple "true"
-				  (loop for configuration being the hash-values of *configurations*
-				     do (htm
-					 (:option :value (cfg::complete-symbol-name (cfg::name configuration))
-						  (str (cfg::title configuration))))))))
+		    (select-parents nil
+				    (loop
+				       for conf being the hash-values of *configurations*
+				       collect conf)
+				    stream)
+		    )
 		   (:tr
 		    (:td (str "Documentation:"))
 		    (:td (:textarea :name "documentation")))
@@ -114,20 +113,14 @@
 		  (:p "Documentation:") (:textarea :name "documentation"
 						   (str (cfg::documentation* configuration)))
 		  (:p "Parents:")
-		  (:select :id "parents"
-			   :name "parents"
-			   :multiple "true"
-			   (loop for conf being the hash-values of *configurations*
-			      do (if (find (cfg::name conf)
-					   (cfg::parents configuration))
-				     (htm
-				      (:option :name (cfg::complete-symbol-name (cfg::name configuration))
-					       :selected "selected"
-					       (str (cfg::title conf))))
-				     (htm
-				      (:option :name (cfg::complete-symbol-name (cfg::name configuration))
-					       (str (cfg::title conf))))
-				     )))
+		  (let ((parents (mapcar #'cfg::find-configuration
+					   (cfg::parents configuration))))
+		      (select-parents parents
+				    (loop
+				       for conf being the hash-values of *configurations*
+				       when (not (find conf parents))
+				       collect conf)
+				    stream))
 		  (loop for section being the hash-values of
 		       (cfg::sections (cfg::configuration-schema configuration))
 		     do (edit-configuration-section configuration section stream))
