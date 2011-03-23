@@ -16,12 +16,28 @@
 
 (defvar *configuration* nil)
 
+(defun handle-continuation-request ()
+  (let ((id (cdr (assoc "k" (get-parameters*) :test #'equalp))))
+    (let ((cont (gethash id (session-value 'continuations))))
+      (let ((params (remove "k"
+		       (append (get-parameters*)
+			       (post-parameters*))
+		       :key #'car
+		       :test #'equalp)))
+	(funcall cont params)))))
+
 (defun start-cl-config-web (&optional configuration)
+  ;; Static dispatcher
   (push (create-folder-dispatcher-and-handler
 	 "/static/"
 	 (asdf:system-relative-pathname
 	  :cl-config-web
 	  "web/static/"))
+	*dispatch-table*)
+  ;; Forms dispatcher
+  (push (create-prefix-dispatcher
+	 "/do"
+	 'handle-continuation-request)
 	*dispatch-table*)
   (setf *configuration*
 	(or configuration
@@ -34,6 +50,8 @@
   )
 
 (defun render-main-page (stream body)
+  (start-session)
+  (initialize-continuations)
   (with-html-output (stream)
     (htm
      (:html
@@ -212,3 +230,11 @@
 	(if (equalp *odd-even* :odd)
 	    :even
 	    :odd)))
+
+;; Loading
+;; (let ((conf (make-configuration my-config ()
+;; 				     (:configuration-schema cl-config-web-configuration)
+;; 				     (:title "My config")
+;; 				     (:section :webapp-configuration
+;; 					       (:port 4242)))))
+;; 	 (CFG.WEB::start-cl-config-web conf))
