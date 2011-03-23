@@ -20,7 +20,7 @@
 			      (let ((configuration
 				     (cfg::with-schema-validation (nil)
 				       (make-instance 'cfg::configuration
-						      :name name
+						      :name (cfg::read-symbol name)
 						      :title title
 						      :parents parents
 						      :configuration-schema (find-configuration-schema schema)
