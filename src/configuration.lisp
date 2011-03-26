@@ -317,6 +317,26 @@
 		       (option-value-not-found-error option-path configuration))
 		      (t (values nil nil nil nil))))))))))
 
+(defun (setf get-option-value) (value option-path configuration)
+  (let ((section-name (option-path-section option-path))
+	(option-name (option-path-option option-path)))
+    (let ((section (or (gethash section-name (direct-sections configuration))
+		       (let ((new-section
+			      (make-instance 'configuration-section
+					     :name section-name)))
+			 (setf (gethash section-name (direct-sections configuration))
+			       new-section)
+			 new-section))))
+      (let ((schema-option
+	     (find-configuration-schema-option
+	      (configuration-schema configuration)
+	      (list section-name option-name))))
+	(setf (gethash option-name (options section))
+	    (make-instance
+	     (option-class (option-type schema-option))
+	     :schema-option schema-option
+	     :value value))))))
+
 (defun get-section-option-value (option section)
   (loop for section-option in section
      do (let ((option-name (first section-option)))
