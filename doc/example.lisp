@@ -62,7 +62,8 @@
                     (:hunchentoot "Hunchentoot"
 				  :configuration 'hunchentoot-configuration)))
         (:host "Host" :text :default "localhost")
-	(:port "Port" :integer :default 8080)))                    
+	(:port "Port" :integer :default 8080)
+	(:catch-errors "Catch errors" :boolean :default t)))                    
 
 (define-configuration-schema standard-configuration
                         (webapp-configuration database-configuration)
@@ -98,6 +99,8 @@
        (:output-location :standard-output)
        (:active-layers (:debugging :database))
        (:debugging-levels (:info :warning :error)))
+    (:section :webapp-configuration
+	      (:catch-errors nil))
     (:documentation "Debugging configuration scheme"))
 
 (define-configuration test-configuration (standard-configuration)
