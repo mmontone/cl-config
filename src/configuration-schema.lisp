@@ -284,7 +284,7 @@ copy is returned by default."
 						option-name))))
 
 (defmethod ordered-parents ((configuration-schema configuration-schema))
-  (let ((parents (mapcar #'find-configuration
-			 (parents configuration))))
+  (let ((parents (mapcar #'find-configuration-schema
+			 (parents configuration-schema))))
     (append parents
 	    (apply #'append (mapcar #'ordered-parents parents)))))

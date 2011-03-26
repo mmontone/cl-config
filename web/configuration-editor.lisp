@@ -80,7 +80,11 @@
 				 (:td (str "Parents:"))
 				 (:td
 				  (with-form-field (field :writer (lambda (val)
-								    (setf parents val)))
+								    (setf parents val))
+							  :reader (lambda (val)
+								    (if (listp val)
+									(mapcar #'cfg::read-symbol val)
+									(list (cfg::read-symbol val)))))
 				    (htm
 				     (:select :id "parents"
 					      :name field
@@ -152,62 +156,65 @@
 			   :on-submit (lambda ()
 					(collecting-validation-errors (errors found-p)
 					    (cfg::validate-configuration configuration)
-					  (if found-p
-					      (with-output-to-string (s)
-						(render-editor errors s))
-					      (break "Success!!")))))
+					  (with-output-to-string (s)
+					    (render-editor errors s)))))
 		 (htm
 		  (:div :class "configuration-editor"
 			(:div :class "title"
 			      (:h2 (fmt "~A editor" (cfg::title configuration))))
 			(:div :class "name"
-			      (:p (fmt "Name: ~A" (cfg::complete-symbol-name (cfg::name configuration)))))
-	     (:div :class "schema"
-		   (:span (:p (str "Schema:")))
-		   (:span (:a :href (format nil "/showsc?schema=~A"
-					    (cfg::complete-symbol-name
-					     (cfg::name
-					      (cfg::configuration-schema
-					       configuration))))
-			      (str (cfg::title
-				    (cfg::configuration-schema configuration))))))
-	   (:form :action action
-		  :method "post"
-		  (:p "Documentation:")
-		  (with-form-field (field :writer (lambda (val)
-						    (setf (cfg::documentation* configuration) val)))
-		    (htm
-		     (:textarea :name field
-				(str (cfg::documentation* configuration)))))
-		  (:p "Parents:")
-		  (with-form-field (field :writer (lambda (val)
-						    (setf (cfg::parents configuration) val)))
-		    (htm
-		     (:select :id "parents"
-			     :name field
-			     :multiple "true"
-			     (loop for conf being the hash-values of *configurations*
-				do (htm
-				    (:option :value (cfg::complete-symbol-name (cfg::name configuration))
-					     :selected (if (find (cfg::name conf)
-								 (cfg::parents configuration))
-							   "selected")
-					     (str (cfg::title conf))))))))
-		  (loop for section being the hash-values of
-		       (cfg::sections (cfg::configuration-schema configuration))
-		     do (edit-configuration-section configuration section stream))
-		  (:input :type "submit" :value "Save")
-		  (when save-as-new
-		    (htm
-		     (:div
-		      (:table
-		       (:tbody
-			(:tr
-			 (:td (:p "Name: ")) (:td (:input :type "text" :name "save-as-name")))
-			(:tr (:td (:p "Title: ")) (:td (:input :type "text" :name "save-as-title"))))))
-		     (:input :type "submit" :value "Save as new"))))))))))
-    (render-editor nil stream)
-    ))
+			      (:p (fmt "Name: ~A" (cfg::complete-symbol-name
+						   (cfg::name configuration)))))
+			(:div :class "schema"
+			      (:span (:p (str "Schema:")))
+			      (:span (:a :href (format nil "/showsc?schema=~A"
+						       (cfg::complete-symbol-name
+							(cfg::name
+							 (cfg::configuration-schema
+							  configuration))))
+					 (str (cfg::title
+					       (cfg::configuration-schema configuration))))))
+			(:form :action action
+			       :method "post"
+			       (:p "Documentation:")
+			       (with-form-field (field :writer (lambda (val)
+								 (setf (cfg::documentation* configuration) val)))
+				 (htm
+				  (:textarea :name field
+					     (str (cfg::documentation* configuration)))))
+			       (:p "Parents:")
+			       (with-form-field (field :writer (lambda (val)
+								 (setf (cfg::parents configuration) val))
+						       :reader (lambda (val)
+								 (if (listp val)
+								     (mapcar #'cfg::read-symbol val)
+								     (list (cfg::read-symbol val)))))
+				 (htm
+				  (:select :id "parents"
+					   :name field
+					   :multiple "true"
+					   (loop for conf being the hash-values of *configurations*
+					      when (not (eql conf configuration))
+					      do (htm
+						  (:option :value (cfg::complete-symbol-name (cfg::name conf))
+							   :selected (if (find (cfg::name conf)
+									       (cfg::parents configuration))
+									 "selected")
+							   (str (cfg::title conf))))))))
+				 (loop for section being the hash-values of
+				      (cfg::sections (cfg::configuration-schema configuration))
+				    do (edit-configuration-section configuration section stream))
+				 (:input :type "submit" :value "Save")
+				 (when save-as-new
+				   (htm
+				    (:div
+				     (:table
+				      (:tbody
+				       (:tr
+					(:td (:p "Name: ")) (:td (:input :type "text" :name "save-as-name")))
+				       (:tr (:td (:p "Title: ")) (:td (:input :type "text" :name "save-as-title"))))))
+				    (:input :type "submit" :value "Save as new"))))))))))
+	   (render-editor nil stream)))
 
 (defun edit-configuration-section (configuration section stream)
   (with-html-output (stream)
@@ -261,11 +268,12 @@
 							    )))))
 	    (:td :class "unset"
 		 (if (eql origin configuration)
-		     (with-form-field (unset :writer (lambda ()
-						       (cfg::unset-option
-							(list (cfg::name section)
-							      (cfg::name option))
-							configuration)))
+		     (with-form-field (unset :writer (lambda (val)
+						       (if val
+							   (cfg::unset-option
+							    (list (cfg::name section)
+								  (cfg::name option))
+							    configuration))))
 		       (htm (:input :type "checkbox" :name unset)))))
 	    (:td :class "origin"
 		 (when origin
@@ -294,7 +302,8 @@
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
+  (with-form-field (field :writer writer
+			  :reader #'parse-integer)
     (with-html-output (stream)
       (:input :type "text"
 	      :name field
@@ -305,7 +314,8 @@
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
+  (with-form-field (field :writer writer
+			  :reader #'cfg::read-symbol)
     (with-html-output (stream)
       (htm
        (:select :name field
@@ -323,7 +333,9 @@
 				 stream &key writer)
   (with-form-field (field :writer writer
 			  :reader (lambda (val)
-				    (mapcar #'cfg::read-symbol val)))
+				    (if (listp val)
+					(mapcar #'cfg::read-symbol val)
+					(list (cfg::read-symbol val)))))
     (with-html-output (stream)
       (htm
        (:select :name field

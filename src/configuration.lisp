@@ -337,6 +337,18 @@
 	     :schema-option schema-option
 	     :value value))))))
 
+(defun unset-option (option-path configuration)
+  (destructuring-bind (section-name option-name)
+      option-path
+    (let ((section (gethash section-name (direct-sections configuration))))
+      (if (not section)
+	  (error "Could not unset option ~A. Section ~A not found in ~A direct-sections" option-path section-name configuration)
+	  (let ((option (gethash option-name (options section))))
+	    (if (not option)
+		(error "Could not unset option ~A. Option ~A not found in ~A"
+		       option-path option-name section)
+		(remhash option-name (options section))))))))
+
 (defun get-section-option-value (option section)
   (loop for section-option in section
      do (let ((option-name (first section-option)))
