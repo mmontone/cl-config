@@ -187,16 +187,12 @@
 			     :name field
 			     :multiple "true"
 			     (loop for conf being the hash-values of *configurations*
-				do (if (find (cfg::name conf)
-					     (cfg::parents configuration))
-				       (htm
-					(:option :name (cfg::complete-symbol-name (cfg::name configuration))
-						 :selected "selected"
-						 (str (cfg::title conf))))
-				       (htm
-					(:option :name (cfg::complete-symbol-name (cfg::name configuration))
-						 (str (cfg::title conf))))
-				       )))))
+				do (htm
+				    (:option :value (cfg::complete-symbol-name (cfg::name configuration))
+					     :selected (if (find (cfg::name conf)
+								 (cfg::parents configuration))
+							   "selected")
+					     (str (cfg::title conf))))))))
 		  (loop for section being the hash-values of
 		       (cfg::sections (cfg::configuration-schema configuration))
 		     do (edit-configuration-section configuration section stream))
@@ -325,7 +321,9 @@
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
+  (with-form-field (field :writer writer
+			  :reader (lambda (val)
+				    (mapcar #'cfg::read-symbol val)))
     (with-html-output (stream)
       (htm
        (:select :name field
@@ -338,7 +336,10 @@
 						    value)
 					      "selected")
 				(str (cfg::title opt)))))))
-      (with-form-field (inherit :writer #'(setf cfg::inherit))
+      (with-form-field (inherit :writer (lambda (val)
+					  (setf (cfg::inherit option) val))
+				:reader (lambda (val)
+					  (if val t nil)))
 	(htm
 	 (:input :type "checkbox"
 		 :name inherit

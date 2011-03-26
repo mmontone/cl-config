@@ -16,6 +16,22 @@
 
 (defvar *configuration* nil)
 
+(defun process-params (list)
+  (let ((visited (make-hash-table :test #'equalp)))
+    (loop for (arg . value) in list
+       when (not (gethash arg visited))
+       collect
+	 (progn
+	   (setf (gethash arg visited) t)
+	   (cons arg
+		 (let ((res
+			(loop for (arg1 . value1) in list
+			   when (equalp arg arg1)
+			   collect value1)))
+		   (if (equalp (length res) 1)
+		       (car res)
+		       res)))))))
+
 (defun handle-continuation-request ()
   (let ((id (cdr (assoc "k" (get-parameters*) :test #'equalp))))
     (let ((cont (gethash id (session-value 'continuations))))
@@ -24,7 +40,8 @@
 			       (post-parameters*))
 		       :key #'car
 		       :test #'equalp)))
-	(funcall cont params)))))
+	;; Process params to form lists if necessary
+	(funcall cont (process-params params))))))
 
 (defun continuation-dispatcher (request)
   (funcall
