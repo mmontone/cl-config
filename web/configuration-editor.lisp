@@ -1,5 +1,30 @@
 (in-package :cfg.web)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defmacro with-change-notifier ((target stream &key (on-change #'identity))
+				  &body body)
+    (let* ((changed-checkbox (gensym "CHANGED-CHECKBOX-")))
+      `(with-form-field (,changed-checkbox :writer (lambda (val)
+						     (when (plusp (length val))
+						       (funcall ,on-change))))
+	 (with-html-output (,stream)
+	   (htm
+	    (:input :id ,changed-checkbox
+	            :name ,changed-checkbox
+		    :type "hidden"
+		    :value "")
+	    (:script :language "javascript"
+		     (str
+		      (ps*
+		       `(chain ($ document)
+			       (ready (lambda ()
+					(chain ($ ,(format nil "#~A" ,target))
+					       (change (lambda ()
+							 (chain ($ ,(format nil "#~A" ,changed-checkbox))
+								(val "true")))))
+					))))))))
+	 ,@body))))
+
 (defun new-configuration (stream &optional errors)
   (let (name title schema parents documentation)
     (labels
@@ -157,7 +182,8 @@
 					(collecting-validation-errors (errors found-p)
 					    (cfg::validate-configuration configuration)
 					  (with-output-to-string (s)
-					    (render-editor errors s)))))
+					    (with-main-page (s)
+					      (render-editor errors s))))))
 		 (htm
 		  (:div :class "configuration-editor"
 			(:div :class "title"
@@ -291,127 +317,168 @@
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (:input :type "text"
-	      :name field
-	      :value (if value value)))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream :on-change
+				   (lambda ()
+				     (funcall writer input-value)))
+	(with-html-output (stream)
+	  (:input :type "text"
+		  :id field
+		  :name field
+		  :value (if value value)))))))
 
 (defmethod render-option-editor ((type cfg::integer-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer
-			  :reader #'parse-integer)
-    (with-html-output (stream)
-      (:input :type "text"
-	      :name field
-	      :value (if value value)))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val))
+			    :reader #'parse-integer)
+      (with-change-notifier (field stream :on-change (lambda ()
+						       (funcall writer input-value)))
+	(with-html-output (stream)
+	  (:input :type "text"
+		  :name field
+		  :value (if value value)))))))
 
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer
-			  :reader #'cfg::read-symbol)
-    (with-html-output (stream)
-      (htm
-       (:select :name field
-		(loop for opt in (cfg::options type)
-		   do (htm
-		       (:option :value (cfg::complete-symbol-name (cfg::name opt))
-				:selected (if (equalp value (cfg::name opt))
-					      "selected")
-				(str (cfg::title opt))))))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val))
+			    :reader #'cfg::read-symbol)
+      (with-change-notifier (field stream :on-change (lambda ()
+						       (funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:select :name field
+		    (loop for opt in (cfg::options type)
+		       do (htm
+			   (:option :value (cfg::complete-symbol-name (cfg::name opt))
+				    :selected (if (equalp value (cfg::name opt))
+						  "selected")
+				    (str (cfg::title opt))))))))))))
 
 (defmethod render-option-editor ((type cfg::list-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer
-			  :reader (lambda (val)
-				    (if (listp val)
-					(mapcar #'cfg::read-symbol val)
-					(list (cfg::read-symbol val)))))
-    (with-html-output (stream)
-      (htm
-       (:select :name field
-		:multiple "multiple"
-		(loop for opt in (cfg::options type)
-		   do (htm
-		       (:option :value (cfg::complete-symbol-name (cfg::name opt))
-				:selected (if (some (lambda (val)
-						      (equalp val (cfg::name opt)))
-						    value)
-					      "selected")
-				(str (cfg::title opt)))))))
-      (with-form-field (inherit :writer (lambda (val)
-					  (setf (cfg::inherit option) val))
-				:reader (lambda (val)
-					  (if val t nil)))
-	(htm
-	 (:input :type "checkbox"
-		 :name inherit
-		 :checked (if (cfg::inherit option)
-			      "checked")))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val))
+			    :reader (lambda (val)
+				      (if (listp val)
+					  (mapcar #'cfg::read-symbol val)
+					  (list (cfg::read-symbol val)))))
+      (with-change-notifier (field stream :on-change (lambda ()
+						       (funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:select :name field
+		    :multiple "multiple"
+		    (loop for opt in (cfg::options type)
+		       do (htm
+			   (:option :value (cfg::complete-symbol-name (cfg::name opt))
+				    :selected (if (some (lambda (val)
+							  (equalp val (cfg::name opt)))
+							value)
+						  "selected")
+				    (str (cfg::title opt)))))))
+	  (with-form-field (inherit :writer (lambda (val)
+					      (setf (cfg::inherit option) val))
+				    :reader (lambda (val)
+					      (if val t nil)))
+	    (htm
+	     (:input :type "checkbox"
+		     :name inherit
+		     :checked (if (cfg::inherit option)
+				  "checked")))))))))
 
 (defmethod render-option-editor ((type cfg::boolean-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (htm
-       (:input :name field
-	       :type "checkbox"
-	       :checked (if value "checked"))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (if val (setf input-value t))))
+      (with-change-notifier (field stream
+				   :on-change (lambda ()
+						(funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:input :name field
+		   :type "checkbox"
+		   :checked (if value "checked"))))))))
 
 (defmethod render-option-editor ((type cfg::pathname-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (htm
-       (:input :type "text"
-	       :name field
-	       :value (if value value))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream
+				   :on-change (lambda ()
+						(funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:input :type "text"
+		   :name field
+		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (htm
-       (:input :type "text"
-	       :name field
-	       :value (if value value))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream
+				   :on-change (lambda ()
+						(funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:input :type "text"
+		   :name field
+		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (htm
-       (:input :type "text"
-	       :name field
-	       :value (if value value))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream :on-change (lambda ()
+						       (funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:input :type "text"
+		   :name field
+		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::sexp-configuration-schema-option-type)
 				 option-schema
 				 option
 				 value
 				 stream &key writer)
-  (with-form-field (field :writer writer)
-    (with-html-output (stream)
-      (:textarea :name field
-		 (if value (str value))))))
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream :on-change (lambda ()
+						       (funcall writer input-value)))
+	(with-html-output (stream)
+	  (:textarea :name field
+		     (if value (str value))))))))
