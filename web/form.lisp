@@ -31,14 +31,12 @@
 	   (register-continuation
 	    ,cont-id
 	    (lambda (args)
-	      (loop
-		 for arg in args
-		 for arg-name = (car arg)
-		 for arg-value = (cdr arg)
-		 for field = (gethash arg-name form)
-		 do (funcall (getf field :writer)
-			     (funcall (getf field :reader)
-				      arg-value)))
+	      (loop for field being the hash-values of form
+		   do
+		   (let* ((arg (assoc (getf field :name) args :test #'equalp))
+			  (arg-value (cdr arg)))
+		     (funcall (getf field :writer)
+			      (funcall (getf field :reader) arg-value))))
 	      (funcall ,on-submit)))))))
 
 (defmacro with-form-field ((var &key
@@ -48,7 +46,8 @@
   (let ((name (symbol-name var)))
     `(let ((,var (symbol-name (gensym ,name))))
        (setf (gethash ,var *form*)
-	     (list :reader ,reader
+	     (list :name ,var
+	           :reader ,reader
 		   :writer ,writer
 		   :on-change ,on-change))
        ,@body)))

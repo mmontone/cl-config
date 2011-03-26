@@ -7,10 +7,10 @@
 				   (htm
 				    ,@body)))))
   (defmacro collecting-validation-errors ((errors found-p) expr &body body)
-  `(multiple-value-bind (,errors ,found-p)
-       (%collecting-validation-errors
-	(lambda () ,expr))
-     ,@body)))
+    `(multiple-value-bind (,errors ,found-p)
+	 (%collecting-validation-errors
+	  (lambda () ,expr))
+       ,@body)))
 
 (setf hunchentoot::*catch-errors-p* nil)
 
@@ -26,29 +26,46 @@
 		       :test #'equalp)))
 	(funcall cont params)))))
 
+(defun continuation-dispatcher (request)
+  (funcall
+   (create-prefix-dispatcher
+    "/do"
+    'handle-continuation-request)
+   request))
+
+(defun static-dispatcher (request)
+  (funcall
+   (create-folder-dispatcher-and-handler
+    "/static/"
+    (asdf:system-relative-pathname
+     :cl-config-web
+     "web/static/"))
+   request))
+
+(defvar *acceptor* nil)
+
 (defun start-cl-config-web (&optional configuration)
   ;; Static dispatcher
-  (push (create-folder-dispatcher-and-handler
-	 "/static/"
-	 (asdf:system-relative-pathname
-	  :cl-config-web
-	  "web/static/"))
-	*dispatch-table*)
+  (push 'static-dispatcher *dispatch-table*)
   ;; Forms dispatcher
-  (push (create-prefix-dispatcher
-	 "/do"
-	 'handle-continuation-request)
-	*dispatch-table*)
+  (push 'continuation-dispatcher *dispatch-table*)
   (setf *configuration*
 	(or configuration
 	    (make-configuration cl-config-web-default-configuration ()
 				(:title "CL-CONFIG Web Default Configuration")
 				(:configuration-schema cl-config-web-configuration))))
-  (start (make-instance 'acceptor
-			:address (cfg (:webapp-configuration :host) *configuration*)
-			:port (cfg (:webapp-configuration :port) *configuration*)))
-  )
+  (setf *acceptor* (make-instance 'acceptor
+				  :address (cfg (:webapp-configuration :host) *configuration*)
+				  :port (cfg (:webapp-configuration :port) *configuration*)))
+  (start *acceptor*))
 
+(defun stop-cl-config-web ()
+  (stop *acceptor*)
+  (setf *acceptor* nil)
+  (setf *dispatch-table*
+	(delete 'continuation-dispatcher
+		(delete 'static-dispatcher *dispatch-table*))))
+    
 (defun render-main-page (stream body)
   (start-session)
   (initialize-continuations)
@@ -106,33 +123,6 @@
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
-
-(define-easy-handler (newconf :uri "/newconf")
-    ((name :parameter-type 'string)
-     (title :parameter-type 'string)
-     (schema :parameter-type 'schema-symbol)
-     (parents :parameter-type 'list)
-     (documentation :parameter-type 'string))
-  
-  (collecting-validation-errors (errors found-p)
-      (progn
-	(if (zerop (length name))
-	    (validation-error 'name "Name cannot be empty"))
-	(if (zerop (length title))
-	    (validation-error 'title "Enter a title")))
-    (with-output-to-string (s)
-      (with-main-page (s)
-	(if found-p
-	    (new-configuration s errors)
-	    (let ((configuration
-		   (cfg::with-schema-validation (nil)
-		     (make-instance 'cfg::configuration
-						:name name
-						:title title
-						:configuration-schema (find-configuration-schema schema)
-						:direct-sections nil
-						:documentation documentation))))
-	      (edit-configuration configuration s)))))))
 
 (defun show-configuration (configuration stream)
   (with-html-output (stream)
@@ -232,9 +222,11 @@
 	    :odd)))
 
 ;; Loading
-;; (let ((conf (make-configuration my-config ()
-;; 				     (:configuration-schema cl-config-web-configuration)
-;; 				     (:title "My config")
-;; 				     (:section :webapp-configuration
-;; 					       (:port 4242)))))
-;; 	 (CFG.WEB::start-cl-config-web conf))
+#|
+(let ((conf (make-configuration my-config ()
+				     (:configuration-schema cl-config-web-configuration)
+				     (:title "My config")
+				     (:section :webapp-configuration
+					       (:port 4242)))))
+	 (CFG.WEB::start-cl-config-web conf))
+|#
