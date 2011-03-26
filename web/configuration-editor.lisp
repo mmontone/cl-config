@@ -343,6 +343,7 @@
 	(with-html-output (stream)
 	  (:input :type "text"
 		  :name field
+		  :id field
 		  :value (if value value)))))))
 
 (defmethod render-option-editor ((type cfg::one-of-configuration-schema-option-type)
@@ -359,6 +360,7 @@
 	(with-html-output (stream)
 	  (htm
 	   (:select :name field
+		    :id field
 		    (loop for opt in (cfg::options type)
 		       do (htm
 			   (:option :value (cfg::complete-symbol-name (cfg::name opt))
@@ -383,6 +385,7 @@
 	(with-html-output (stream)
 	  (htm
 	   (:select :name field
+		    :id field
 		    :multiple "multiple"
 		    (loop for opt in (cfg::options type)
 		       do (htm
@@ -416,6 +419,7 @@
 	(with-html-output (stream)
 	  (htm
 	   (:input :name field
+		   :id field
 		   :type "checkbox"
 		   :checked (if value "checked"))))))))
 
@@ -434,6 +438,7 @@
 	  (htm
 	   (:input :type "text"
 		   :name field
+		   :id field
 		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
@@ -451,6 +456,7 @@
 	  (htm
 	   (:input :type "text"
 		   :name field
+		   :id field
 		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
@@ -467,6 +473,7 @@
 	  (htm
 	   (:input :type "text"
 		   :name field
+		   :id field
 		   :value (if value value))))))))
 
 (defmethod render-option-editor ((type cfg::sexp-configuration-schema-option-type)
@@ -481,4 +488,5 @@
 						       (funcall writer input-value)))
 	(with-html-output (stream)
 	  (:textarea :name field
+		     :id field
 		     (if value (str value))))))))
