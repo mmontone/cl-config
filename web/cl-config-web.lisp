@@ -32,16 +32,35 @@
 		       (car res)
 		       res)))))))
 
+(defun invalid-page-request ()
+  (with-html-output-to-string (s)
+    (htm
+     (:html
+      (:head
+       (:meta :http-equiv "refresh"
+	      :content "3; URL=http://localhost:4242/"))
+      (:body
+       (:h1
+	(str "The request is invalid. Redirecting to http://localhost:4242")
+       ))))))
+
 (defun handle-continuation-request ()
   (let ((id (cdr (assoc "k" (get-parameters*) :test #'equalp))))
     (let ((cont (gethash id (session-value 'continuations))))
-      (let ((params (remove "k"
-		       (append (get-parameters*)
-			       (post-parameters*))
-		       :key #'car
-		       :test #'equalp)))
-	;; Process params to form lists if necessary
-	(funcall cont (process-params params))))))
+      (if (not cont)
+	  (invalid-page-request)
+	  ; else
+	  (let ((params (remove "k"
+				(append (get-parameters*)
+					(post-parameters*))
+				:key #'car
+				:test #'equalp)))
+	     ;; Invalidate the continuation
+	    (setf (session-value 'continuations)
+		  (make-hash-table :test #'equalp))
+	    
+	    ;; Process params to form lists if necessary
+	    (funcall cont (process-params params)))))))
 
 (defun continuation-dispatcher (request)
   (funcall
@@ -100,13 +119,16 @@
       (:body
        (funcall body stream))))))
 
-(define-easy-handler (main :uri "/") (conf)
+(defun root-page (&optional conf)
   (with-output-to-string (s)
     (with-main-page (s)
       (apply #'configurations-editor
 	     s
 	     (when conf
 	       (list (find-configuration (cfg::read-symbol conf))))))))
+
+(define-easy-handler (main :uri "/") (conf)
+  (root-page conf))
 
 (define-condition validation-error ()
   ((target :initarg :target
