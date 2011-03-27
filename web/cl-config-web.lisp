@@ -80,19 +80,16 @@
 
 (defvar *acceptor* nil)
 
-(defun start-cl-config-web (&optional configuration)
+(defun start-cl-config-web (&optional (configuration
+				       (find-configuration
+					'standard-cl-config-web-configuration)))
   ;; Static dispatcher
   (push 'static-dispatcher *dispatch-table*)
   ;; Forms dispatcher
   (push 'continuation-dispatcher *dispatch-table*)
-  (setf *configuration*
-	(or configuration
-	    (make-configuration cl-config-web-default-configuration ()
-				(:title "CL-CONFIG Web Default Configuration")
-				(:configuration-schema cl-config-web-configuration))))
   (setf *acceptor* (make-instance 'acceptor
-				  :address (cfg (:webapp-configuration :host) *configuration*)
-				  :port (cfg (:webapp-configuration :port) *configuration*)))
+				  :address (cfg (:webapp-configuration :host) configuration)
+				  :port (cfg (:webapp-configuration :port) configuration)))
   (start *acceptor*))
 
 (defun stop-cl-config-web ()
@@ -112,7 +109,7 @@
        (:script :type "text/javascript"
 		:src  "/static/jquery-1.5.1.min.js")
        (:script :type "text/javascript"
-		:src "/static/jquery-ui-1.8.11.custom.min.js")
+		:src "/static/jquery-ui-1.8.11/js/jquery-ui-1.8.11.custom.min.js")
        (:script :type "text/javascript"
 		:src  "/static/cl-config.js")
        (:link :type "text/css"
@@ -261,13 +258,3 @@
 	(if (equalp *odd-even* :odd)
 	    :even
 	    :odd)))
-
-;; Loading
-#|
-(let ((conf (make-configuration my-config ()
-				     (:configuration-schema cl-config-web-configuration)
-				     (:title "My config")
-				     (:section :webapp-configuration
-					       (:port 4242)))))
-	 (CFG.WEB::start-cl-config-web conf))
-|#
