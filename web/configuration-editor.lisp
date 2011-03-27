@@ -243,22 +243,56 @@
 	   (render-editor nil stream)))
 
 (defun edit-configuration-section (configuration section stream)
+  (let ((direct-options (cfg::direct-options-list section
+						  :exclude-advanced t))
+	(advanced-options (cfg::advanced-options-list section))
+	(advanced-section-id (gensym "ADVANCED-SECTION-")))
   (with-html-output (stream)
     (htm
      (:div :class "section"
-	   :id (format nil "section#~A" (cfg::complete-symbol-name (cfg::name section)))
+	   :id (format nil "section#~A"
+		       (cfg::complete-symbol-name (cfg::name section)))
 	   (:div :class "title"
 		 (:h3 (str (cfg::title section))))
-	   (:table :class "section"
-		   (:tbody
-		    (loop for option being the hash-values of (cfg::direct-options section)
-		       do (progn
-			    (edit-configuration-option configuration
-						       section
-						       option
-						       stream)
-			    (switch-odd-even)))))))))
-       
+	   (if (plusp (length advanced-options))
+	       (let ((button-id (gensym "TOGGLE-ADVANCED-OPTIONS-")))
+		 (htm
+		  (:div :class "toggle-advanced-options"
+			(:a :href "#" :id button-id
+			    (str "Toggle advanced options"))
+			(:script :language "javascript"
+				 (str
+				  (ps* `(chain ($ document)
+					       (ready (lambda ()
+							(chain ($ ,(format nil "#~A" advanced-section-id))
+							       (hide))
+							(chain ($ ,(format nil "#~A" button-id))
+							       (click (lambda ()
+									(chain ($ ,(format nil "#~A" advanced-section-id))
+									       (toggle)))))))))))))))
+	   (htm
+	    (:table :class "section"
+		    (:tbody
+		     (:div :class "options"
+			   (loop for option in direct-options
+			      do (progn
+				   (edit-configuration-option configuration
+							      section
+							      option
+							      stream)
+				   (switch-odd-even)))))))
+	   (if (plusp (length advanced-options))
+	       (htm
+		(:div :class "advanced-options"
+		      :id advanced-section-id
+		      (loop for option in advanced-options
+			 do (progn
+			      (edit-configuration-option configuration
+							 section
+							 option
+							 stream)
+			      (switch-odd-even)))))))))))
+
 (defun edit-configuration-option (configuration section option stream)
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"

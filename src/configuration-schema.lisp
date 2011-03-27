@@ -288,3 +288,16 @@ copy is returned by default."
 			 (parents configuration-schema))))
     (append parents
 	    (apply #'append (mapcar #'ordered-parents parents)))))
+
+(defun direct-options-list (section &key exclude-advanced)
+  (loop
+     for option being the hash-values of (direct-options section)
+     when (or (not exclude-advanced)
+	      (not (advanced option)))
+       collect option))
+
+(defun advanced-options-list (section)
+  (loop
+       for option being the hash-values of (direct-options section)
+       when (advanced option)
+       collect option))
