@@ -23,7 +23,41 @@
 							 (chain ($ ,(format nil "#~A" ,changed-checkbox))
 								(val "true")))))
 					))))))))
-	 ,@body))))
+	 ,@body)))
+  
+  (defmacro with-jquery.ui-accordion ((&key (header :h2) (animate t))
+				      &rest sections)
+    (let ((widget-id (gensym "ACCORDION-")))
+      `(htm
+	(:div :id ,(symbol-name widget-id)
+	      ,@(loop for section in sections
+		     for title = (car section)
+		     for content = (cadr section)
+		     collect
+		     `((,header (:a :href "#" (str ,title)))
+		       (:div
+			,content))))
+	(:script :language "javascript"
+		 (str (ps* `(chain ($ document)
+				   (ready (lambda ()
+					    (chain ($ ,(format nil "#~A" widget-id))
+						   (accordion))))))))))))
+
+(defun jquery.ui-accordion (stream sections)
+  (let ((widget-id (gensym "ACCORDION-")))
+    (with-html-output (stream)
+      (htm
+       (:div :id (symbol-name widget-id)
+	     (loop for (title . content) in sections
+		do (htm
+		    (:h3 (:a :href "#" (str title)))
+		    (:div (funcall content stream))))
+	     (htm
+	      (:script :language "javascript"
+		       (str (ps* `(chain ($ document)
+					 (ready (lambda ()
+						  (chain ($ ,(format nil "#~A" widget-id))
+							 (accordion))))))))))))))
 
 (defun new-configuration (stream &optional errors)
   (let (name title schema parents documentation)
@@ -227,9 +261,15 @@
 									       (cfg::parents configuration))
 									 "selected")
 							   (str (cfg::title conf))))))))
-				 (loop for section being the hash-values of
-				      (cfg::sections (cfg::configuration-schema configuration))
-				    do (edit-configuration-section configuration section stream))
+
+			       (jquery.ui-accordion stream
+						    (loop for section being the hash-values of
+							 (cfg::sections (cfg::configuration-schema configuration))
+						       collect (cons (cfg::title section)
+								     (let ((section* section))
+								       (lambda (s)
+									 (declare (ignore s))
+									 (edit-configuration-section configuration section* stream))))))
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
@@ -252,8 +292,6 @@
      (:div :class "section"
 	   :id (format nil "section#~A"
 		       (cfg::complete-symbol-name (cfg::name section)))
-	   (:div :class "title"
-		 (:h3 (str (cfg::title section))))
 	   (if (plusp (length advanced-options))
 	       (let ((button-id (gensym "TOGGLE-ADVANCED-OPTIONS-")))
 		 (htm
