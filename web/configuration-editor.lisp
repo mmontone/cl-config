@@ -469,7 +469,7 @@
 						(funcall writer input-value)))
 	(with-html-output (stream)
 	  (htm
-	   (:input :type "text"
+	   (:input :type "file"
 		   :name field
 		   :id field
 		   :value (if value value))))))))
