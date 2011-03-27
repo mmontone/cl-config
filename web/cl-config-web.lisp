@@ -112,6 +112,8 @@
        (:script :type "text/javascript"
 		:src  "/static/jquery-1.5.1.min.js")
        (:script :type "text/javascript"
+		:src "/static/jquery-ui-1.8.11.custom.min.js")
+       (:script :type "text/javascript"
 		:src  "/static/cl-config.js")
        (:link :type "text/css"
 	      :rel "stylesheet"
