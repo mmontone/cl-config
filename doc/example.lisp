@@ -15,6 +15,17 @@
       (:database-name "Database name" :text)
       (:database-parameters "Database parameters" :text :default "" :advanced t)))
 
+(define-configuration-schema cl-config-application-configuration ()
+  (:title "CL-CONFIG Application Configuration")
+  (:documentation "CL-CONFIG Application Configuration")
+  (:section :configuration-settings "Configuration settings"
+	    (:load-configs-from-file "Load configurations from file"
+				     :boolean :default t)
+	    (:load-configs-file "Configurations file" :pathname :optional t)
+	    (:select-config-from-file "Select configuration from file"
+				      :boolean :default t)
+	    (:select-config-file "Select configuration file" :pathname :optional t)))
+
 (define-configuration-schema db-socket-configuration ()
     (:title "Socket configuration")
     (:section :db-socket-configuration "Socket configuration"
@@ -66,7 +77,9 @@
 	(:catch-errors "Catch errors" :boolean :default t)))                    
 
 (define-configuration-schema standard-configuration
-                        (webapp-configuration database-configuration)
+    (cl-config-application-configuration
+     webapp-configuration
+     database-configuration)
       (:title "Standard configuration")
       (:documentation "Standard configuration for a Gestalt application")
       (:page-title "Page title" :text :default "Gestalt application"))
