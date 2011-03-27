@@ -313,8 +313,7 @@
 	    (:td :class "title"
 		 (str (cfg::title option)))
 	    (:td :class "editor"
-		 (when value
-		   (render-option-editor (cfg::option-type option)
+		 (render-option-editor (cfg::option-type option)
 					 option
 					 option-instance
 					 value
@@ -325,7 +324,7 @@
 								   (cfg::name option))
 							     configuration)
 							    val
-							    )))))
+							    ))))
 	    (:td :class "unset"
 		 (if (eql origin configuration)
 		     (with-form-field (unset :writer (lambda (val)
