@@ -492,6 +492,25 @@
 		   :id field
 		   :value (if value value))))))))
 
+(defmethod render-option-editor ((type cfg::url-configuration-schema-option-type)
+				 option-schema
+				 option
+				 value
+				 stream &key writer)
+  (let (input-value)
+    (with-form-field (field :writer (lambda (val)
+				      (setf input-value val)))
+      (with-change-notifier (field stream
+				   :on-change (lambda ()
+						(funcall writer input-value)))
+	(with-html-output (stream)
+	  (htm
+	   (:input :type "text"
+		   :name field
+		   :id field
+		   :value (if value value))))))))
+
+
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option-schema
 				 option
