@@ -114,10 +114,18 @@
 	      :rel "stylesheet"
 	      :href "/static/jquery-ui-1.8.11/css/ui-lightness/jquery-ui-1.8.11.custom.css")
        (:script :type "text/javascript"
+		:src "/static/multiselect/js/ui.multiselect.js")
+       (:script :type "text/javascript"
 		:src  "/static/cl-config.js")
        (:link :type "text/css"
 	      :rel "stylesheet"
-	      :href "/static/cl-config.css"))
+	      :href "/static/cl-config.css")
+       (:link :type "text/css"
+	      :rel "stylesheet"
+	      :href "/static/multiselect/css/common.css")
+       (:link :type "text/css"
+	      :rel "stylesheet"
+	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
        (funcall body stream))))))
 

@@ -148,6 +148,7 @@
 				     (:select :id "parents"
 					      :name field
 					      :multiple "true"
+					      :class "multiselect"
 					      (loop for configuration being the hash-values of *configurations*
 						 do (htm
 						     (:option :value (cfg::complete-symbol-name (cfg::name configuration))
@@ -253,6 +254,7 @@
 				  (:select :id "parents"
 					   :name field
 					   :multiple "true"
+					   :class "multiselect"
 					   (loop for conf being the hash-values of *configurations*
 					      when (not (eql conf configuration))
 					      do (htm
@@ -458,6 +460,7 @@
 	   (:select :name field
 		    :id field
 		    :multiple "multiple"
+		    :class "multiselect"
 		    (loop for opt in (cfg::options type)
 		       do (htm
 			   (:option :value (cfg::complete-symbol-name (cfg::name opt))
