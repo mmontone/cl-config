@@ -48,4 +48,4 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "sexp-backend")
 	     (:file "xml-backend"))
 	    :serial t))
-  :depends-on (:xml-emitter :cl-store))
+  :depends-on (:alexandria :xml-emitter :cl-store))

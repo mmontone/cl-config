@@ -1,5 +1,11 @@
 (in-package :cl-config)
 
+(defmacro collecting-validation-errors ((errors found-p) expr &body body)
+  `(multiple-value-bind (,errors ,found-p)
+       (%collecting-validation-errors
+	(lambda () ,expr))
+     ,@body))
+
 (define-condition validation-error ()
   ((target :initarg :target
 	   :initform (error "Set up the target")
@@ -22,7 +28,8 @@
 		     (option c) (configuration c)))))
    
 (defun validation-error (target error-msg &rest args)
-  (error 'validation-error
+  (cerror "Skip validation"
+	  'validation-error
 	 :target target
 	 :error-msg (apply #'format nil (cons error-msg args))))
 
@@ -30,3 +37,13 @@
   (error 'option-value-not-found-error
 	 :option option
 	 :configuration configuration))
+
+(defun %collecting-validation-errors (func)
+  (let ((errors nil))
+    (handler-bind
+	((cfg::validation-error
+	  (lambda (c)
+	    (push c errors)
+	    (continue))))
+      (funcall func))
+    (values errors (plusp (length errors)))))

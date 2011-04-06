@@ -6,11 +6,7 @@
 				 (with-html-output (,stream)
 				   (htm
 				    ,@body)))))
-  (defmacro collecting-validation-errors ((errors found-p) expr &body body)
-    `(multiple-value-bind (,errors ,found-p)
-	 (%collecting-validation-errors
-	  (lambda () ,expr))
-       ,@body)))
+  )
 
 (setf hunchentoot::*catch-errors-p* nil)
 
@@ -144,36 +140,6 @@
 
 (define-easy-handler (main :uri "/") (conf)
   (root-page conf))
-
-(define-condition validation-error ()
-  ((target :initarg :target
-	   :reader target
-	   :initform (error "Provide the target"))
-   (error-msg :initarg :error-msg
-	      :reader error-msg
-	      :initform (error "Provide the error message")))
-  (:report (lambda (c s)
-	     (format s "~A in ~A"
-		   (error-msg c)
-		   (target c)))))
-
-(defun validation-error (target error-msg &rest args)
-  (with-simple-restart (continue "Continue")
-    (error 'validation-error
-	   :target target
-	   :error-msg (format nil error-msg args))))
-
-(defun %collecting-validation-errors (func)
-  (let ((errors nil))
-    (handler-bind
-	((validation-error
-	  (lambda (c)
-	    (push `(:error-msg ,(error-msg c)
-		    :target ,(target c))
-		  errors)
-	    (continue))))
-      (funcall func))
-    (values errors (plusp (length errors)))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))

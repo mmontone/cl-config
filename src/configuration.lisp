@@ -165,8 +165,9 @@
 
 (defmethod initialize-instance :after ((option configuration-option) &rest initargs)
   (declare (ignore initargs))
-  (process-configuration-option option)
-  (validate-configuration-option option))
+  (when *schema-validation*
+    (process-configuration-option option)
+    (validate-configuration-option option)))
 
 (defmethod initialize-instance :after ((section configuration-section) &rest initargs)
   (let ((options (make-hash-table :test #'equalp)))
@@ -227,7 +228,18 @@
 			  (option-value-not-found-error ()
 			    (validation-error configuration
 					      "Value for ~A not found"
-					      option-path))))))))
+					      option-path)))))))
+  (validate-configuration-values configuration))
+
+(defun validate-configuration-values (configuration)
+  "Validate values"
+  (loop for section being the hash-values of (direct-sections configuration)
+       do
+       (loop for option being the hash-values of (options section)
+	  do (validate-configuration-option option)))
+  ;(loop for parent in (mapcar #'find-configuration (parents configuration))
+  ;   do (validate-configuration-values parent))
+  )
 
 (defmacro make-configuration (name parents &rest args)
   "Create a configuration without registering globally"
@@ -362,3 +374,76 @@
 			 (parents configuration))))
     (append parents
 	    (apply #'append (mapcar #'ordered-parents parents)))))
+
+;; Copy configuration
+
+(defun copy-configuration (configuration)
+  (let ((copy (allocate-instance (class-of configuration))))
+    (when (slot-boundp configuration 'name)
+      (setf (slot-value copy 'name)
+	    (slot-value configuration 'name)))
+    (when (slot-boundp configuration 'parents)
+      (setf (slot-value copy 'parents)
+	    (if (null (slot-value configuration 'parents))
+		nil
+		(alexandria:copy-sequence 'cons
+					  (slot-value configuration 'parents)))))
+    (when (slot-boundp configuration 'title)
+      (setf (slot-value copy 'title)
+	    (slot-value configuration 'title)))
+    (when (slot-boundp configuration 'configuration-schema)
+      (setf (slot-value copy 'configuration-schema)
+	    (slot-value configuration 'configuration-schema)))
+    (when (slot-boundp configuration 'documentation)
+      (setf (slot-value copy 'documentation)
+	    (slot-value configuration 'documentation)))
+    (when (slot-boundp configuration 'direct-sections)
+      (setf (slot-value copy 'direct-sections)
+	    (make-hash-table :test #'equalp))
+      (maphash (lambda (name section)
+		 (setf (gethash name (slot-value copy 'direct-sections))
+		       (copy-configuration-section section)))
+	       (slot-value configuration 'direct-sections)))
+    copy))
+
+(defun copy-configuration-section (section)
+  (let ((copy (allocate-instance (class-of section))))
+    (when (slot-boundp section 'name)
+      (setf (slot-value copy 'name)
+	    (slot-value section 'name)))
+    (when (slot-boundp section 'options)
+      (setf (slot-value copy 'options)
+	    (make-hash-table :test #'equalp))
+      (maphash (lambda (name option)
+		 (setf (gethash name (slot-value copy 'options))
+		       (copy-configuration-option option)))
+	       (slot-value section 'options)))
+    copy))
+
+(defmethod copy-configuration-option ((option configuration-option))
+  (let ((copy (allocate-instance (class-of option))))
+    (when (slot-boundp option 'schema-option)
+      (setf (slot-value copy 'schema-option)
+	    (slot-value option 'schema-option)))
+    (when (slot-boundp option 'value)
+      (setf (slot-value copy 'value)
+	    (copy-option-value (slot-value option 'value))))
+    copy))
+
+(defmethod copy-configuration-option ((option list-configuration-option))
+  (let ((copy (call-next-method)))
+    (when (slot-boundp option 'inherit)
+      (setf (slot-value copy 'inherit)
+	    (slot-value option 'inherit)))
+    copy))
+
+(defmethod copy-configuration-option ((option one-of-configuration-option))
+  (let ((copy (call-next-method)))
+    (when (slot-boundp option 'value2)
+      (setf (slot-value copy 'value)
+	    (copy-option-value (slot-value option 'value2))))
+    copy))
+
+(defmethod copy-option-value (value)
+  ;; warning: we should probably copy the value too
+  value)

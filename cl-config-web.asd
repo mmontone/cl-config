@@ -45,4 +45,5 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "configuration-editor")
 	     (:file "configuration-schema-editor"))
 	    :serial t))
-  :depends-on (:cl-config :hunchentoot :cl-who :parenscript :ironclad))
+  :depends-on (:cl-config :hunchentoot :cl-who
+			  :parenscript :ironclad))

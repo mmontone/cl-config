@@ -64,12 +64,12 @@
     (labels
 	((render-form (stream errors)
 	   (flet ((on-submit ()
-		    (collecting-validation-errors (errors found-p)
+		    (cfg::collecting-validation-errors (errors found-p)
 			(progn
 			  (if (zerop (length name))
-			      (validation-error 'name "Name cannot be empty"))
+			      (cfg::validation-error 'name "Name cannot be empty"))
 			  (if (zerop (length title))
-			      (validation-error 'title "Enter a title")))
+			      (cfg::validation-error 'title "Enter a title")))
 		      (with-output-to-string (s)
 			(with-main-page (s)
 			  (if found-p
@@ -113,7 +113,8 @@
 				 (:td (str "Title:"))
 				 (:td
 				  (with-form-field (field :writer (lambda (val)
-								    (setf title val)))
+								    (cfg::with-schema-validation (nil)
+								      (setf title val))))
 				    (htm
 				     (:input :type "text"
 					     :name field
@@ -210,68 +211,81 @@
   (new-configuration stream))
 
 (defun edit-configuration (configuration stream &key (save-as-new t))
-  (labels ((render-editor (errors stream)
-	     (with-html-output (stream)
-	       (with-form (action
-			   :on-submit (lambda ()
-					(collecting-validation-errors (errors found-p)
-					    (cfg::validate-configuration configuration)
-					  (with-output-to-string (s)
-					    (with-main-page (s)
-					      (render-editor errors s))))))
-		 (htm
-		  (:div :class "configuration-editor"
-			(:div :class "title"
-			      (:h2 (fmt "~A editor" (cfg::title configuration))))
-			(:div :class "name"
-			      (:p (fmt "Name: ~A" (cfg::complete-symbol-name
-						   (cfg::name configuration)))))
-			(:div :class "schema"
-			      (:span (:p (str "Schema:")))
-			      (:span (:a :href (format nil "/showsc?schema=~A"
-						       (cfg::complete-symbol-name
-							(cfg::name
-							 (cfg::configuration-schema
-							  configuration))))
-					 (str (cfg::title
-					       (cfg::configuration-schema configuration))))))
-			(:form :action action
-			       :method "post"
-			       (:p "Documentation:")
-			       (with-form-field (field :writer (lambda (val)
-								 (setf (cfg::documentation* configuration) val)))
-				 (htm
-				  (:textarea :name field
-					     (str (cfg::documentation* configuration)))))
-			       (:p "Parents:")
-			       (with-form-field (field :writer (lambda (val)
-								 (setf (cfg::parents configuration) val))
-						       :reader (lambda (val)
-								 (if (listp val)
-								     (mapcar #'cfg::read-symbol val)
-								     (list (cfg::read-symbol val)))))
-				 (htm
-				  (:select :id "parents"
-					   :name field
-					   :multiple "true"
-					   :class "multiselect"
-					   (loop for conf being the hash-values of *configurations*
-					      when (not (eql conf configuration))
-					      do (htm
-						  (:option :value (cfg::complete-symbol-name (cfg::name conf))
-							   :selected (if (find (cfg::name conf)
-									       (cfg::parents configuration))
-									 "selected")
-							   (str (cfg::title conf))))))))
+  (let ((configuration (cfg::copy-configuration configuration)))
+    (labels ((render-editor (errors stream)
+	       (with-html-output (stream)
+		 (with-form (action
+			     :on-submit (lambda ()
+					  (cfg::collecting-validation-errors (errors found-p)
+					      (cfg::validate-configuration configuration)
+					    (if found-p
+						(with-output-to-string (s)
+						  (with-main-page (s)
+						    (render-editor errors s)))
+						(setf (gethash (cfg::name configuration) cfg::*configurations*)
+						      configuration)))))
+		   (htm
+		    (:div :class "configuration-editor"
+			  (when errors
+			    (htm
+			      (:div :class "errors"
+				    (:ul
+				    (loop for error in errors
+					 do
+					 (htm
+					  (:li
+					   (str (cfg::error-msg error)))))))))
+			  (:div :class "title"
+				(:h2 (fmt "~A editor" (cfg::title configuration))))
+			  (:div :class "name"
+				(:p (fmt "Name: ~A" (cfg::complete-symbol-name
+						     (cfg::name configuration)))))
+			  (:div :class "schema"
+				(:span (:p (str "Schema:")))
+				(:span (:a :href (format nil "/showsc?schema=~A"
+							 (cfg::complete-symbol-name
+							  (cfg::name
+							   (cfg::configuration-schema
+							    configuration))))
+					   (str (cfg::title
+						 (cfg::configuration-schema configuration))))))
+			  (:form :action action
+				 :method "post"
+				 (:p "Documentation:")
+				 (with-form-field (field :writer (lambda (val)
+								   (setf (cfg::documentation* configuration) val)))
+				   (htm
+				    (:textarea :name field
+					       (str (cfg::documentation* configuration)))))
+				 (:p "Parents:")
+				 (with-form-field (field :writer (lambda (val)
+								   (setf (cfg::parents configuration) val))
+							 :reader (lambda (val)
+								   (if (listp val)
+								       (mapcar #'cfg::read-symbol val)
+								       (list (cfg::read-symbol val)))))
+				   (htm
+				    (:select :id "parents"
+					     :name field
+					     :multiple "true"
+					     :class "multiselect"
+					     (loop for conf being the hash-values of *configurations*
+						when (not (eql conf configuration))
+						do (htm
+						    (:option :value (cfg::complete-symbol-name (cfg::name conf))
+							     :selected (if (find (cfg::name conf)
+										 (cfg::parents configuration))
+									   "selected")
+							     (str (cfg::title conf))))))))
 
-			       (jquery.ui-accordion stream
-						    (loop for section being the hash-values of
-							 (cfg::sections (cfg::configuration-schema configuration))
-						       collect (cons (cfg::title section)
-								     (let ((section* section))
-								       (lambda (s)
-									 (declare (ignore s))
-									 (edit-configuration-section configuration section* stream))))))
+				 (jquery.ui-accordion stream
+						      (loop for section being the hash-values of
+							   (cfg::sections (cfg::configuration-schema configuration))
+							 collect (cons (cfg::title section)
+								       (let ((section* section))
+									 (lambda (s)
+									   (declare (ignore s))
+									   (edit-configuration-section configuration section* stream))))))
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
@@ -282,7 +296,7 @@
 					(:td (:p "Name: ")) (:td (:input :type "text" :name "save-as-name")))
 				       (:tr (:td (:p "Title: ")) (:td (:input :type "text" :name "save-as-title"))))))
 				    (:input :type "submit" :value "Save as new"))))))))))
-	   (render-editor nil stream)))
+      (render-editor nil stream))))
 
 (defun edit-configuration-section (configuration section stream)
   (let ((direct-options (cfg::direct-options-list section
@@ -358,21 +372,22 @@
 					 option-instance
 					 value
 					 stream :writer (lambda (val)
-							  (setf
-							    (cfg:get-option-value
-							     (list (cfg::name section)
-								   (cfg::name option))
-							     configuration)
-							    val
-							    ))))
+							  (cfg::with-schema-validation (nil)
+							    (setf
+							     (cfg:get-option-value
+							      (list (cfg::name section)
+								    (cfg::name option))
+							      configuration)
+							     val)))))
 	    (:td :class "unset"
 		 (if (eql origin configuration)
 		     (with-form-field (unset :writer (lambda (val)
-						       (if val
-							   (cfg::unset-option
-							    (list (cfg::name section)
-								  (cfg::name option))
-							    configuration))))
+						       (cfg::with-schema-validation (nil)
+							 (if val
+							     (cfg::unset-option
+							      (list (cfg::name section)
+								    (cfg::name option))
+							      configuration)))))
 		       (htm (:input :type "checkbox" :name unset)))))
 	    (:td :class "origin"
 		 (when origin
@@ -410,7 +425,8 @@
   (let (input-value)
     (with-form-field (field :writer (lambda (val)
 				      (setf input-value val))
-			    :reader #'parse-integer)
+			    :reader (lambda (val)
+				      (parse-integer val :junk-allowed t)))
       (with-change-notifier (field stream :on-change (lambda ()
 						       (funcall writer input-value)))
 	(with-html-output (stream)
