@@ -211,23 +211,43 @@
   (new-configuration stream))
 
 (defun edit-configuration (configuration stream &key (save-as-new t))
-  (let ((configuration (cfg::copy-configuration configuration)))
+  (let ((configuration-copy (cfg::copy-configuration configuration))
+	(save-as-name "")
+	(save-as-title ""))
     (labels ((render-editor (errors stream)
 	       (with-html-output (stream)
 		 (with-form (action
 			     :on-submit (lambda ()
-					  (cfg::collecting-validation-errors (errors found-p)
-					      (cfg::validate-configuration configuration)
-					    (if found-p
-						(with-output-to-string (s)
-						  (with-main-page (s)
-						    (render-editor errors s)))
-						(progn
-						  (setf (gethash (cfg::name configuration) cfg::*configurations*)
-							configuration)
-						  (with-output-to-string (s)
-						    (with-main-page (s)
-						      (render-editor errors s))))))))
+					  (if (plusp (length save-as-name))
+					      (let ((new-conf-name
+						     (ignore-errors
+						       (cfg::read-symbol save-as-name))))
+						(if new-conf-name
+						    (let ((new-conf (cfg::copy-configuration configuration)))
+						      (setf (cfg::name new-conf) new-conf-name)
+						      (setf (cfg::title new-conf) save-as-title)
+						      (setf (gethash new-conf-name cfg::*configurations*)
+							new-conf)
+						      (with-output-to-string (s)
+							(with-main-page (s)
+							  (edit-configuration new-conf s))))
+						    (with-output-to-string (s)
+						      (with-main-page (s)
+							(edit-configuration configuration s)))))
+					      ;; else
+					      (progn
+						(cfg::collecting-validation-errors (errors found-p)
+						    (cfg::validate-configuration configuration-copy)
+						  (if found-p
+						      (with-output-to-string (s)
+							(with-main-page (s)
+							  (render-editor errors s)))
+						      (progn
+							(setf (gethash (cfg::name configuration) cfg::*configurations*)
+							      configuration-copy)
+							(with-output-to-string (s)
+							  (with-main-page (s)
+							    (render-editor errors s))))))))))
 		   (htm
 		    (:div :class "configuration-editor"
 			  (when errors
@@ -240,30 +260,30 @@
 					  (:li
 					   (str (cfg::error-msg error)))))))))
 			  (:div :class "title"
-				(:h2 (fmt "~A editor" (cfg::title configuration))))
+				(:h2 (fmt "~A editor" (cfg::title configuration-copy))))
 			  (:div :class "name"
 				(:p (fmt "Name: ~A" (cfg::complete-symbol-name
-						     (cfg::name configuration)))))
+						     (cfg::name configuration-copy)))))
 			  (:div :class "schema"
 				(:span (:p (str "Schema:")))
 				(:span (:a :href (format nil "/showsc?schema=~A"
 							 (cfg::complete-symbol-name
 							  (cfg::name
 							   (cfg::configuration-schema
-							    configuration))))
+							    configuration-copy))))
 					   (str (cfg::title
-						 (cfg::configuration-schema configuration))))))
+						 (cfg::configuration-schema configuration-copy))))))
 			  (:form :action action
 				 :method "post"
 				 (:p "Documentation:")
 				 (with-form-field (field :writer (lambda (val)
-								   (setf (cfg::documentation* configuration) val)))
+								   (setf (cfg::documentation* configuration-copy) val)))
 				   (htm
 				    (:textarea :name field
-					       (str (cfg::documentation* configuration)))))
+					       (str (cfg::documentation* configuration-copy)))))
 				 (:p "Parents:")
 				 (with-form-field (field :writer (lambda (val)
-								   (setf (cfg::parents configuration) val))
+								   (setf (cfg::parents configuration-copy) val))
 							 :reader (lambda (val)
 								   (if (listp val)
 								       (mapcar #'cfg::read-symbol val)
@@ -278,18 +298,18 @@
 						do (htm
 						    (:option :value (cfg::complete-symbol-name (cfg::name conf))
 							     :selected (if (find (cfg::name conf)
-										 (cfg::parents configuration))
+										 (cfg::parents configuration-copy))
 									   "selected")
 							     (str (cfg::title conf))))))))
 
 				 (jquery.ui-accordion stream
 						      (loop for section being the hash-values of
-							   (cfg::sections (cfg::configuration-schema configuration))
+							   (cfg::sections (cfg::configuration-schema configuration-copy))
 							 collect (cons (cfg::title section)
 								       (let ((section* section))
 									 (lambda (s)
 									   (declare (ignore s))
-									   (edit-configuration-section configuration section* stream))))))
+									   (edit-configuration-section configuration-copy section* stream))))))
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
@@ -297,8 +317,18 @@
 				     (:table
 				      (:tbody
 				       (:tr
-					(:td (:p "Name: ")) (:td (:input :type "text" :name "save-as-name")))
-				       (:tr (:td (:p "Title: ")) (:td (:input :type "text" :name "save-as-title"))))))
+					(:td (:p "Name: "))
+					(:td
+					 (with-form-field (field :writer (lambda (val)
+									   (setf save-as-name val)))
+					   (htm
+					    (:input :type "text" :name field)))))
+				       (:tr (:td (:p "Title: "))
+					    (:td
+					     (with-form-field (field :writer (lambda (val)
+									       (setf save-as-title val)))
+					       (htm
+						(:input :type "text" :name field))))))))
 				    (:input :type "submit" :value "Save as new"))))))))))
       (render-editor nil stream))))
 
