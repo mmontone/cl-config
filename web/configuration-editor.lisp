@@ -1,7 +1,7 @@
 (in-package :cfg.web)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defmacro with-change-notifier ((target stream &key (on-change #'identity))
+  (defmacro with-change-notifier ((target stream &key on-change)
 				  &body body)
     (let* ((changed-checkbox (gensym "CHANGED-CHECKBOX-")))
       `(with-form-field (,changed-checkbox :writer (lambda (val)
@@ -210,44 +210,55 @@
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
+(defun $id (str)
+  (format nil "#~A" str))
+
 (defun edit-configuration (configuration stream &key (save-as-new t))
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
-	(save-as-title ""))
+	(save-as-title "")
+	(delete-configuration? nil))
     (labels ((render-editor (errors stream)
 	       (with-html-output (stream)
 		 (with-form (action
 			     :on-submit (lambda ()
-					  (if (plusp (length save-as-name))
-					      (let ((new-conf-name
-						     (ignore-errors
-						       (cfg::read-symbol save-as-name))))
-						(if new-conf-name
-						    (let ((new-conf (cfg::copy-configuration configuration)))
-						      (setf (cfg::name new-conf) new-conf-name)
-						      (setf (cfg::title new-conf) save-as-title)
-						      (setf (gethash new-conf-name cfg::*configurations*)
-							new-conf)
-						      (with-output-to-string (s)
-							(with-main-page (s)
-							  (edit-configuration new-conf s))))
-						    (with-output-to-string (s)
-						      (with-main-page (s)
-							(edit-configuration configuration s)))))
-					      ;; else
+					  (if delete-configuration?
 					      (progn
-						(cfg::collecting-validation-errors (errors found-p)
-						    (cfg::validate-configuration configuration-copy)
-						  (if found-p
-						      (with-output-to-string (s)
-							(with-main-page (s)
-							  (render-editor errors s)))
-						      (progn
-							(setf (gethash (cfg::name configuration) cfg::*configurations*)
-							      configuration-copy)
+						(remhash (cfg::name configuration) cfg::*configurations*)
+						(with-output-to-string (s)
+						  (with-main-page (s)
+						    (configurations-editor s))))
+					      ;; else
+					      (if (plusp (length save-as-name))
+						  (let ((new-conf-name
+							 (ignore-errors
+							   (cfg::read-symbol save-as-name))))
+						    (if new-conf-name
+							(let ((new-conf (cfg::copy-configuration configuration)))
+							  (setf (cfg::name new-conf) new-conf-name)
+							  (setf (cfg::title new-conf) save-as-title)
+							  (setf (gethash new-conf-name cfg::*configurations*)
+								new-conf)
+							  (with-output-to-string (s)
+							    (with-main-page (s)
+							      (configurations-editor s new-conf))))
 							(with-output-to-string (s)
 							  (with-main-page (s)
-							    (render-editor errors s))))))))))
+							    (configurations-editor s configuration)))))
+						  ;; else
+						  (progn
+						    (cfg::collecting-validation-errors (errors found-p)
+							(cfg::validate-configuration configuration-copy)
+						      (if found-p
+							  (with-output-to-string (s)
+							    (with-main-page (s)
+							      (render-editor errors s)))
+							  (progn
+							    (setf (gethash (cfg::name configuration) cfg::*configurations*)
+								  configuration-copy)
+							    (with-output-to-string (s)
+							      (with-main-page (s)
+								(render-editor errors s)))))))))))
 		   (htm
 		    (:div :class "configuration-editor"
 			  (when errors
@@ -275,6 +286,7 @@
 						 (cfg::configuration-schema configuration-copy))))))
 			  (:form :action action
 				 :method "post"
+				 :id "edit-configuration-form"
 				 (:p "Documentation:")
 				 (with-form-field (field :writer (lambda (val)
 								   (setf (cfg::documentation* configuration-copy) val)))
@@ -329,7 +341,25 @@
 									       (setf save-as-title val)))
 					       (htm
 						(:input :type "text" :name field))))))))
-				    (:input :type "submit" :value "Save as new"))))))))))
+				    (:input :type "submit" :value "Save as new")
+				    (with-form-field (field :writer (lambda (val)
+								      (when (equalp val "true")
+									(setf delete-configuration? t))))
+				      (htm
+				       (:input :type "hidden" :name field :id field)
+				       (:input :type "button" :class "button" :value "Delete" :id "delete-configuration")
+				       (:script :language "javascript"
+						(str
+						 (ps*
+						  `(chain ($ document)
+							  (ready (lambda ()
+								   (chain ($ ,($id "delete-configuration"))
+									  (click (lambda ()
+										   (when (confirm "Delete this configuration?")
+										     (chain ($ ,($id field))
+											    (val "true"))
+										     (chain ($ ,($id "edit-configuration-form"))
+											    (submit)))))))))))))))))))))))
       (render-editor nil stream))))
 
 (defun edit-configuration-section (configuration section stream)
