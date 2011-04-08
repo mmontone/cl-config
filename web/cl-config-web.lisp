@@ -112,8 +112,6 @@
        (:script :type "text/javascript"
 		:src "/static/multiselect/js/ui.multiselect.js")
        (:script :type "text/javascript"
-		:src "/static/selectmenu/jquery.ui.selectmenu.js")
-       (:script :type "text/javascript"
 		:src  "/static/cl-config.js")
        (:link :type "text/css"
 	      :rel "stylesheet"
@@ -123,10 +121,7 @@
 	      :href "/static/multiselect/css/common.css")
        (:link :type "text/css"
 	      :rel "stylesheet"
-	      :href "/static/multiselect/css/ui.multiselect.css")
-       (:link :type "text/css"
-	      :rel "stylesheet"
-	      :href "/static/selectmenu/jquery.ui.selectmenu.css"))
+	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
        (funcall body stream))))))
 

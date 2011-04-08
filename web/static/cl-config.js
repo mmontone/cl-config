@@ -5,5 +5,4 @@ $(function(){
   $(".multiselect").multiselect({sortable: true, searchable: true});
   $(".button").button();
   $("input:submit").button();
-  $("select:not([multiple])").selectmenu();
 });
