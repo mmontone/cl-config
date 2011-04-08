@@ -41,7 +41,11 @@
 
 (defmacro with-form-field ((var &key
 				(reader '#'identity)
-				writer on-change)
+				(writer '#'identity)
+				(on-change '(lambda (x)
+					     (declare (ignore x))
+					     nil
+					     )))
 			   &body body)
   (let ((name (symbol-name var)))
     `(let ((,var (symbol-name (gensym ,name))))
