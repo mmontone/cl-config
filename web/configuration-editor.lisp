@@ -222,8 +222,12 @@
 						(with-output-to-string (s)
 						  (with-main-page (s)
 						    (render-editor errors s)))
-						(setf (gethash (cfg::name configuration) cfg::*configurations*)
-						      configuration)))))
+						(progn
+						  (setf (gethash (cfg::name configuration) cfg::*configurations*)
+							configuration)
+						  (with-output-to-string (s)
+						    (with-main-page (s)
+						      (render-editor errors s))))))))
 		   (htm
 		    (:div :class "configuration-editor"
 			  (when errors
