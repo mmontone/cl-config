@@ -292,6 +292,11 @@
 							       (:div :class "name"
 								     (:p (fmt "Name: ~A" (cfg::complete-symbol-name
 											  (cfg::name configuration-copy)))))
+							       (:p "Title:")
+							       (with-form-field (field :writer (lambda (val)
+												 (setf (cfg::title configuration-copy) val)))
+								 (htm
+								  (:input :type "text" :name field :value (cfg::title configuration-copy))))
 							       (:div :class "schema"
 								     (:span (:p (str "Schema:")))
 								     (:span (:a :href (format nil "/showsc?schema=~A"
