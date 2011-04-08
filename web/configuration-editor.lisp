@@ -306,17 +306,18 @@
   (let ((direct-options (cfg::direct-options-list section
 						  :exclude-advanced t))
 	(advanced-options (cfg::advanced-options-list section))
-	(advanced-section-id (gensym "ADVANCED-SECTION-")))
+	(advanced-section-id (gensym "ADVANCED-SECTION-"))
+	(section-id (format nil "section#~A"
+			    (cfg::complete-symbol-name (cfg::name section)))))
   (with-html-output (stream)
     (htm
      (:div :class "section"
-	   :id (format nil "section#~A"
-		       (cfg::complete-symbol-name (cfg::name section)))
+	   :id section-id
 	   (if (plusp (length advanced-options))
 	       (let ((button-id (gensym "TOGGLE-ADVANCED-OPTIONS-")))
 		 (htm
 		  (:div :class "toggle-advanced-options"
-			(:a :href "#" :id button-id
+			(:a :href (format nil "#~A" section-id) :id button-id
 			    (str "Toggle advanced options"))
 			(:script :language "javascript"
 				 (str
