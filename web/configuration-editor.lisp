@@ -263,65 +263,71 @@
 		    (:div :class "configuration-editor"
 			  (when errors
 			    (htm
-			      (:div :class "errors"
-				    (:ul
+			     (:div :class "errors"
+				   (:ul
 				    (loop for error in errors
-					 do
+				       do
 					 (htm
 					  (:li
 					   (str (cfg::error-msg error)))))))))
 			  (:div :class "title"
 				(:h2 (fmt "~A editor" (cfg::title configuration-copy))))
-			  (:div :class "name"
-				(:p (fmt "Name: ~A" (cfg::complete-symbol-name
-						     (cfg::name configuration-copy)))))
-			  (:div :class "schema"
-				(:span (:p (str "Schema:")))
-				(:span (:a :href (format nil "/showsc?schema=~A"
-							 (cfg::complete-symbol-name
-							  (cfg::name
-							   (cfg::configuration-schema
-							    configuration-copy))))
-					   (str (cfg::title
-						 (cfg::configuration-schema configuration-copy))))))
 			  (:form :action action
 				 :method "post"
 				 :id "edit-configuration-form"
-				 (:p "Documentation:")
-				 (with-form-field (field :writer (lambda (val)
-								   (setf (cfg::documentation* configuration-copy) val)))
-				   (htm
-				    (:textarea :name field
-					       (str (cfg::documentation* configuration-copy)))))
-				 (:p "Parents:")
-				 (with-form-field (field :writer (lambda (val)
-								   (setf (cfg::parents configuration-copy) val))
-							 :reader (lambda (val)
-								   (if (listp val)
-								       (mapcar #'cfg::read-symbol val)
-								       (list (cfg::read-symbol val)))))
-				   (htm
-				    (:select :id "parents"
-					     :name field
-					     :multiple "true"
-					     :class "multiselect"
-					     (loop for conf being the hash-values of *configurations*
-						when (not (eql conf configuration))
-						do (htm
-						    (:option :value (cfg::complete-symbol-name (cfg::name conf))
-							     :selected (if (find (cfg::name conf)
-										 (cfg::parents configuration-copy))
-									   "selected")
-							     (str (cfg::title conf))))))))
-
 				 (jquery.ui-accordion stream
-						      (loop for section being the hash-values of
-							   (cfg::sections (cfg::configuration-schema configuration-copy))
-							 collect (cons (cfg::title section)
-								       (let ((section* section))
-									 (lambda (s)
-									   (declare (ignore s))
-									   (edit-configuration-section configuration-copy section* stream))))))
+						      (append
+						       (loop for section being the hash-values of
+							    (cfg::sections (cfg::configuration-schema configuration-copy))
+							  collect (cons (cfg::title section)
+									(let ((section* section))
+									  (lambda (s)
+									    (declare (ignore s))
+									    (edit-configuration-section configuration-copy section* stream)))))
+						       (list
+							(cons "Advanced settings"
+							     (lambda (s)
+							       (declare (ignore s))
+							       (htm
+							       (:div :class "name"
+								     (:p (fmt "Name: ~A" (cfg::complete-symbol-name
+											  (cfg::name configuration-copy)))))
+							       (:div :class "schema"
+								     (:span (:p (str "Schema:")))
+								     (:span (:a :href (format nil "/showsc?schema=~A"
+											      (cfg::complete-symbol-name
+											       (cfg::name
+												(cfg::configuration-schema
+												 configuration-copy))))
+										(str (cfg::title
+										      (cfg::configuration-schema configuration-copy))))))
+							       (:p "Documentation:")
+							       (with-form-field (field :writer (lambda (val)
+												 (setf (cfg::documentation* configuration-copy) val)))
+								 (htm
+								  (:textarea :name field
+									     (str (cfg::documentation* configuration-copy)))))
+							       (:p "Parents:")
+							       (with-form-field (field :writer (lambda (val)
+												 (setf (cfg::parents configuration-copy) val))
+										       :reader (lambda (val)
+												 (if (listp val)
+												     (mapcar #'cfg::read-symbol val)
+												     (list (cfg::read-symbol val)))))
+								 (htm
+								  (:select :id "parents"
+									   :name field
+									   :multiple "true"
+									   :class "multiselect"
+									   (loop for conf being the hash-values of *configurations*
+									      when (not (eql conf configuration))
+									      do (htm
+										  (:option :value (cfg::complete-symbol-name (cfg::name conf))
+											   :selected (if (find (cfg::name conf)
+													       (cfg::parents configuration-copy))
+													 "selected")
+											   (str (cfg::title conf))))))))))))))
+							       
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
