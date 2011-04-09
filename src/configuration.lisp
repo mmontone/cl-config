@@ -3,6 +3,15 @@
 (defvar *configuration* nil "The current configuration")
 (defvar *configurations* (make-hash-table :test #'equalp))
 (defvar *schema-validation* t)
+(defvar *configuration-validators* (make-hash-table :test #'equalp)
+  "Collection of configurations validators")
+
+(defmacro define-configuration-validator (configuration-schema (configuration) &body body)
+  (let ((validator-name (intern (format nil "~A-VALIDATOR" configuration-schema))))
+    `(flet ((,validator-name (,configuration)
+	      ,@body))
+       (setf (gethash ',configuration-schema *configuration-validators*)
+	     #',validator-name))))
 
 (defun %with-schema-validation (value func)
   (let ((*schema-validation* value))
@@ -211,7 +220,27 @@
     (format stream "~A"
 	    (name section))))
 
-(defun validate-configuration (configuration)
+(defun validate-configuration-validators (configuration)
+  "Apply validators to configuration"
+  (let ((configuration-schema (configuration-schema configuration)))
+    (loop for schema in (cons (class-name configuration-schema)
+			      (mapcar #'class-name
+				      (ordered-parents configuration-schema)))
+       when (gethash schema *configuration-validators*)
+       do (funcall (gethash schema *configuration-validators*)
+		   configuration))))
+
+(defun validate-configuration-values (configuration)
+  "Validate values"
+  (loop for section being the hash-values of (direct-sections configuration)
+       do
+       (loop for option being the hash-values of (options section)
+	  do (validate-configuration-option option)))
+  ;(loop for parent in (mapcar #'find-configuration (parents configuration))
+  ;   do (validate-configuration-values parent))
+  )
+
+(defun validate-configuration-schema (configuration)
   "Validates a configuration against its schema"
   (loop for schema-section being the hash-values of
        (sections (configuration-schema configuration))
@@ -228,18 +257,12 @@
 			  (option-value-not-found-error ()
 			    (validation-error configuration
 					      "Value for ~A not found"
-					      option-path)))))))
-  (validate-configuration-values configuration))
+					      option-path))))))))
 
-(defun validate-configuration-values (configuration)
-  "Validate values"
-  (loop for section being the hash-values of (direct-sections configuration)
-       do
-       (loop for option being the hash-values of (options section)
-	  do (validate-configuration-option option)))
-  ;(loop for parent in (mapcar #'find-configuration (parents configuration))
-  ;   do (validate-configuration-values parent))
-  )
+(defun validate-configuration (configuration)
+  (validate-configuration-schema configuration)
+  (validate-configuration-values configuration)
+  (validate-configuration-validators configuration))
 
 (defmacro make-configuration (name parents &rest args)
   "Create a configuration without registering globally"

@@ -5,6 +5,8 @@
 	   #:cfg*
 	   #:*configurations*
 	   #:*configuration-schemas*
+	   #:define-configuration-validator
+	   #:with-configuration-section
 	   #:xml-writer
 	   #:xml-reader
 	   #:sexp-writer

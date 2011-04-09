@@ -1,7 +1,19 @@
 (in-package :cl-config)
 
+(defvar *section* nil)
+
+(defmacro with-configuration-section (section-name &body body)
+  `(let ((*section* ',section-name))
+     ,@body))
+
 (defun read-configuration-option (path &optional (configuration *configuration*))
-  (%read-configuration-option path configuration))
+  (if *section*
+      (%read-configuration-option (if (listp path)
+				      (cons *section* path)
+				      (intern (format "~A.~A" *section* path)
+					      :keyword))
+				  configuration)
+      (%read-configuration-option path configuration)))
 
 (defmethod %read-configuration-option (path (configuration symbol))
   (get-option-value path (find-configuration configuration)))
@@ -31,8 +43,13 @@
 	       ,@body)))))))
 
 (defmacro with-configuration-values (values configuration &body body)
-  `(let ,(loop for (var option-path) in values
-	      collect (list var `(cfg ,option-path ,configuration)))
+  `(let ,(loop for value in values
+	      collect
+	      (if (listp value)
+		  (destructuring-bind (var option-path) value
+		    (list var `(cfg ,option-path ,configuration)))
+		  (list value `(cfg ,(intern (symbol-name value)
+					     :keyword) ,configuration))))
      ,@body))
 
 (defun complete-symbol-name (symbol)
