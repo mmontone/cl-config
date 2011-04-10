@@ -287,6 +287,8 @@ The web configuration editing tool
 @node System reference
 @chapter System reference
 
+@include references.texinfo
+
 @node References
 @chapter References
 @cindex reference

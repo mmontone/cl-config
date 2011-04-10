@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:define-configuration}
+@deffn {Macro} cl-config:define-configuration name parents &rest args
+@findex cl-config:define-configuration
+Create and register a configuration
+@end deffn

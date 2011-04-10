@@ -1,2 +1,15 @@
 *~
 *.fasl
+/doc/cl-config.aux
+/doc/cl-config.cp
+/doc/cl-config.cps
+/doc/cl-config.fn
+/doc/cl-config.fns
+/doc/cl-config.html
+/doc/cl-config.ky
+/doc/cl-config.log
+/doc/cl-config.pdf
+/doc/cl-config.pg
+/doc/cl-config.toc
+/doc/cl-config.tp
+/doc/cl-config.vr

@@ -1,0 +1,2 @@
+@include references/macro-cl-config-define-configuration.texinfo
+@include references/macro-cl-config-make-configuration.texinfo
