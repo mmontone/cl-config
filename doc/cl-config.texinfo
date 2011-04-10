@@ -83,7 +83,7 @@ This is cl-config Common Lisp library documentation
 @menu
 * Introduction::                What is cl-config?
 * Output backends::             Output backends
-* Examples::                    Gestalt applications examples
+* Examples::                    Several configuration examples
 * Configuration editing::       Tool for configuration editing
 * System reference::            System reference
 * References::                  Related work
@@ -282,7 +282,20 @@ And then we attach the desired configuration to the application:
 @node Configuration editing
 @chapter Configuration editing
 
-The web configuration editing tool
+Configurations can be edited from a web interface.
+
+To start the web configuration editor, evaluate:
+
+@example
+
+(require :cl-config-web)
+(cfg.web:start-cl-config-web)
+
+@end example
+
+and then point your browser to http://localhost:4242
+
+@image{web-editor}
 
 @node System reference
 @chapter System reference

@@ -10,8 +10,6 @@
 
 (setf hunchentoot::*catch-errors-p* nil)
 
-(defvar *configuration* nil)
-
 (defun process-params (list)
   (let ((visited (make-hash-table :test #'equalp)))
     (loop for (arg . value) in list
@@ -79,6 +77,11 @@
 (defun start-cl-config-web (&optional (configuration
 				       (find-configuration
 					'standard-cl-config-web-configuration)))
+  "Starts the web configuration editor
+
+   Default arguments are in standard-cl-config-web-configuration
+
+   Evaluate (cfg.web:start-cl-config-web) and point your browser to http://localhost:4242"
   ;; Static dispatcher
   (push 'static-dispatcher *dispatch-table*)
   ;; Forms dispatcher
@@ -89,6 +92,7 @@
   (start *acceptor*))
 
 (defun stop-cl-config-web ()
+  "Stops the web configuration editor"
   (stop *acceptor*)
   (setf *acceptor* nil)
   (setf *dispatch-table*

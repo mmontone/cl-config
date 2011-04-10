@@ -1,0 +1,9 @@
+@anchor{Function cl-config.web:start-cl-config-web}
+@deffn {Function} cl-config.web:start-cl-config-web &optional configuration
+@findex cl-config.web:start-cl-config-web
+Starts the web configuration editor
+
+   Default arguments are in standard-cl-config-web-configuration
+
+   Evaluate (cfg.web:start-cl-config-web) and point your browser to http://localhost:4242
+@end deffn

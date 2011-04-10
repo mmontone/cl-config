@@ -1,0 +1,5 @@
+@anchor{Function cl-config.web:stop-cl-config-web}
+@deffn {Function} cl-config.web:stop-cl-config-web
+@findex cl-config.web:stop-cl-config-web
+Stops the web configuration editor
+@end deffn

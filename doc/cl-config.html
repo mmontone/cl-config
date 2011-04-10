@@ -886,7 +886,7 @@ ul.toc {list-style: none}
 <tr><td align="left" valign="top"><a href="#Introduction">1. Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                What is cl-config?
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Output-backends">2. Output backends</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-<tr><td align="left" valign="top"><a href="#Examples">3. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    Gestalt applications examples
+<tr><td align="left" valign="top"><a href="#Examples">3. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    Several configuration examples
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Configuration-editing">4. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       Tool for configuration editing
 </td></tr>
@@ -1233,8 +1233,18 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <a name="Configuration-editing-1"></a>
 <h1 class="chapter">4. Configuration editing</h1>
 
-<p>The web configuration editing tool
+<p>To start the web configuration editor, evaluate:
 </p>
+<table><tr><td>&nbsp;</td><td><pre class="example">
+(require :cl-config-web)
+(cfg.web:start-cl-config-web)
+
+</pre></td></tr></table>
+
+<p>and then point your browser to http://localhost:4242
+</p>
+<img src="web-editor.png" alt="web-editor">
+
 <hr size="6">
 <a name="System-reference"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -1286,6 +1296,22 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <dt><a name="index-cl_002dconfig_003afind_002dconfiguration"></a><u>Function:</u> <b>cl-config:find-configuration</b><i> name</i></dt>
 <dd><a name="index-cl_002dconfig_003afind_002dconfiguration-1"></a>
 <p>Get a configuration by its name
+</p></dd></dl>
+<p><a name="Function-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"></a><u>Function:</u> <b>cl-config.web:start-cl-config-web</b><i> &amp;optional configuration</i></dt>
+<dd><a name="index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"></a>
+<p>Starts the web configuration editor
+</p>
+<p>   Default arguments are in standard-cl-config-web-configuration
+</p>
+<p>   Evaluate (cfg.web:start-cl-config-web) and point your browser to http://localhost:4242
+</p></dd></dl>
+<p><a name="Function-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"></a><u>Function:</u> <b>cl-config.web:stop-cl-config-web</b></dt>
+<dd><a name="index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"></a>
+<p>Stops the web configuration editor
 </p></dd></dl>
 <p><a name="Macro-cl_002dconfig_003acfg"></a>
 </p><dl>
@@ -1696,6 +1722,10 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Function-_002f-Macro-Index-1_fn_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg-1"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
