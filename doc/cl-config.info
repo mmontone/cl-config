@@ -1,0 +1,595 @@
+This is cl-config.info, produced by makeinfo version 4.13 from cl-config.texinfo.
+
+START-INFO-DIR-ENTRY
+* cl-config: (cl-config.info). A configuration library for Common Lisp.
+END-INFO-DIR-ENTRY
+
+   This manual is for cl-config version 0.1.
+
+   Copyright (C) 2011 Mariano Montone
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with the Front-Cover texts
+     being "A GNU Manual," and with the Back-Cover Texts as in (a)
+     below.  A copy of the license is included in the section entitled
+     "GNU Free Documentation License."
+
+     (a) The FSF's Back-Cover Text is: "You have the freedom to copy and
+     modify this GNU manual.  Buying copies from the FSF supports it in
+     developing GNU and promoting software freedom."
+
+     This document is part of a collection distributed under the GNU
+     Free Documentation License.  If you want to distribute this
+     document separately from the collection, you can do so by adding a
+     copy of the license to the document, as described in section 6 of
+     the license.
+
+
+File: cl-config.info,  Node: Top,  Next: Introduction,  Up: (dir)
+
+cl-config - A configuration library for Common Lisp
+***************************************************
+
+This is cl-config Common Lisp library documentation
+
+* Menu:
+
+* Introduction::                What is cl-config?
+* Output backends::             Output backends
+* Examples::                    Gestalt applications examples
+* Configuration editing::       Tool for configuration editing
+* System reference::            System reference
+* References::                  Related work
+* Index::                       Complete index.
+
+
+File: cl-config.info,  Node: Introduction,  Next: Output backends,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+cl-config is a configuration library for Common Lisp
+
+   You can get a copy and this manual at
+`http://common-lisp.net/project/cl-config'
+
+* Menu:
+
+* Summary::                     A brief summary of what cl-config is
+* Installation::                How to install cl-config
+* Feedback::                    Bug reports, ideas, patches etc.
+* Conventions::                 Type-setting conventions in the manual
+
+
+File: cl-config.info,  Node: Summary,  Next: Installation,  Up: Introduction
+
+1.1 Summary
+===========
+
+cl-config is a configuration library for Common Lisp
+
+
+File: cl-config.info,  Node: Installation,  Next: Feedback,  Prev: Summary,  Up: Introduction
+
+1.2 Installation
+================
+
+To install cl-config, start a Common Lisp session and type the
+following:
+
+     CL-USER> (require :asdf-install)
+     CL-USER> (asdf-install:asdf-install 'cl-config)
+
+
+File: cl-config.info,  Node: Feedback,  Next: Conventions,  Prev: Installation,  Up: Introduction
+
+1.3 Feedback
+============
+
+Mail marianomontone at gmail dot com with feedback
+
+
+File: cl-config.info,  Node: Conventions,  Prev: Feedback,  Up: Introduction
+
+1.4 Conventions
+===============
+
+Hear are some coding conventions we'd like to follow:
+
+     *We _do_ believe in documentation. Document your dynamic
+     variables, functions, macros and classes. Besides, provide a
+     documentation from a wider perspective. Provide diagrams and
+     arquitecture documentation; examples and tutorials, too. Consider
+     using an automatic documentation generator (see the bitacora
+     package in the dependencies).
+
+     *We don't want functions to be shorter than the should nor longer
+     than they should. There is no "every function should have at most
+     ten lines of code" rule. We think that coding is like literature
+     to a great extent. So you should strive for beauty and clarity.
+     Again, that your code is object oriented doesn't imply that your
+     methods will ideally have two lines of code and dispatch to
+     somewhere else; that is not always good at all. It may be good
+     from an object oriented point of view, but it is too low level. We
+     want to think in terms of languages, that is higher level,
+     instead of objects sending messages.
+
+     *Use destructuring-bind or let or a pattern-matching library
+     instead of car, cdr, cadr, and the like to obtain more readable
+     code.
+
+     *Use widely known Common Lisp coding guidelines:
+     `http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm'
+
+
+
+File: cl-config.info,  Node: Output backends,  Next: Examples,  Prev: Introduction,  Up: Top
+
+2 Output backends
+*****************
+
+There are two output backends: an sexp-backend and a xml-backend
+
+
+File: cl-config.info,  Node: Examples,  Next: Configuration editing,  Prev: Output backends,  Up: Top
+
+3 Examples
+**********
+
+Example:
+
+     (define-configuration 'database-configuration ()
+        (:title "Database configuration")
+        (:documentation "Database configuration")
+        (:section :database-configuration "Database configuration"
+           (:documentation "Section for configuring the database")
+           (:connection-type "Connection type"
+               (one-of (:socket "Socket"
+                            (:configuration 'db-socket-configuration))
+                       (:tcp "TCP"
+                            (:configuration 'db-tcp-configuration))))
+           (:username "Username" :text :documentation "The database engine username")
+           (:password "Password" :text :documentation "The database engine password")
+           (:database-name "Database name" :text)
+           (:database-parameters :text :default "" :advanced)))
+
+     (define-configuration 'db-socket-configuration ()
+         (:title "Socket configuration")
+         (:section :db-socket-configuration "Socket configuration"
+             (:path "Socket" :text
+                    :default "/tmp/socket.soc")))
+
+     (define-configuration 'db-tcp-configuration ()
+         (:title "TCP configuration")
+         (:section "TCP configuration"
+             (:url "URL" :text
+                   :default "localhost")))
+
+     (define-configuration webapp-configuration (logging-configuration)
+         (:title "Web application configuration")
+         (:documentation "Web application configuration")
+         (:section :webapp-configuration "Web application configuration"
+             (:documentation "Web application configuration")
+             (:http-server "HTTP server"
+                 (one-of (:apache "Apache" (:configuration 'apache-configuration))
+                         (:hunchentoot "Hunchentoot" (:configuration 'hunchentoot-configuration))))
+             (:host "Host" :text :default "localhost")))
+
+     (define-configuration logging-configuration ()
+         (:title "Logging configuration")
+         (:documentation "Logging configuration")
+         (let-configuration*
+             ((output-logging ()
+                 (output-location "Output location"
+                         (one-of (:standard-output "Standard output" :value '*standard-output*)
+                                 (:file "File" :text :default "/tmp/log.log"))))
+             (debugging-layer (output-logging)
+                 (debugging-levels "Debuggin levels" (list (:info "Info")
+                                                           (:warning "Warning")
+                                                           (:profile "Profile"))))
+             (database-layer (output-logging)
+                ...)))
+         (:section :logging-configuration "Logging configuration"
+             (:documentation "Logging configuration")
+             (:backend "Backend"
+                 (:one-of (:log5 "Log5")))
+             (:active-layers "Active layers" (list (:debugging "Debugging" (:configuration debugging-layer))
+                                                   (:database "Database" (:configuration database-layer))
+                                                   (:control-flow "Control flow")
+                                                   (:system "System")))))
+
+     (define-configuration standard-configuration
+                             (webapp-configuration database-configuration)
+           (:documentation "Standard configuration for a Gestalt application")
+           (:page-title "Page title" :type :text :default "Gestalt application"))
+
+   The typical attributes types are, :text, where the user fill text
+in; :one-of options*, where the user chooses one of the options in
+options*; :list list*, where the user selects one or more of the items
+of the list *list; :bool, a boolean, :maybe option, where the user can
+disable or enable option, etc.
+
+   Configurations can inherit from several configurations (that act
+like mixins). The same as with classes or models or templates. So, for
+example, web-app-configuration inherits from logging-configuration.
+That means the web-app-configuration will have the sections defined in
+logging-configuration too.
+
+   Documentation is used as a section or configuration help from the
+UI. From the UI, each section is shown collapsable and there's and
+option for showing/hiding advanced fields, and the help button.
+
+   The user can define several configuration schemes for an application
+and switch between the configurations. For example, there will probably
+be a "development configuration", a "deployment configuration", a
+"testing configuration", and so on.
+
+   There's no need for a GUI, although it is desirable. We can define
+configurations with files, for example:
+
+     (define-configuration-scheme standard-configuration-scheme ()
+        (:configuration standard-configuration)
+        (:database-configuration
+            (:connection-type :socket
+                (:db-socket-configuration
+                   (:path "/tmp/my-socket.soc")))
+            (:username "root")
+            (:password "root")
+            (:database-name "standard-database"))
+        (:webapp-configuration
+            (:host "localhost")
+            (:http-server :hunchentoot)))
+
+     (define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
+         (:configuration standard-configuration)
+         (:database-configuration
+             (:database-name "debug-database"))
+         (:logging-configuration
+            (:output-location :file "/tmp/debug.log")
+            (:active-layers :debugging :database
+                (:debugging-levels :info :warning :error)))
+         (:documentation "Debugging configuration scheme"))
+
+     (define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
+         (:configuration standard-configuration)
+         (:database-configuration
+             (:database-name "test-database"))
+         (:logging-configuration
+            (:output-location :file "/tmp/test.log")
+            (:active-layers :debugging :database
+                (:debugging-levels :warning :error)))
+         (:documentation "Testing configuration scheme"))
+
+   And then we attach the desired configuration to the application:
+
+     (defapplication my-application (standard-application)
+        ...
+        (:configuration 'debug-configuration-scheme))
+
+
+File: cl-config.info,  Node: Configuration editing,  Next: System reference,  Prev: Examples,  Up: Top
+
+4 Configuration editing
+***********************
+
+The web configuration editing tool
+
+
+File: cl-config.info,  Node: System reference,  Next: References,  Prev: Configuration editing,  Up: Top
+
+5 System reference
+******************
+
+ -- Function: cl-config:cfg* path &optional configuration
+     Function for getting a configuration value (the functional version
+     of the cfg macro)    path can be one of:
+        * A list with the form (<section> <option>).       Example:
+
+          (cfg* '(:database-configuration :username))
+
+        * A symbol with the form <section>.<option>      Example:
+
+          (cfg* :database-configuration.username)
+
+        The default configuration used is *configuration* (the current
+     configuration)
+
+ -- Function: cl-config:find-configuration-schema name
+     Get a configuration-schema by its name
+
+ -- Function: cl-config:find-configuration name
+     Get a configuration by its name
+
+ -- Macro: cl-config:cfg path &optional configuration
+     Macro for getting a configuration value.     path can be one of:
+        * A list with the form (<section> <option>).       Example:
+
+          (cfg (:database-configuration :username))
+
+        * A symbol with the form <section>.<option>       Example:
+
+          (cfg :database-configuration.username)
+
+          The default configuration used is *configuration* (the
+          current configuration)
+
+ -- Macro: cl-config:define-configuration-schema-option-type type args
+          &body body
+     Define a custom configuration-schema option type.       Example:
+
+               (define-configuration-schema-option-type :email (&rest args)
+                   (apply #'make-instance 'email-configuration-schema-option-type
+          	     args))
+
+ -- Macro: cl-config:define-configuration-schema name parents &rest args
+     Syntax for defining a configuration-schema.
+
+     Parameters:
+        * name `-' The name of the schema
+
+        * parents `-' A list of schema parents
+
+        Comments:
+        * A configuration schema can inherit from several parents.
+
+        * A title parameter is required to define the schema (see
+          example below)
+
+        Example:
+
+           (cfg::define-configuration-schema postgres-database-configuration ()
+             (:title "Postgres database configuration")
+             (:documentation "Postgres database configuration")
+             (:section :database-configuration "Database configuration"
+                (:documentation "Section for configuring the database")
+                (:connection-type "Connection type"
+                    (:one-of (:socket "Socket"
+          			    :configuration 'db-socket-configuration)
+          		   (:tcp "TCP"
+          			 :configuration 'db-tcp-configuration)))
+                (:username "Username" :text :documentation "The database engine username")
+                (:password "Password" :text :documentation "The database engine password")
+                (:database-name "Database name" :text)
+                (:host "Host" :text :documentation "The database host")
+                (:database-parameters "Database parameters" :text :default "" :advanced t)))
+
+ -- Macro: cl-config:define-configuration-validator
+          configuration-schema configuration &body body
+     Defines a validator on a configuration.
+
+     Example:
+
+             (cfg::define-configuration-validator postgres-database-configuration (configuration)
+               (cfg:with-configuration-section :database-configuration
+                 (cfg:with-configuration-values
+                      (database-name username password host) configuration
+                     (handler-bind
+          	     (postmodern:connect database-name username password host)
+          	        (postmodern:database-error (error)
+          		  (cfg::validation-error
+          		   (cl-postgres::message error)))))))
+
+ -- Macro: cl-config:define-configuration name parents &rest args
+     Create and register a configuration    Example:
+
+             (define-configuration debug-configuration (standard-configuration)
+              (:configuration-schema standard-configuration)
+              (:title "Debug configuration")
+              (:section :database-configuration
+                  (:database-name "debug-database"))
+              (:section :logging-configuration
+                 (:output-location :standard-output)
+                 (:active-layers (:debugging :database))
+                 (:debugging-levels (:info :warning :error)))
+              (:section :webapp-configuration
+          	      (:catch-errors nil))
+              (:documentation "Debugging configuration scheme"))
+
+ -- Macro: cl-config:define-option-processor type value &body body
+     Define a processor for a custom type
+
+ -- Macro: cl-config:define-option-validator type value condition
+          error-msg &rest args
+     Define a validator for a custom type
+
+     Example:
+
+               (define-option-validator email-configuration-schema-option-type
+                  (value option)
+                    (valid-mail-address-p value)
+                          "~A is not a valid email address in ~A" value option)
+
+ -- Macro: cl-config:make-configuration name parents &rest args
+     Create a configuration without registering globally
+
+ -- Macro: cl-config:with-configuration-section section-name &body body
+     Executes body in the context of the given configuration section
+
+     Example:
+
+             (with-configuration test-configuration
+                 (with-configuration-section :database-configuration
+          	 (cfg :username)))
+
+ -- Macro: cl-config:with-configuration-values values configuration
+          &body body
+     Macro for binding a configuration option values
+
+     Example:
+
+             (with-configuration test-configuration
+                 (with-configuration-section :database-configuration
+          	 (with-configuration-values (username) *configuration*
+          	   username)))
+
+ -- Macro: cl-config:with-configuration configuration-name &body body
+     Executes body in the context of the given configuration    Example:
+
+             (with-configuration test-configuration
+                 (cfg (:database-configuration :username)))
+
+ -- Macro: cl-config:with-current-configuration-values values &body body
+     The same as with-configuration-values but using the current
+     configuration *configuration*
+
+    _Example:_
+    _(with-configuration test-configuration_
+          (with-configuration-section :database-configuration
+
+     	 (with-current-configuration-values (username) 	   username)))
+
+ -- Macro: cl-config:with-schema-validation &optional &body body
+     Executes body validating or or not the configurations created in
+     body context (depending the value of value).     The default when
+     using this macro is to not validate.     This macro is more
+     commonly used for internal implementation options.
+
+     Example:
+
+             (with-schema-validation (nil)
+                 (setf (cfg :database-configuration.username) 2323))
+
+ -- Variable: cl-config:*configuration-schemas*
+     The defined configuration-schemas. Access the confiuration-schemas
+     through the find-configuration-schema function
+
+ -- Variable: cl-config:*configuration*
+     The current configuration. Use with-configuration macro to set this
+
+ -- Variable: cl-config:*configurations*
+     The defined configurations. Use find-configuration to access
+     configurations by name
+
+
+File: cl-config.info,  Node: References,  Next: Index,  Prev: System reference,  Up: Top
+
+6 References
+************
+
+[Common Lisp Directory]  [Common Lisp Wiki]
+
+   [Common Lisp Directory]: http://common-lisp.net  [Common Lisp Wiki]:
+http://www.cliki.net
+
+
+File: cl-config.info,  Node: Index,  Prev: References,  Up: Top
+
+7 Index
+*******
+
+* Menu:
+
+* Concept Index::          The concept index
+* Class Index::            The classes index
+* Function / Macro Index:: The functions and macros index
+* Variable Index::         The variables index
+
+
+File: cl-config.info,  Node: Concept Index,  Next: Class Index,  Up: Index
+
+7.1 Concept Index
+=================
+
+ [index ]
+* Menu:
+
+* backends:                              Output backends.       (line 6)
+* conventions:                           Conventions.           (line 6)
+* examples:                              Examples.              (line 6)
+* feedback:                              Feedback.              (line 6)
+* installation:                          Installation.          (line 6)
+* introduction:                          Introduction.          (line 6)
+* reference:                             References.            (line 6)
+* summary:                               Summary.               (line 6)
+
+
+File: cl-config.info,  Node: Class Index,  Next: Function / Macro Index,  Prev: Concept Index,  Up: Index
+
+7.2 Class Index
+===============
+
+ [index ]
+* Menu:
+
+File: cl-config.info,  Node: Function / Macro Index,  Next: Variable Index,  Prev: Class Index,  Up: Index
+
+7.3 Function / Macro Index
+==========================
+
+ [index ]
+* Menu:
+
+* cl-config:cfg:                         System reference.    (line  27)
+* cl-config:cfg*:                        System reference.    (line   7)
+* cl-config:define-configuration:        System reference.    (line  96)
+* cl-config:define-configuration-schema: System reference.    (line  48)
+* cl-config:define-configuration-schema-option-type: System reference.
+                                                              (line  41)
+* cl-config:define-configuration-validator: System reference. (line  81)
+* cl-config:define-option-processor:     System reference.    (line 112)
+* cl-config:define-option-validator:     System reference.    (line 116)
+* cl-config:find-configuration:          System reference.    (line  24)
+* cl-config:find-configuration-schema:   System reference.    (line  21)
+* cl-config:make-configuration:          System reference.    (line 126)
+* cl-config:with-configuration:          System reference.    (line 149)
+* cl-config:with-configuration-section:  System reference.    (line 129)
+* cl-config:with-configuration-values:   System reference.    (line 139)
+* cl-config:with-current-configuration-values: System reference.
+                                                              (line 155)
+* cl-config:with-schema-validation:      System reference.    (line 165)
+
+
+File: cl-config.info,  Node: Variable Index,  Prev: Function / Macro Index,  Up: Index
+
+7.4 Variable Index
+==================
+
+ [index ]
+* Menu:
+
+* cl-config:*configuration*:             System reference.    (line 180)
+* cl-config:*configuration-schemas*:     System reference.    (line 176)
+* cl-config:*configurations*:            System reference.    (line 183)
+
+
+
+Tag Table:
+Node: Top1230
+Node: Introduction1833
+Node: Summary2366
+Node: Installation2525
+Node: Feedback2824
+Node: Conventions3004
+Node: Output backends4483
+Node: Examples4682
+Node: Configuration editing11161
+Node: System reference11352
+Ref: Function cl-config:cfg*11499
+Ref: Function cl-config:find-configuration-schema12009
+Ref: Function cl-config:find-configuration12109
+Ref: Macro cl-config:cfg12195
+Ref: Macro cl-config:define-configuration-schema-option-type12658
+Ref: Macro cl-config:define-configuration-schema13003
+Ref: Macro cl-config:define-configuration-validator14415
+Ref: Macro cl-config:define-configuration15127
+Ref: Macro cl-config:define-option-processor15903
+Ref: Macro cl-config:define-option-validator16013
+Ref: Macro cl-config:make-configuration16410
+Ref: Macro cl-config:with-configuration-section16532
+Ref: Macro cl-config:with-configuration-values16841
+Ref: Macro cl-config:with-configuration17213
+Ref: Macro cl-config:with-current-configuration-values17470
+Ref: Macro cl-config:with-schema-validation17837
+Ref: Variable cl-config:*configuration-schemas*18293
+Ref: Variable cl-config:*configuration*18466
+Ref: Variable cl-config:*configurations*18580
+Node: References18716
+Node: Index18974
+Node: Concept Index19263
+Node: Class Index19984
+Node: Function / Macro Index20146
+Node: Variable Index21637
+
+End Tag Table
