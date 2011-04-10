@@ -10,7 +10,7 @@
   (if *section*
       (%read-configuration-option (if (listp path)
 				      (cons *section* path)
-				      (intern (format "~A.~A" *section* path)
+				      (intern (format nil "~A.~A" *section* path)
 					      :keyword))
 				  configuration)
       (%read-configuration-option path configuration)))
