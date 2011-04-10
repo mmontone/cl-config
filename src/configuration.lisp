@@ -223,7 +223,7 @@
 (defun validate-configuration-validators (configuration)
   "Apply validators to configuration"
   (let ((configuration-schema (configuration-schema configuration)))
-    (loop for schema in (cons (class-name configuration-schema)
+    (loop for schema in (cons (cfg::name configuration-schema)
 			      (mapcar #'class-name
 				      (ordered-parents configuration-schema)))
        when (gethash schema *configuration-validators*)
