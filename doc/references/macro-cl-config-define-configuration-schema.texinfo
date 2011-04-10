@@ -1,0 +1,37 @@
+@anchor{Macro cl-config:define-configuration-schema}
+@deffn {Macro} cl-config:define-configuration-schema name parents &rest args
+@findex cl-config:define-configuration-schema
+Syntax for defining a configuration-schema.
+
+   Parameters:
+@itemize
+@item  name @code{-} The name of the schema
+@item  parents @code{-} A list of schema parents
+
+@end itemize
+   Comments:
+@itemize
+@item  A configuration schema can inherit from several parents.
+@item  A title parameter is required to define the schema (see example below) 
+
+@end itemize
+   Example:
+
+@lisp
+ (cfg::define-configuration-schema postgres-database-configuration ()
+   (:title "Postgres database configuration")
+   (:documentation "Postgres database configuration")
+   (:section :database-configuration "Database configuration"
+      (:documentation "Section for configuring the database")
+      (:connection-type "Connection type"
+          (:one-of (:socket "Socket"
+			    :configuration 'db-socket-configuration)
+		   (:tcp "TCP"
+			 :configuration 'db-tcp-configuration)))
+      (:username "Username" :text :documentation "The database engine username")
+      (:password "Password" :text :documentation "The database engine password")
+      (:database-name "Database name" :text)
+      (:host "Host" :text :documentation "The database host")
+      (:database-parameters "Database parameters" :text :default "" :advanced t)))
+@end lisp
+@end deffn

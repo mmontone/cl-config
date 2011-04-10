@@ -4,18 +4,16 @@
 Defines a validator on a configuration.
 
    Example:
+
+@lisp
    (cfg::define-configuration-validator postgres-database-configuration (configuration)
-
-@table @emph
-
-@item   (cfg:with-configuration-section :database-configuration 
-    (cfg:with-configuration-values
-@end table
-
-	(database-name username password host) configuration
-      (handler-bind 
-	  (postmodern:connect database-name username password host)
-	(postmodern:database-error (error)
-		(cfg::validation-error		   
-		 (cl-postgres::message error)))))))
+     (cfg:with-configuration-section :database-configuration 
+       (cfg:with-configuration-values
+            (database-name username password host) configuration
+           (handler-bind 
+	     (postmodern:connect database-name username password host)
+	        (postmodern:database-error (error)
+		  (cfg::validation-error		   
+		   (cl-postgres::message error)))))))
+@end lisp
 @end deffn

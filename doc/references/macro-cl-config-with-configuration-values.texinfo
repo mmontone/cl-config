@@ -3,14 +3,12 @@
 @findex cl-config:with-configuration-values
 Macro for binding a configuration option values
 
+   Example:
 
-@table @emph
-
-@item    Example:
-@itemx    (with-configuration test-configuration
+@lisp
+   (with-configuration test-configuration
        (with-configuration-section :database-configuration
-@end table
-
 	 (with-configuration-values (username) *configuration*
 	   username)))
+@end lisp
 @end deffn

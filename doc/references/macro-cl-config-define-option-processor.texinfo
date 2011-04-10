@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:define-option-processor}
+@deffn {Macro} cl-config:define-option-processor type value &body body
+@findex cl-config:define-option-processor
+Define a processor for a custom type
+@end deffn

@@ -1,0 +1,5 @@
+@anchor{Variable cl-config:*configuration-schemas*}
+@defvr {Variable} cl-config:*configuration-schemas*
+@vindex cl-config:*configuration-schemas*
+The defined configuration-schemas. Access the confiuration-schemas through the find-configuration-schema function
+@end defvr

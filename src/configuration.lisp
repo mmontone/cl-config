@@ -12,8 +12,8 @@
 
 (defmacro with-configuration (configuration-name &body body)
   "Executes body in the context of the given configuration
-
    Example:
+
    (with-configuration test-configuration
        (cfg (:database-configuration :username)))"
   `(let ((*configuration* ',configuration-name))
@@ -23,15 +23,16 @@
   "Defines a validator on a configuration.
 
    Example:
+
    (cfg::define-configuration-validator postgres-database-configuration (configuration)
-  (cfg:with-configuration-section :database-configuration 
-    (cfg:with-configuration-values
-	(database-name username password host) configuration
-      (handler-bind 
-	  (postmodern:connect database-name username password host)
-	(postmodern:database-error (error)
-		(cfg::validation-error		   
-		 (cl-postgres::message error)))))))"
+     (cfg:with-configuration-section :database-configuration 
+       (cfg:with-configuration-values
+            (database-name username password host) configuration
+           (handler-bind 
+	     (postmodern:connect database-name username password host)
+	        (postmodern:database-error (error)
+		  (cfg::validation-error		   
+		   (cl-postgres::message error)))))))"
   
   (let ((validator-name (intern (format nil "~A-VALIDATOR" configuration-schema))))
     `(flet ((,validator-name (,configuration)
@@ -49,6 +50,7 @@
    This macro is more commonly used for internal implementation options.
 
    Example:
+
    (with-schema-validation (nil)
        (setf (cfg :database-configuration.username) 2323))"
   `(%with-schema-validation ,value (lambda () ,@body)))
@@ -96,30 +98,6 @@
    (options :initarg :options
 	    :accessor options
 	    :initform (make-hash-table :test #'equalp))))
-
-(defmethod initialize-instance :after ((section configuration-section) &rest initargs)
-  (declare (ignore initargs))
-  (when *schema-validation*
-    (process-configuration-section (name section) section)
-    (validate-configuration-section (name section) section)))
-
-(defgeneric process-configuration-section (name section)
-  (:method (name section)
-    t))
-
-(defgeneric validate-configuration-section (name section)
-  (:method (name section)
-    t))
-
-(defmacro define-configuration-section-processor (name (section) &body body)
-  (let ((name-var (gensym "NAME-")))
-    `(defmethod process-configuration-section ((,name-var (eql ',name)) ,section)
-       ,@body)))
-
-(defmacro define-configuration-section-validator (name (section) &body body)
-  (let ((name-var (gensym "NAME-")))
-    `(defmethod validate-configuration-section ((,name-var (eql ',name)) ,section)
-       ,@body)))
 
 (defclass configuration-option ()
   ((schema-option :initarg :schema-option
@@ -320,8 +298,8 @@
 
 (defmacro define-configuration (name parents &rest args)
   "Create and register a configuration
-
    Example:
+
    (define-configuration debug-configuration (standard-configuration)
     (:configuration-schema standard-configuration)
     (:title \"Debug configuration\")

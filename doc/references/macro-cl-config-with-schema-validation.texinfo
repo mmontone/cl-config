@@ -5,12 +5,10 @@ Executes body validating or or not the configurations created in body context (d
    The default when using this macro is to not validate.
    This macro is more commonly used for internal implementation options.
 
+   Example:
 
-@table @emph
-
-@item    Example:
-@itemx    (with-schema-validation (nil)
+@lisp
+   (with-schema-validation (nil)
        (setf (cfg :database-configuration.username) 2323))
-@end table
-
+@end lisp
 @end deffn

@@ -1,0 +1,14 @@
+@anchor{Macro cl-config:define-option-validator}
+@deffn {Macro} cl-config:define-option-validator type value condition error-msg &rest args
+@findex cl-config:define-option-validator
+Define a validator for a custom type
+
+     Example:
+
+@lisp
+     (define-option-validator email-configuration-schema-option-type
+        (value option)
+          (valid-mail-address-p value)
+                "~A is not a valid email address in ~A" value option)
+@end lisp
+@end deffn

@@ -4,22 +4,37 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro define-configuration-schema-option-type (type args &body body)
-  `(setf (gethash ',type *option-types*)
-	 (lambda ,args ,@body)))
+    "Define a custom configuration-schema option type.
+     Example:
+
+     (define-configuration-schema-option-type :email (&rest args)
+         (apply #'make-instance 'email-configuration-schema-option-type
+	     args))"
+    `(setf (gethash ',type *option-types*)
+	   (lambda ,args ,@body)))
   
   (defmacro define-option-validator (type (value &optional (option (gensym "OPTION-")))
 				   condition error-msg &rest args)
-  (let ((result (gensym "RESULT-")))
-    `(defmethod %validate-configuration-option ((type ,type) ,option)
-       (let ((,value (value ,option)))
-	 (let ((,result ,condition))
-	   (if (not ,result)
-	       (validation-error ,option
-				 ,error-msg ,@args)
-	       t))))))
+    "Define a validator for a custom type
+
+     Example:
+
+     (define-option-validator email-configuration-schema-option-type
+        (value option)
+          (valid-mail-address-p value)
+                \"~A is not a valid email address in ~A\" value option)"
+    (let ((result (gensym "RESULT-")))
+      `(defmethod %validate-configuration-option ((type ,type) ,option)
+	 (let ((,value (value ,option)))
+	   (let ((,result ,condition))
+	     (if (not ,result)
+		 (validation-error ,option
+				   ,error-msg ,@args)
+		 t))))))
 
   (defmacro define-option-processor (type (value &optional (option (gensym "OPTION-")))
 				     &body body)
+    "Define a processor for a custom type"
     `(defmethod %process-configuration-option ((type ,type) ,option)
        (let ((,value (value ,option)))
 	 (setf (value ,option)

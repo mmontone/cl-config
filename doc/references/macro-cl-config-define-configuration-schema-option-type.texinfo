@@ -1,0 +1,12 @@
+@anchor{Macro cl-config:define-configuration-schema-option-type}
+@deffn {Macro} cl-config:define-configuration-schema-option-type type args &body body
+@findex cl-config:define-configuration-schema-option-type
+Define a custom configuration-schema option type.
+     Example:
+
+@lisp
+     (define-configuration-schema-option-type :email (&rest args)
+         (apply #'make-instance 'email-configuration-schema-option-type
+	     args))
+@end lisp
+@end deffn

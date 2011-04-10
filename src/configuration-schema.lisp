@@ -1,8 +1,10 @@
 (in-package :cl-config)
 
-(defvar *configuration-schemas* (make-hash-table :test #'equal))
+(defvar *configuration-schemas* (make-hash-table :test #'equal)
+  "The defined configuration-schemas. Access the confiuration-schemas through the find-configuration-schema function")
 
 (defun find-configuration-schema (name)
+  "Get a configuration-schema by its name"
   (multiple-value-bind (configuration-schema found-p)
       (gethash name *configuration-schemas*)
     (if found-p
@@ -200,6 +202,33 @@ copy is returned by default."
 	  list :initial-value nil))
 
 (defmacro define-configuration-schema (name parents &rest args)
+  "Syntax for defining a configuration-schema.
+
+   Parameters:
+   * name - The name of the schema
+   * parents - A list of schema parents
+
+   Comments:
+   * A configuration schema can inherit from several parents.
+   * A title parameter is required to define the schema (see example below) 
+
+   Example:
+
+ (cfg::define-configuration-schema postgres-database-configuration ()
+   (:title \"Postgres database configuration\")
+   (:documentation \"Postgres database configuration\")
+   (:section :database-configuration \"Database configuration\"
+      (:documentation \"Section for configuring the database\")
+      (:connection-type \"Connection type\"
+          (:one-of (:socket \"Socket\"
+			    :configuration 'db-socket-configuration)
+		   (:tcp \"TCP\"
+			 :configuration 'db-tcp-configuration)))
+      (:username \"Username\" :text :documentation \"The database engine username\")
+      (:password \"Password\" :text :documentation \"The database engine password\")
+      (:database-name \"Database name\" :text)
+      (:host \"Host\" :text :documentation \"The database host\")
+      (:database-parameters \"Database parameters\" :text :default \"\" :advanced t)))"
   (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))

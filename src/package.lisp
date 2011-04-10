@@ -31,4 +31,7 @@
 	   #:with-configuration-values
 	   #:with-current-configuration-values	   
 	   #:with-schema-validation
+	   #:define-configuration-schema-option-type
+	   #:define-option-validator
+	   #:define-option-processor
 	   ))

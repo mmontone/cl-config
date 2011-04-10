@@ -6,6 +6,7 @@
   "Executes body in the context of the given configuration section
 
    Example:
+
    (with-configuration test-configuration 
        (with-configuration-section :database-configuration
 	 (cfg :username)))"
@@ -30,20 +31,30 @@
 (defmacro cfg (path &optional (configuration '*configuration*))
   "Macro for getting a configuration value.
    path can be one of:
-   1) A list with the form (<section> <option>).
-      Example: (cfg (:database-configuration :username))
-   2) A symbol with the form <section>.<option>
-      Example: (cfg :database-configuration.username)
-   The default configuration used is *configuration* (the current configuration)"
+   * A list with the form (<section> <option>).
+     Example:
+
+     (cfg (:database-configuration :username))
+   * A symbol with the form <section>.<option>
+      Example:
+
+      (cfg :database-configuration.username)
+
+    The default configuration used is *configuration* (the current configuration)"
   `(read-configuration-option ',path ,configuration))
 
 (defun cfg* (path &optional (configuration *configuration*))
   "Function for getting a configuration value (the functional version of the cfg macro)
    path can be one of:
-   1) A list with the form (<section> <option>).
-      Example: (cfg* '(:database-configuration :username))
-   2) A symbol with the form <section>.<option>
-      Example: (cfg* :database-configuration.username)
+   * A list with the form (<section> <option>).
+     Example:
+
+     (cfg* '(:database-configuration :username))
+   * A symbol with the form <section>.<option>
+     Example:
+
+     (cfg* :database-configuration.username)
+
    The default configuration used is *configuration* (the current configuration)"
   (read-configuration-option path configuration))
 
@@ -77,6 +88,7 @@
   "Macro for binding a configuration option values
 
    Example:
+
    (with-configuration test-configuration
        (with-configuration-section :database-configuration
 	 (with-configuration-values (username) *configuration*

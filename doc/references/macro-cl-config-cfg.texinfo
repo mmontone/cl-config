@@ -3,14 +3,16 @@
 @findex cl-config:cfg
 Macro for getting a configuration value.
    path can be one of:
-   1) A list with the form (<section> <option>).
-      Example: (cfg (:database-configuration :username))
+@itemize
+@item  A list with the form (<section> <option>).
+     Example:
 
-@table @emph
+     (cfg (:database-configuration :username))
+@item  A symbol with the form <section>.<option>
+      Example:
 
-@item    2) A symbol with the form <section>.<option>
-      Example: (cfg :database-configuration.username)
-@end table
+      (cfg :database-configuration.username)
 
-   The default configuration used is *configuration* (the current configuration)
+    The default configuration used is *configuration* (the current configuration)
+@end itemize
 @end deffn
