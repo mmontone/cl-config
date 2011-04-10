@@ -1,0 +1,16 @@
+@anchor{Macro cl-config:with-configuration-values}
+@deffn {Macro} cl-config:with-configuration-values values configuration &body body
+@findex cl-config:with-configuration-values
+Macro for binding a configuration option values
+
+
+@table @emph
+
+@item    Example:
+@itemx    (with-configuration test-configuration
+       (with-configuration-section :database-configuration
+@end table
+
+	 (with-configuration-values (username) *configuration*
+	   username)))
+@end deffn

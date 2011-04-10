@@ -1,0 +1,5 @@
+@anchor{Variable cl-config:*configurations*}
+@defvr {Variable} cl-config:*configurations*
+@vindex cl-config:*configurations*
+The defined configurations. Use find-configuration to access configurations by name
+@end defvr

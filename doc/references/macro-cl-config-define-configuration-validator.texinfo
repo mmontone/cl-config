@@ -1,0 +1,21 @@
+@anchor{Macro cl-config:define-configuration-validator}
+@deffn {Macro} cl-config:define-configuration-validator configuration-schema configuration &body body
+@findex cl-config:define-configuration-validator
+Defines a validator on a configuration.
+
+   Example:
+   (cfg::define-configuration-validator postgres-database-configuration (configuration)
+
+@table @emph
+
+@item   (cfg:with-configuration-section :database-configuration 
+    (cfg:with-configuration-values
+@end table
+
+	(database-name username password host) configuration
+      (handler-bind 
+	  (postmodern:connect database-name username password host)
+	(postmodern:database-error (error)
+		(cfg::validation-error		   
+		 (cl-postgres::message error)))))))
+@end deffn

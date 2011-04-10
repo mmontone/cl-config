@@ -1,0 +1,5 @@
+@anchor{Function cl-config:find-configuration}
+@deffn {Function} cl-config:find-configuration name
+@findex cl-config:find-configuration
+Get a configuration by its name
+@end deffn

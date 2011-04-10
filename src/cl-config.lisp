@@ -1,8 +1,14 @@
 (in-package :cl-config)
 
-(defvar *section* nil)
+(defvar *section* nil "The current configuration section")
 
 (defmacro with-configuration-section (section-name &body body)
+  "Executes body in the context of the given configuration section
+
+   Example:
+   (with-configuration test-configuration 
+       (with-configuration-section :database-configuration
+	 (cfg :username)))"
   `(let ((*section* ',section-name))
      ,@body))
 
@@ -22,9 +28,23 @@
   (get-option-value path configuration))
 
 (defmacro cfg (path &optional (configuration '*configuration*))
+  "Macro for getting a configuration value.
+   path can be one of:
+   1) A list with the form (<section> <option>).
+      Example: (cfg (:database-configuration :username))
+   2) A symbol with the form <section>.<option>
+      Example: (cfg :database-configuration.username)
+   The default configuration used is *configuration* (the current configuration)"
   `(read-configuration-option ',path ,configuration))
 
 (defun cfg* (path &optional (configuration *configuration*))
+  "Function for getting a configuration value (the functional version of the cfg macro)
+   path can be one of:
+   1) A list with the form (<section> <option>).
+      Example: (cfg* '(:database-configuration :username))
+   2) A symbol with the form <section>.<option>
+      Example: (cfg* :database-configuration.username)
+   The default configuration used is *configuration* (the current configuration)"
   (read-configuration-option path configuration))
 
 (defmacro define-configurable-function (name args &body body)
@@ -42,7 +62,25 @@
 				     ,conf-args)))
 	       ,@body)))))))
 
+(defmacro with-current-configuration-values (values &body body)
+  "The same as with-configuration-values but using the current configuration *configuration*
+
+   Example:
+   (with-configuration test-configuration
+       (with-configuration-section :database-configuration
+	 (with-current-configuration-values (username)
+	   username)))"
+  `(with-configuration-values ,values *configuration*
+     ,@body))
+
 (defmacro with-configuration-values (values configuration &body body)
+  "Macro for binding a configuration option values
+
+   Example:
+   (with-configuration test-configuration
+       (with-configuration-section :database-configuration
+	 (with-configuration-values (username) *configuration*
+	   username)))"
   `(let ,(loop for value in values
 	      collect
 	      (if (listp value)

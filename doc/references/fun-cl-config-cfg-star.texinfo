@@ -1,0 +1,16 @@
+@anchor{Function cl-config:cfg*}
+@deffn {Function} cl-config:cfg* path &optional configuration
+@findex cl-config:cfg*
+Function for getting a configuration value (the functional version of the cfg macro)
+   path can be one of:
+   1) A list with the form (<section> <option>).
+      Example: (cfg* '(:database-configuration :username))
+
+@table @emph
+
+@item    2) A symbol with the form <section>.<option>
+      Example: (cfg* :database-configuration.username)
+@end table
+
+   The default configuration used is *configuration* (the current configuration)
+@end deffn

@@ -1,12 +1,38 @@
 (in-package :cl-config)
 
-(defvar *configuration* nil "The current configuration")
-(defvar *configurations* (make-hash-table :test #'equalp))
-(defvar *schema-validation* t)
+(defvar *configuration* nil "The current configuration. Use with-configuration macro to set this")
+
+(defvar *configurations* (make-hash-table :test #'equalp)
+  "The defined configurations. Use find-configuration to access configurations by name")
+
+(defvar *schema-validation* t "Whether to validate a configuration (on creation) or not. Use with-schema-validation to set this")
+
 (defvar *configuration-validators* (make-hash-table :test #'equalp)
-  "Collection of configurations validators")
+  "Collection of configurations validators. Use define-configuration-validator to define new validators on a configuration")
+
+(defmacro with-configuration (configuration-name &body body)
+  "Executes body in the context of the given configuration
+
+   Example:
+   (with-configuration test-configuration
+       (cfg (:database-configuration :username)))"
+  `(let ((*configuration* ',configuration-name))
+     ,@body))
 
 (defmacro define-configuration-validator (configuration-schema (configuration) &body body)
+  "Defines a validator on a configuration.
+
+   Example:
+   (cfg::define-configuration-validator postgres-database-configuration (configuration)
+  (cfg:with-configuration-section :database-configuration 
+    (cfg:with-configuration-values
+	(database-name username password host) configuration
+      (handler-bind 
+	  (postmodern:connect database-name username password host)
+	(postmodern:database-error (error)
+		(cfg::validation-error		   
+		 (cl-postgres::message error)))))))"
+  
   (let ((validator-name (intern (format nil "~A-VALIDATOR" configuration-schema))))
     `(flet ((,validator-name (,configuration)
 	      ,@body))
@@ -17,10 +43,18 @@
   (let ((*schema-validation* value))
     (funcall func)))
 
-(defmacro with-schema-validation ((value) &body body)
+(defmacro with-schema-validation ((&optional value) &body body)
+  "Executes body validating or or not the configurations created in body context (depending the value of value).
+   The default when using this macro is to not validate.
+   This macro is more commonly used for internal implementation options.
+
+   Example:
+   (with-schema-validation (nil)
+       (setf (cfg :database-configuration.username) 2323))"
   `(%with-schema-validation ,value (lambda () ,@body)))
 
 (defun find-configuration (name)
+  "Get a configuration by its name"
   (multiple-value-bind (configuration found-p)
       (gethash name *configurations*)
     (if found-p
@@ -285,7 +319,21 @@
 			  `(:documentation ,documentation)))))
 
 (defmacro define-configuration (name parents &rest args)
-  "Create and register a configuration"
+  "Create and register a configuration
+
+   Example:
+   (define-configuration debug-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title \"Debug configuration\")
+    (:section :database-configuration
+        (:database-name \"debug-database\"))
+    (:section :logging-configuration
+       (:output-location :standard-output)
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:info :warning :error)))
+    (:section :webapp-configuration
+	      (:catch-errors nil))
+    (:documentation \"Debugging configuration scheme\"))"
   (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))

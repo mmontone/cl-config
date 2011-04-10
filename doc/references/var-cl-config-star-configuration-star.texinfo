@@ -1,0 +1,5 @@
+@anchor{Variable cl-config:*configuration*}
+@defvr {Variable} cl-config:*configuration*
+@vindex cl-config:*configuration*
+The current configuration. Use with-configuration macro to set this
+@end defvr

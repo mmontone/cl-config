@@ -1,0 +1,14 @@
+@anchor{Macro cl-config:with-configuration}
+@deffn {Macro} cl-config:with-configuration configuration-name &body body
+@findex cl-config:with-configuration
+Executes body in the context of the given configuration
+
+
+@table @emph
+
+@item    Example:
+@itemx    (with-configuration test-configuration
+       (cfg (:database-configuration :username)))
+@end table
+
+@end deffn

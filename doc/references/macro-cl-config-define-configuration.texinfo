@@ -2,4 +2,23 @@
 @deffn {Macro} cl-config:define-configuration name parents &rest args
 @findex cl-config:define-configuration
 Create and register a configuration
+
+
+@table @emph
+
+@item    Example:
+@itemx    (define-configuration debug-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title "Debug configuration")
+    (:section :database-configuration
+        (:database-name "debug-database"))
+    (:section :logging-configuration
+       (:output-location :standard-output)
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:info :warning :error)))
+    (:section :webapp-configuration
+@end table
+
+	      (:catch-errors nil))
+    (:documentation "Debugging configuration scheme"))
 @end deffn

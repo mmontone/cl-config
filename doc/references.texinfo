@@ -1,2 +1,13 @@
+@include references/fun-cl-config-cfg-star.texinfo
+@include references/fun-cl-config-find-configuration.texinfo
+@include references/macro-cl-config-cfg.texinfo
+@include references/macro-cl-config-define-configuration-validator.texinfo
 @include references/macro-cl-config-define-configuration.texinfo
 @include references/macro-cl-config-make-configuration.texinfo
+@include references/macro-cl-config-with-configuration-section.texinfo
+@include references/macro-cl-config-with-configuration-values.texinfo
+@include references/macro-cl-config-with-configuration.texinfo
+@include references/macro-cl-config-with-current-configuration-values.texinfo
+@include references/macro-cl-config-with-schema-validation.texinfo
+@include references/var-cl-config-star-configuration-star.texinfo
+@include references/var-cl-config-star-configurations-star.texinfo

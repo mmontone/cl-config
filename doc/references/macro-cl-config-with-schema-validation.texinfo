@@ -1,0 +1,16 @@
+@anchor{Macro cl-config:with-schema-validation}
+@deffn {Macro} cl-config:with-schema-validation &optional &body body
+@findex cl-config:with-schema-validation
+Executes body validating or or not the configurations created in body context (depending the value of value).
+   The default when using this macro is to not validate.
+   This macro is more commonly used for internal implementation options.
+
+
+@table @emph
+
+@item    Example:
+@itemx    (with-schema-validation (nil)
+       (setf (cfg :database-configuration.username) 2323))
+@end table
+
+@end deffn

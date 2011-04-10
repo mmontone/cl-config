@@ -1,8 +1,10 @@
 (defpackage :cl-config
   (:nicknames :cfg)
   (:use :cl)
-  (:export #:cfg
+  (:export #:with-configuration
+	   #:cfg
 	   #:cfg*
+	   #:*configuration*
 	   #:*configurations*
 	   #:*configuration-schemas*
 	   #:define-configuration-validator
@@ -27,4 +29,6 @@
 	   #:read-configuration-option
 	   #:define-configurable-function
 	   #:with-configuration-values
+	   #:with-current-configuration-values	   
+	   #:with-schema-validation
 	   ))

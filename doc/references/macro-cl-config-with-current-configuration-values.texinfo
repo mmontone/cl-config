@@ -1,0 +1,16 @@
+@anchor{Macro cl-config:with-current-configuration-values}
+@deffn {Macro} cl-config:with-current-configuration-values values &body body
+@findex cl-config:with-current-configuration-values
+The same as with-configuration-values but using the current configuration *configuration*
+
+
+@table @emph
+
+@item    Example:
+@itemx    (with-configuration test-configuration
+       (with-configuration-section :database-configuration
+@end table
+
+	 (with-current-configuration-values (username)
+	   username)))
+@end deffn

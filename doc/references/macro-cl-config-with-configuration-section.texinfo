@@ -1,0 +1,15 @@
+@anchor{Macro cl-config:with-configuration-section}
+@deffn {Macro} cl-config:with-configuration-section section-name &body body
+@findex cl-config:with-configuration-section
+Executes body in the context of the given configuration section
+
+
+@table @emph
+
+@item    Example:
+@itemx    (with-configuration test-configuration 
+       (with-configuration-section :database-configuration
+@end table
+
+	 (cfg :username)))
+@end deffn
