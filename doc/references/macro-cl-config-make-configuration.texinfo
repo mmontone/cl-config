@@ -1,5 +1,5 @@
 @anchor{Macro cl-config:make-configuration}
 @deffn {Macro} cl-config:make-configuration name parents &rest args
 @findex cl-config:make-configuration
-Create a configuration without registering globally
+Create a configuration without registering it globally
 @end deffn

@@ -277,7 +277,7 @@
   (validate-configuration-validators configuration))
 
 (defmacro make-configuration (name parents &rest args)
-  "Create a configuration without registering globally"
+  "Create a configuration without registering it globally"
   (let ((direct-sections (filter (lambda (elem)
 			    (equalp (first elem) :section))
 			  args))

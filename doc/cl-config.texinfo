@@ -81,13 +81,18 @@ This is cl-config Common Lisp library documentation
 @end ifnottex
 
 @menu
-* Introduction::                What is cl-config?
-* Output backends::             Output backends
-* Examples::                    Several configuration examples
-* Configuration editing::       Tool for configuration editing
-* System reference::            System reference
-* References::                  Related work
-* Index::                       Complete index.
+* Introduction::                        What is cl-config?
+* Overview::                            A cl-config overview
+* Configuration schemas::               What configuration schemas are and how to define them
+* Configurations::                      What configurations are and how to define them
+* Working with configurations::         The API to work with configurations
+* Configurations serialization::        Configurations serialization
+* Examples::                            Some examples
+* Configuration editing::               Web tool for configuration editing
+* Custom option types::                 How to define custom option types
+* System reference::                    The system reference
+* References::                          Related work
+* Index::                               Complete index.
 @end menu
 
 @node Introduction
@@ -134,21 +139,183 @@ Mail marianomontone at gmail dot com with feedback
 
 Hear are some coding conventions we'd like to follow:
 
-@itemize
+@itemize @bullet
 
-@bullet{We @emph{do} believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).}
+@item
+We @emph{do} believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
 
-@bullet{We don't want functions to be shorter than the should nor longer than they should. There is no "every function should have at most ten lines of code" rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. Again, that your code is object oriented doesn't imply that your methods will ideally have two lines of code and dispatch to somewhere else; that is not always good at all. It may be good from an object oriented point of view, but it is too low level. We want to think in terms of languages, that is higher level,  instead of objects sending messages.}
+@item
+We don't want functions to be shorter than the should nor longer than they should. There is no "every function should have at most ten lines of code" rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. Again, that your code is object oriented doesn't imply that your methods will ideally have two lines of code and dispatch to somewhere else; that is not always good at all. It may be good from an object oriented point of view, but it is too low level. We want to think in terms of languages, that is higher level,  instead of objects sending messages.
 
-@bullet{Use destructuring-bind or let or a pattern-matching library instead of car, cdr, cadr, and the like to obtain more readable code.}
+@item
+Use destructuring-bind or let or a pattern-matching library instead of car, cdr, cadr, and the like to obtain more readable code.
 
-@bullet{Use widely known Common Lisp coding guidelines: @url{http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm}}
+@item
+Use widely known Common Lisp coding guidelines: @url{http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm}
 
 @end itemize
 
-@node Output backends
-@chapter Output backends
-@cindex backends
+@node Overview
+@chapter Overview
+@cindex overview 
+
+CL-CONFIG is a configuration library for Common Lisp.
+
+The idea is to define configuration-schemas and get a proper way of:
+
+@itemize @bullet
+@item
+Sharing and versioning your project's configuration schemas, but not your configurations. That way, you avoid overwriting configurations from different coders. Each coder has his own configurations that need to match the configuration schemas in the project. Whenever a project's configuration schema changes, each coder is reponsible of updating his configurations to match the new schemas.
+
+@item
+Being able to define configuration schemas declaratively.
+
+@item
+Provide configurations documentation and validation.
+
+@item
+Edit configurations from a GUI.
+
+@item
+Define your own option configurations types and provide validation for them.
+@end itemize
+
+@node Configuration schemas
+@chapter Configuration schemas
+@cindex configuration schema
+
+Configuration schemas define the structure of a configuration.
+
+The syntax to define configuration schemas is the following:
+
+@example
+(define-configuration-schema @emph{configuration-schema-name}
+        ({@emph{parent-configuration-schema}}*)
+        (:title @emph{configuration-schema-title})
+        [(:documentation @emph{configuration-schema-documentation})]
+        {@emph{configuration-schema-section}}*)
+@end example
+
+Where:
+
+@itemize @bullet
+@item
+@emph{configuration-schema-name} is the name of the configuration-schema and the configuration-schema is globally identified by it. See @emph{find-configuration-schema}
+
+@item
+@emph{parent-configuration-schema} is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+
+@item
+@emph{configuration-schema-title} is a string describing very shortly the configuration schema. It is used to display configuration schemas from the editing GUI. It is a required argument.
+
+@item
+@emph{configuration-schema-documentation} is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
+@end itemize
+
+Each configuration schema section follows this syntax:
+
+@example
+   (:section @emph{section-identifier} @emph{section-title}
+      [(:documentation @emph{section-documentation})]
+      {@emph{option-schema}}*)
+@end example
+
+Where:
+@itemize @bullet
+@item
+@emph{section-identifier} is a keyword that uniquely identifies the section
+
+@item
+@emph{section-title} is a string describing very shortly the section. It is used to display sections from the editing GUI.
+@end itemize
+
+And option schemas are specified like this:
+
+@example
+(@emph{option-identifier} @emph{option-title} @emph{option-type} {@emph{option-parameter}*})
+@end example
+
+where:
+
+@itemize @bullet
+@item
+@emph{option-identifier} is a keyword that uniquely identifies the option
+
+@item
+@emph{option-title} is a string describing very shortly the option. It is used to display sections from the editing GUI.
+
+@item
+@emph{option-type} is the option type. There are different ways of specifying an option type, depending on the type.
+
+@item
+@emph{option-parameters} may be:
+
+@itemize @minus
+@item
+@emph{:documentation} followed by the documentation string. To document the option.
+
+@item
+@emph{default} followed by the default option value. If the configuration leaves the option unspecified, then it has the default value.
+
+@item
+@emph{optional}, followed by true (t) of false (nil). Determines if the option value can be left unspecified. Default is false.
+
+@item
+@emph{avanced}, followed by true (t) or false (nil). Determines if the option category is ``advanced'' (default is false)
+@end itemize
+@end itemize
+
+Here is a simple example:
+
+@example
+(define-configuration-schema database-configuration ()
+   (:title "Database configuration")
+   (:documentation "Database configuration")
+   (:section :database-configuration "Database configuration"
+      (:documentation "Section for configuring the database")
+      (:connection-type "Connection type"
+          (:one-of (:socket "Socket"
+			    :configuration 'db-socket-configuration)
+		   (:tcp "TCP"
+			 :configuration 'db-tcp-configuration)))
+      (:username "Username" :text :documentation "The database engine username")
+      (:password "Password" :text :documentation "The database engine password")
+      (:database-name "Database name" :text)
+      (:database-parameters "Database parameters" :text :default "" :advanced t)))
+@end example
+
+That is a typical configuration schema needed to connect to a database.
+
+It has only one section @emph{Database configuration} where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type @emph{:text}.
+
+@node Built-in option types
+@section Built-in option types
+@cindex option type
+
+@subsection Text
+
+The text option type is specified with @emph{:text}. It ensures that the the option value is of type string.
+
+Example:
+
+@example
+(:username "Username" :text :documentation "The database engine username")
+(:password "Password" :text :documentation "The database engine password")
+@end example
+
+@node Configurations
+@chapter Configurations
+
+How to define configurations
+
+@node Working with configurations
+@chapter Working with configurations
+
+The API for working with configurations
+
+@node Configurations serialization
+@chapter Configurations serialization
+@cindex serialization
 
 There are two output backends: an sexp-backend and a xml-backend
 
@@ -156,74 +323,135 @@ There are two output backends: an sexp-backend and a xml-backend
 @chapter Examples
 @cindex examples
 
-Example:
-
 @example
-(define-configuration 'database-configuration ()
+
+(define-configuration-schema database-configuration ()
    (:title "Database configuration")
    (:documentation "Database configuration")
    (:section :database-configuration "Database configuration"
       (:documentation "Section for configuring the database")
       (:connection-type "Connection type"
-          (one-of (:socket "Socket"
-                       (:configuration 'db-socket-configuration))
-                  (:tcp "TCP"
-                       (:configuration 'db-tcp-configuration))))
+          (:one-of (:socket "Socket"
+			    :configuration 'db-socket-configuration)
+		   (:tcp "TCP"
+			 :configuration 'db-tcp-configuration)))
       (:username "Username" :text :documentation "The database engine username")
       (:password "Password" :text :documentation "The database engine password")
       (:database-name "Database name" :text)
-      (:database-parameters :text :default "" :advanced)))
+      (:database-parameters "Database parameters" :text :default "" :advanced t)))
 
-(define-configuration 'db-socket-configuration ()
+(define-configuration-schema cl-config-application-configuration ()
+  (:title "CL-CONFIG Application Configuration")
+  (:documentation "CL-CONFIG Application Configuration")
+  (:section :configuration-settings "Configuration settings"
+	    (:load-configs-from-file "Load configurations from file"
+				     :boolean :default t)
+	    (:load-configs-file "Configurations file" :pathname :optional t)
+	    (:select-config-from-file "Select configuration from file"
+				      :boolean :default t)
+	    (:select-config-file "Select configuration file" :pathname :optional t)))
+
+(define-configuration-schema db-socket-configuration ()
     (:title "Socket configuration")
     (:section :db-socket-configuration "Socket configuration"
-        (:path "Socket" :text
+        (:path "Socket" :pathname
                :default "/tmp/socket.soc")))
 
-(define-configuration 'db-tcp-configuration ()
+(define-configuration-schema db-tcp-configuration ()
     (:title "TCP configuration")
     (:section "TCP configuration"
-        (:url "URL" :text
+        (:url "URL" :url
               :default "localhost")))
 
-(define-configuration webapp-configuration (logging-configuration)
+(define-configuration-schema logging-configuration ()
+    (:title "Logging configuration")
+    (:documentation "Logging configuration")
+    (:section :logging-configuration "Logging configuration"
+        (:documentation "Logging configuration")
+        (:backend "Backend"
+            (:one-of (:log5 "Log5")))
+	(:debugging-levels "Debugging levels" (:list (:info "Info")
+						     (:warning "Warning")
+						     (:profile "Profile")))
+	(:output-location "Output location"
+                    (:one-of (:standard-output "Standard output"
+					       :default *standard-output*)
+			     (:file "File" :default "/tmp/log.log"))
+		    :default '*standard-output)
+        (:active-layers "Active layers"
+			(:list
+			 (:debugging "Debugging"
+				     :configuration 'debugging-layer)
+			 (:database "Database"
+				    :configuration database-layer)
+			 (:control-flow "Control flow")
+			 (:system "System")))))
+
+(define-configuration-schema webapp-configuration (logging-configuration)
     (:title "Web application configuration")
     (:documentation "Web application configuration")
     (:section :webapp-configuration "Web application configuration"
         (:documentation "Web application configuration")
         (:http-server "HTTP server"
-            (one-of (:apache "Apache" (:configuration 'apache-configuration))
-                    (:hunchentoot "Hunchentoot" (:configuration 'hunchentoot-configuration))))
-        (:host "Host" :text :default "localhost")))                    
+            (:one-of (:apache "Apache"
+			      :configuration 'apache-configuration)
+                    (:hunchentoot "Hunchentoot"
+				  :configuration 'hunchentoot-configuration)))
+        (:host "Host" :text :default "localhost")
+	(:port "Port" :integer :default 8080)
+	(:catch-errors "Catch errors" :boolean :default t)))                    
 
-(define-configuration logging-configuration ()
-    (:title "Logging configuration")
-    (:documentation "Logging configuration")
-    (let-configuration*
-        ((output-logging ()
-            (output-location "Output location"
-                    (one-of (:standard-output "Standard output" :value '*standard-output*)
-                            (:file "File" :text :default "/tmp/log.log"))))
-        (debugging-layer (output-logging)
-            (debugging-levels "Debuggin levels" (list (:info "Info")
-                                                      (:warning "Warning")
-                                                      (:profile "Profile"))))
-        (database-layer (output-logging)
-           ...)))
-    (:section :logging-configuration "Logging configuration"
-        (:documentation "Logging configuration")
-        (:backend "Backend"
-            (:one-of (:log5 "Log5")))
-        (:active-layers "Active layers" (list (:debugging "Debugging" (:configuration debugging-layer))
-                                              (:database "Database" (:configuration database-layer))
-                                              (:control-flow "Control flow")
-                                              (:system "System")))))
-
-(define-configuration standard-configuration
-                        (webapp-configuration database-configuration)
+(define-configuration-schema standard-configuration
+    (cl-config-application-configuration
+     webapp-configuration
+     database-configuration)
+      (:title "Standard configuration")
       (:documentation "Standard configuration for a Gestalt application")
-      (:page-title "Page title" :type :text :default "Gestalt application"))
-      
+      (:page-title "Page title" :text :default "Gestalt application"))
+
+(define-configuration standard-configuration ()
+  (:title "Standard configuration")
+  (:configuration-schema standard-configuration)
+  (:section :database-configuration
+	    (:connection-type :socket
+			      :value2
+			      '(:db-socket-configuration
+				(:path "/tmp/my-socket.soc")))
+	    (:username "root")
+	    (:password "root")
+	    (:database-name "standard-database"))
+  (:section :webapp-configuration
+	    (:http-server :hunchentoot))
+  (:section :logging-configuration
+	    (:active-layers (:debugging))
+	    (:output-location :standard-output)
+	    (:debugging-levels (:info))
+	    (:backend :log5)))
+
+(define-configuration debug-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title "Debug configuration")
+    (:section :database-configuration
+        (:database-name "debug-database"))
+    (:section :logging-configuration
+       (:output-location :standard-output)
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:info :warning :error)))
+    (:section :webapp-configuration
+	      (:catch-errors nil))
+    (:documentation "Debugging configuration scheme"))
+
+(define-configuration test-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title "Test configuration")
+    (:section :database-configuration
+        (:database-name "test-database"))
+    (:section :logging-configuration
+       (:output-location :file :value2 "/tmp/test.log")
+       (:active-layers (:debugging :database) :inherit t)
+       (:debugging-levels (:warning :error)))
+    (:documentation "Testing configuration scheme"))
+
 @end example
 
 The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
@@ -296,6 +524,11 @@ To start the web configuration editor, evaluate:
 and then point your browser to http://localhost:4242
 
 @image{web-editor}
+
+@node Custom option types
+@chapter Custom option types
+
+How to define custom option types
 
 @node System reference
 @chapter System reference

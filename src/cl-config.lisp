@@ -59,14 +59,33 @@
   (read-configuration-option path configuration))
 
 (defmacro define-configurable-function (name args &body body)
-  (let ((pos (position '&configuration args)))
+  "Defines a configurable function.
+   See macroexpansion to understand what it does
+
+   Example:
+
+   (cfg:define-configurable-function connect (&configuration (conf 'postgres-database-configuration))
+       (cfg:with-configuration-values (database-name username password host)
+	   configuration
+       (connect database-name username password host)))
+
+   And then:
+
+   (connect :database-name \"My database\"
+            :host \"localhost\"
+            :username \"foo\"
+            :password \"bar\")"
+  (let ((pos (position "&configuration" args :key #'symbol-name
+		       :test #'equalp)))
     (let ((conf-spec (when pos
 		       (nth (1+ pos) args))))
       (if (not (listp conf-spec))
 	  (error "Configuration spec not valid"))
       (destructuring-bind (conf-var conf-type) conf-spec
-	(let ((new-args (remove '&configuration
-				(remove (nth (1+ pos) args) args)))
+	(let ((new-args (remove "&configuration"
+				(remove (nth (1+ pos) args) args)
+				:key #'symbol-name
+				:test #'equalp))
 	      (conf-args (gensym "CONF-ARGS-")))
 	  `(defun ,name (,@new-args &rest ,conf-args)
 	     (let ((,conf-var (apply #'make-configuration ',conf-type
@@ -77,6 +96,7 @@
   "The same as with-configuration-values but using the current configuration *configuration*
 
    Example:
+
    (with-configuration test-configuration
        (with-configuration-section :database-configuration
 	 (with-current-configuration-values (username)

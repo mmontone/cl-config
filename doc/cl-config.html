@@ -22,7 +22,7 @@ separately from the collection, you can do so by adding a copy of the
 license to the document, as described in section 6 of the license.
 
  -->
-<!-- Created on April 10, 2011 by texi2html 1.82
+<!-- Created on April 16, 2011 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -883,17 +883,28 @@ ul.toc {list-style: none}
 </p>
 
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Introduction">1. Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                What is cl-config?
+<tr><td align="left" valign="top"><a href="#Introduction">1. Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                        What is cl-config?
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Output-backends">2. Output backends</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-<tr><td align="left" valign="top"><a href="#Examples">3. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    Several configuration examples
+<tr><td align="left" valign="top"><a href="#Overview">2. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            A cl-config overview
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Configuration-editing">4. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       Tool for configuration editing
+<tr><td align="left" valign="top"><a href="#Configuration-schemas">3. Configuration schemas</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               What configuration schemas are and how to define them
 </td></tr>
-<tr><td align="left" valign="top"><a href="#System-reference">5. System reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-<tr><td align="left" valign="top"><a href="#References">6. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  Related work
+<tr><td align="left" valign="top"><a href="#Configurations">4. Configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                      What configurations are and how to define them
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Index">7. Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       Complete index.
+<tr><td align="left" valign="top"><a href="#Working-with-configurations">5. Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configurations-serialization">6. Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
+<tr><td align="left" valign="top"><a href="#Examples">7. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Some examples
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configuration-editing">8. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               Web tool for configuration editing
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Custom-option-types">9. Custom option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 How to define custom option types
+</td></tr>
+<tr><td align="left" valign="top"><a href="#System-reference">10. System reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    The system reference
+</td></tr>
+<tr><td align="left" valign="top"><a href="#References">11. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          Related work
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Index">12. Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                               Complete index.
 </td></tr>
 </table>
 
@@ -905,7 +916,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Top" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -942,7 +953,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -966,7 +977,7 @@ ul.toc {list-style: none}
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -994,7 +1005,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1014,11 +1025,11 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <a name="Conventions"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Feedback" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1036,23 +1047,287 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 </p>
 <ul>
 <li>
-&bull;We <em>do</em> believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
+We <em>do</em> believe in documentation. Document your dynamic variables, functions, macros and classes. Besides, provide a documentation from a wider perspective. Provide diagrams and arquitecture documentation; examples and tutorials, too. Consider using an automatic documentation generator (see the bitacora package in the dependencies).
 
-<p>&bull;We don&rsquo;t want functions to be shorter than the should nor longer than they should. There is no &quot;every function should have at most ten lines of code&quot; rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. Again, that your code is object oriented doesn&rsquo;t imply that your methods will ideally have two lines of code and dispatch to somewhere else; that is not always good at all. It may be good from an object oriented point of view, but it is too low level. We want to think in terms of languages, that is higher level,  instead of objects sending messages.
-</p>
-<p>&bull;Use destructuring-bind or let or a pattern-matching library instead of car, cdr, cadr, and the like to obtain more readable code.
-</p>
-<p>&bull;Use widely known Common Lisp coding guidelines: <a href="http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm">http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm</a>
-</p>
+</li><li>
+We don&rsquo;t want functions to be shorter than the should nor longer than they should. There is no &quot;every function should have at most ten lines of code&quot; rule. We think that coding is like literature to a great extent. So you should strive for beauty and clarity. Again, that your code is object oriented doesn&rsquo;t imply that your methods will ideally have two lines of code and dispatch to somewhere else; that is not always good at all. It may be good from an object oriented point of view, but it is too low level. We want to think in terms of languages, that is higher level,  instead of objects sending messages.
+
+</li><li>
+Use destructuring-bind or let or a pattern-matching library instead of car, cdr, cadr, and the like to obtain more readable code.
+
+</li><li>
+Use widely known Common Lisp coding guidelines: <a href="http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm">http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm</a>
+
 </li></ul>
 
 <hr size="6">
-<a name="Output-backends"></a>
+<a name="Overview"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Conventions" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview-1"></a>
+<h1 class="chapter">2. Overview</h1>
+<a name="index-overview"></a>
+
+<p>CL-CONFIG is a configuration library for Common Lisp.
+</p>
+<p>The idea is to define configuration-schemas and get a proper way of:
+</p>
+<ul>
+<li>
+Sharing and versioning your project&rsquo;s configuration schemas, but not your configurations. That way, you avoid overwriting configurations from different coders. Each coder has his own configurations that need to match the configuration schemas in the project. Whenever a project&rsquo;s configuration schema changes, each coder is reponsible of updating his configurations to match the new schemas.
+
+</li><li>
+Being able to define configuration schemas declaratively.
+
+</li><li>
+Provide configurations documentation and validation.
+
+</li><li>
+Edit configurations from a GUI.
+
+</li><li>
+Define your own option configurations types and provide validation for them.
+</li></ul>
+
+<hr size="6">
+<a name="Configuration-schemas"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configuration-schemas-1"></a>
+<h1 class="chapter">3. Configuration schemas</h1>
+<a name="index-configuration-schema"></a>
+
+<p>Configuration schemas define the structure of a configuration.
+</p>
+<p>The syntax to define configuration schemas is the following:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(define-configuration-schema <em>configuration-schema-name</em>
+        ({<em>parent-configuration-schema</em>*)
+        (:title <em>configuration-schema-title</em>)
+        [(:documentation <em>configuration-schema-documentation</em>)]
+        {<em>configuration-schema-section</em>*)
+</pre></td></tr></table>
+
+<p>Where:
+</p>
+<ul>
+<li>
+<em>configuration-schema-name</em> is the name of the configuration-schema and the configuration-schema is globally identified by it. See <em>find-configuration-schema</em>
+
+</li><li>
+<em>parent-configuration-schema</em> is the configuration schema we inherit from. Inheriting from a configuration schema means adding its sections to the child schema. Configuration schemas can inherit from several parents
+
+</li><li>
+<em>configuration-schema-title</em> is a string describing very shortly the configuration schema. It is used to display configuration schemas from the editing GUI. It is a required argument.
+
+</li><li>
+<em>configuration-schema-documentation</em> is the configuration schema documentation. This is not a required argument. It is also used from the editing GUI and is very useful for the configuration schema user.
+</li></ul>
+
+<p>Each configuration schema section follows this syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">   (:section <em>section-identifier</em> <em>section-title</em>
+      [(:documentation <em>section-documentation</em>)]
+      {<em>option-schema</em>*)
+</pre></td></tr></table>
+
+<p>Where:
+</p><ul>
+<li>
+<em>section-identifier</em> is a keyword that uniquely identifies the section
+
+</li><li>
+<em>section-title</em> is a string describing very shortly the section. It is used to display sections from the editing GUI.
+</li></ul>
+
+<p>And option schemas are specified like this:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(<em>option-identifier</em> <em>option-title</em> <em>option-type</em> {<em>option-parameter</em>*)
+</pre></td></tr></table>
+
+<p>where:
+</p>
+<ul>
+<li>
+<em>option-identifier</em> is a keyword that uniquely identifies the option
+
+</li><li>
+<em>option-title</em> is a string describing very shortly the option. It is used to display sections from the editing GUI.
+
+</li><li>
+<em>option-type</em> is the option type. There are different ways of specifying an option type, depending on the type.
+
+</li><li>
+<em>option-parameters</em> may be:
+
+<ul class="toc">
+<li>-
+<em>:documentation</em> followed by the documentation string. To document the option.
+
+</li><li>-
+<em>default</em> followed by the default option value. If the configuration leaves the option unspecified, then it has the default value.
+
+</li><li>-
+<em>optional</em>, followed by true (t) of false (nil). Determines if the option value can be left unspecified. Default is false.
+
+</li><li>-
+<em>avanced</em>, followed by true (t) or false (nil). Determines if the option category is &ldquo;advanced&rdquo; (default is false)
+</li></ul>
+</li></ul>
+
+<p>Here is a simple example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(define-configuration-schema database-configuration ()
+   (:title &quot;Database configuration&quot;)
+   (:documentation &quot;Database configuration&quot;)
+   (:section :database-configuration &quot;Database configuration&quot;
+      (:documentation &quot;Section for configuring the database&quot;)
+      (:connection-type &quot;Connection type&quot;
+          (:one-of (:socket &quot;Socket&quot;
+			    :configuration 'db-socket-configuration)
+		   (:tcp &quot;TCP&quot;
+			 :configuration 'db-tcp-configuration)))
+      (:username &quot;Username&quot; :text :documentation &quot;The database engine username&quot;)
+      (:password &quot;Password&quot; :text :documentation &quot;The database engine password&quot;)
+      (:database-name &quot;Database name&quot; :text)
+      (:database-parameters &quot;Database parameters&quot; :text :default &quot;&quot; :advanced t)))
+</pre></td></tr></table>
+
+<p>That is a typical configuration schema needed to connect to a database.
+</p>
+<p>It has only one section <em>Database configuration</em> where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type <em>:text</em>.
+</p>
+<hr size="6">
+<a name="Built_002din-option-types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuration-schemas" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Text" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Built_002din-option-types-1"></a>
+<h2 class="section">3.1 Built-in option types</h2>
+<a name="index-option-type"></a>
+
+<hr size="6">
+<a name="Text"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Built_002din-option-types" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h3 class="subsection">3.1.1 Text</h3>
+
+<p>The text option type is specified with <em>:text</em>. It ensures that the the option value is of type string.
+</p>
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:username &quot;Username&quot; :text :documentation &quot;The database engine username&quot;)
+(:password &quot;Password&quot; :text :documentation &quot;The database engine password&quot;)
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Configurations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Text" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configuration-schemas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Configurations-1"></a>
+<h1 class="chapter">4. Configurations</h1>
+
+<p>How to define configurations
+</p>
+<hr size="6">
+<a name="Working-with-configurations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configurations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Working-with-configurations-1"></a>
+<h1 class="chapter">5. Working with configurations</h1>
+
+<p>The API for working with configurations
+</p>
+<hr size="6">
+<a name="Configurations-serialization"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Working-with-configurations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Working-with-configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
 <td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1064,19 +1339,19 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<a name="Output-backends-1"></a>
-<h1 class="chapter">2. Output backends</h1>
-<a name="index-backends"></a>
+<a name="Configurations-serialization-1"></a>
+<h1 class="chapter">6. Configurations serialization</h1>
+<a name="index-serialization"></a>
 
 <p>There are two output backends: an sexp-backend and a xml-backend
 </p>
 <hr size="6">
 <a name="Examples"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Output-backends" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#Configurations-serialization" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Configuration-editing" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Output-backends" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Configurations-serialization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
 <td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1089,76 +1364,137 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Examples-1"></a>
-<h1 class="chapter">3. Examples</h1>
+<h1 class="chapter">7. Examples</h1>
 <a name="index-examples"></a>
 
-<p>Example:
-</p>
-<table><tr><td>&nbsp;</td><td><pre class="example">(define-configuration 'database-configuration ()
+<table><tr><td>&nbsp;</td><td><pre class="example">
+(define-configuration-schema database-configuration ()
    (:title &quot;Database configuration&quot;)
    (:documentation &quot;Database configuration&quot;)
    (:section :database-configuration &quot;Database configuration&quot;
       (:documentation &quot;Section for configuring the database&quot;)
       (:connection-type &quot;Connection type&quot;
-          (one-of (:socket &quot;Socket&quot;
-                       (:configuration 'db-socket-configuration))
-                  (:tcp &quot;TCP&quot;
-                       (:configuration 'db-tcp-configuration))))
+          (:one-of (:socket &quot;Socket&quot;
+			    :configuration 'db-socket-configuration)
+		   (:tcp &quot;TCP&quot;
+			 :configuration 'db-tcp-configuration)))
       (:username &quot;Username&quot; :text :documentation &quot;The database engine username&quot;)
       (:password &quot;Password&quot; :text :documentation &quot;The database engine password&quot;)
       (:database-name &quot;Database name&quot; :text)
-      (:database-parameters :text :default &quot;&quot; :advanced)))
+      (:database-parameters &quot;Database parameters&quot; :text :default &quot;&quot; :advanced t)))
 
-(define-configuration 'db-socket-configuration ()
+(define-configuration-schema cl-config-application-configuration ()
+  (:title &quot;CL-CONFIG Application Configuration&quot;)
+  (:documentation &quot;CL-CONFIG Application Configuration&quot;)
+  (:section :configuration-settings &quot;Configuration settings&quot;
+	    (:load-configs-from-file &quot;Load configurations from file&quot;
+				     :boolean :default t)
+	    (:load-configs-file &quot;Configurations file&quot; :pathname :optional t)
+	    (:select-config-from-file &quot;Select configuration from file&quot;
+				      :boolean :default t)
+	    (:select-config-file &quot;Select configuration file&quot; :pathname :optional t)))
+
+(define-configuration-schema db-socket-configuration ()
     (:title &quot;Socket configuration&quot;)
     (:section :db-socket-configuration &quot;Socket configuration&quot;
-        (:path &quot;Socket&quot; :text
+        (:path &quot;Socket&quot; :pathname
                :default &quot;/tmp/socket.soc&quot;)))
 
-(define-configuration 'db-tcp-configuration ()
+(define-configuration-schema db-tcp-configuration ()
     (:title &quot;TCP configuration&quot;)
     (:section &quot;TCP configuration&quot;
-        (:url &quot;URL&quot; :text
+        (:url &quot;URL&quot; :url
               :default &quot;localhost&quot;)))
 
-(define-configuration webapp-configuration (logging-configuration)
+(define-configuration-schema logging-configuration ()
+    (:title &quot;Logging configuration&quot;)
+    (:documentation &quot;Logging configuration&quot;)
+    (:section :logging-configuration &quot;Logging configuration&quot;
+        (:documentation &quot;Logging configuration&quot;)
+        (:backend &quot;Backend&quot;
+            (:one-of (:log5 &quot;Log5&quot;)))
+	(:debugging-levels &quot;Debugging levels&quot; (:list (:info &quot;Info&quot;)
+						     (:warning &quot;Warning&quot;)
+						     (:profile &quot;Profile&quot;)))
+	(:output-location &quot;Output location&quot;
+                    (:one-of (:standard-output &quot;Standard output&quot;
+					       :default *standard-output*)
+			     (:file &quot;File&quot; :default &quot;/tmp/log.log&quot;))
+		    :default '*standard-output)
+        (:active-layers &quot;Active layers&quot;
+			(:list
+			 (:debugging &quot;Debugging&quot;
+				     :configuration 'debugging-layer)
+			 (:database &quot;Database&quot;
+				    :configuration database-layer)
+			 (:control-flow &quot;Control flow&quot;)
+			 (:system &quot;System&quot;)))))
+
+(define-configuration-schema webapp-configuration (logging-configuration)
     (:title &quot;Web application configuration&quot;)
     (:documentation &quot;Web application configuration&quot;)
     (:section :webapp-configuration &quot;Web application configuration&quot;
         (:documentation &quot;Web application configuration&quot;)
         (:http-server &quot;HTTP server&quot;
-            (one-of (:apache &quot;Apache&quot; (:configuration 'apache-configuration))
-                    (:hunchentoot &quot;Hunchentoot&quot; (:configuration 'hunchentoot-configuration))))
-        (:host &quot;Host&quot; :text :default &quot;localhost&quot;)))                    
+            (:one-of (:apache &quot;Apache&quot;
+			      :configuration 'apache-configuration)
+                    (:hunchentoot &quot;Hunchentoot&quot;
+				  :configuration 'hunchentoot-configuration)))
+        (:host &quot;Host&quot; :text :default &quot;localhost&quot;)
+	(:port &quot;Port&quot; :integer :default 8080)
+	(:catch-errors &quot;Catch errors&quot; :boolean :default t)))                    
 
-(define-configuration logging-configuration ()
-    (:title &quot;Logging configuration&quot;)
-    (:documentation &quot;Logging configuration&quot;)
-    (let-configuration*
-        ((output-logging ()
-            (output-location &quot;Output location&quot;
-                    (one-of (:standard-output &quot;Standard output&quot; :value '*standard-output*)
-                            (:file &quot;File&quot; :text :default &quot;/tmp/log.log&quot;))))
-        (debugging-layer (output-logging)
-            (debugging-levels &quot;Debuggin levels&quot; (list (:info &quot;Info&quot;)
-                                                      (:warning &quot;Warning&quot;)
-                                                      (:profile &quot;Profile&quot;))))
-        (database-layer (output-logging)
-           ...)))
-    (:section :logging-configuration &quot;Logging configuration&quot;
-        (:documentation &quot;Logging configuration&quot;)
-        (:backend &quot;Backend&quot;
-            (:one-of (:log5 &quot;Log5&quot;)))
-        (:active-layers &quot;Active layers&quot; (list (:debugging &quot;Debugging&quot; (:configuration debugging-layer))
-                                              (:database &quot;Database&quot; (:configuration database-layer))
-                                              (:control-flow &quot;Control flow&quot;)
-                                              (:system &quot;System&quot;)))))
-
-(define-configuration standard-configuration
-                        (webapp-configuration database-configuration)
+(define-configuration-schema standard-configuration
+    (cl-config-application-configuration
+     webapp-configuration
+     database-configuration)
+      (:title &quot;Standard configuration&quot;)
       (:documentation &quot;Standard configuration for a Gestalt application&quot;)
-      (:page-title &quot;Page title&quot; :type :text :default &quot;Gestalt application&quot;))
-      
+      (:page-title &quot;Page title&quot; :text :default &quot;Gestalt application&quot;))
+
+(define-configuration standard-configuration ()
+  (:title &quot;Standard configuration&quot;)
+  (:configuration-schema standard-configuration)
+  (:section :database-configuration
+	    (:connection-type :socket
+			      :value2
+			      '(:db-socket-configuration
+				(:path &quot;/tmp/my-socket.soc&quot;)))
+	    (:username &quot;root&quot;)
+	    (:password &quot;root&quot;)
+	    (:database-name &quot;standard-database&quot;))
+  (:section :webapp-configuration
+	    (:http-server :hunchentoot))
+  (:section :logging-configuration
+	    (:active-layers (:debugging))
+	    (:output-location :standard-output)
+	    (:debugging-levels (:info))
+	    (:backend :log5)))
+
+(define-configuration debug-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title &quot;Debug configuration&quot;)
+    (:section :database-configuration
+        (:database-name &quot;debug-database&quot;))
+    (:section :logging-configuration
+       (:output-location :standard-output)
+       (:active-layers (:debugging :database))
+       (:debugging-levels (:info :warning :error)))
+    (:section :webapp-configuration
+	      (:catch-errors nil))
+    (:documentation &quot;Debugging configuration scheme&quot;))
+
+(define-configuration test-configuration (standard-configuration)
+    (:configuration-schema standard-configuration)
+    (:title &quot;Test configuration&quot;)
+    (:section :database-configuration
+        (:database-name &quot;test-database&quot;))
+    (:section :logging-configuration
+       (:output-location :file :value2 &quot;/tmp/test.log&quot;)
+       (:active-layers (:debugging :database) :inherit t)
+       (:debugging-levels (:warning :error)))
+    (:documentation &quot;Testing configuration scheme&quot;))
+
 </pre></td></tr></table>
 
 <p>The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
@@ -1216,11 +1552,11 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <a name="Configuration-editing"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Examples" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#System-reference" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#System-reference" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1231,8 +1567,10 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Configuration-editing-1"></a>
-<h1 class="chapter">4. Configuration editing</h1>
+<h1 class="chapter">8. Configuration editing</h1>
 
+<p>Configurations can be edited from a web interface.
+</p>
 <p>To start the web configuration editor, evaluate:
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example">
@@ -1246,12 +1584,35 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <img src="web-editor.png" alt="web-editor">
 
 <hr size="6">
-<a name="System-reference"></a>
+<a name="Custom-option-types"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Configuration-editing" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#System-reference" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configuration-editing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#System-reference" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Custom-option-types-1"></a>
+<h1 class="chapter">9. Custom option types</h1>
+
+<p>How to define custom option types
+</p>
+<hr size="6">
+<a name="System-reference"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Custom-option-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Custom-option-types" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
 <td valign="middle" align="left">[<a href="#References" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1264,7 +1625,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="System-reference-1"></a>
-<h1 class="chapter">5. System reference</h1>
+<h1 class="chapter">10. System reference</h1>
 
 <p><a name="Function-cl_002dconfig_003acfg_002a"></a>
 </p><dl>
@@ -1331,6 +1692,29 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 </p>
 <p>    The default configuration used is *configuration* (the current configuration)
 </p></li></ul>
+</dd></dl>
+<p><a name="Macro-cl_002dconfig_003adefine_002dconfigurable_002dfunction"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003adefine_002dconfigurable_002dfunction"></a><u>Macro:</u> <b>cl-config:define-configurable-function</b><i> name args &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003adefine_002dconfigurable_002dfunction-1"></a>
+<p>Defines a configurable function.
+   See macroexpansion to understand what it does
+</p>
+<p>   Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">   (cfg:define-configurable-function connect (&amp;configuration (conf 'postgres-database-configuration))
+       (cfg:with-configuration-values (database-name username password host)
+	   configuration
+       (connect database-name username password host)))
+</pre></td></tr></table>
+
+<p>   And then:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">   (connect :database-name &quot;My database&quot;
+            :host &quot;localhost&quot;
+            :username &quot;foo&quot;
+            :password &quot;bar&quot;)
+</pre></td></tr></table>
 </dd></dl>
 <p><a name="Macro-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype"></a>
 </p><dl>
@@ -1445,7 +1829,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 </p><dl>
 <dt><a name="index-cl_002dconfig_003amake_002dconfiguration"></a><u>Macro:</u> <b>cl-config:make-configuration</b><i> name parents &amp;rest args</i></dt>
 <dd><a name="index-cl_002dconfig_003amake_002dconfiguration-1"></a>
-<p>Create a configuration without registering globally
+<p>Create a configuration without registering it globally
 </p></dd></dl>
 <p><a name="Macro-cl_002dconfig_003awith_002dconfiguration_002dsection"></a>
 </p><dl>
@@ -1491,17 +1875,14 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <dd><a name="index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"></a>
 <p>The same as with-configuration-values but using the current configuration *configuration*
 </p>
-
-<dl compact="compact">
-<dt>    <em>Example:</em></dt>
-<dt>    <em>(with-configuration test-configuration</em></dt>
-<dd><p>       (with-configuration-section :database-configuration
-</p></dd>
-</dl>
-
-<p>	 (with-current-configuration-values (username)
+<p>   Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">   (with-configuration test-configuration
+       (with-configuration-section :database-configuration
+	 (with-current-configuration-values (username)
 	   username)))
-</p></dd></dl>
+</pre></td></tr></table>
+</dd></dl>
 <p><a name="Macro-cl_002dconfig_003awith_002dschema_002dvalidation"></a>
 </p><dl>
 <dt><a name="index-cl_002dconfig_003awith_002dschema_002dvalidation"></a><u>Macro:</u> <b>cl-config:with-schema-validation</b><i> &amp;optional &amp;body body</i></dt>
@@ -1554,7 +1935,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="References-1"></a>
-<h1 class="chapter">6. References</h1>
+<h1 class="chapter">11. References</h1>
 <a name="index-reference"></a>
 
 <p> [Common Lisp Directory]
@@ -1582,15 +1963,15 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Index-1"></a>
-<h1 class="chapter">7. Index</h1>
+<h1 class="chapter">12. Index</h1>
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Concept-Index">7.1 Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The concept index
+<tr><td align="left" valign="top"><a href="#Concept-Index">12.1 Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The concept index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Class-Index">7.2 Class Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            The classes index
+<tr><td align="left" valign="top"><a href="#Class-Index">12.2 Class Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            The classes index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Function-_002f-Macro-Index">7.3 Function / Macro Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> The functions and macros index
+<tr><td align="left" valign="top"><a href="#Function-_002f-Macro-Index">12.3 Function / Macro Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> The functions and macros index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Variable-Index">7.4 Variable Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The variables index
+<tr><td align="left" valign="top"><a href="#Variable-Index">12.4 Variable Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The variables index
 </td></tr>
 </table>
 
@@ -1613,17 +1994,17 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Concept-Index-1"></a>
-<h2 class="section">7.1 Concept Index</h2>
+<h2 class="section">12.1 Concept Index</h2>
 
-<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-B" class="summary-letter"><b>B</b></a>
- &nbsp; 
-<a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-E" class="summary-letter"><b>E</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-F" class="summary-letter"><b>F</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-O" class="summary-letter"><b>O</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-R" class="summary-letter"><b>R</b></a>
  &nbsp; 
@@ -1633,14 +2014,12 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <table border="0" class="index-cp">
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
-<tr><th><a name="Concept-Index-1_cp_letter-B">B</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-backends">backends</a></td><td valign="top"><a href="#Output-backends">2. Output backends</a></td></tr>
-<tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-configuration-schema">configuration schema</a></td><td valign="top"><a href="#Configuration-schemas">3. Configuration schemas</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-conventions">conventions</a></td><td valign="top"><a href="#Conventions">1.4 Conventions</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-E">E</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">3. Examples</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">7. Examples</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-F">F</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-feedback">feedback</a></td><td valign="top"><a href="#Feedback">1.3 Feedback</a></td></tr>
@@ -1649,22 +2028,27 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <tr><td></td><td valign="top"><a href="#index-installation">installation</a></td><td valign="top"><a href="#Installation">1.2 Installation</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-introduction">introduction</a></td><td valign="top"><a href="#Introduction">1. Introduction</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-Index-1_cp_letter-O">O</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-option-type">option type</a></td><td valign="top"><a href="#Built_002din-option-types">3.1 Built-in option types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-overview">overview</a></td><td valign="top"><a href="#Overview">2. Overview</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-R">R</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-reference">reference</a></td><td valign="top"><a href="#References">6. References</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-reference">reference</a></td><td valign="top"><a href="#References">11. References</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-S">S</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-serialization">serialization</a></td><td valign="top"><a href="#Configurations-serialization">6. Configurations serialization</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-summary">summary</a></td><td valign="top"><a href="#Summary">1.1 Summary</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
-<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-B" class="summary-letter"><b>B</b></a>
- &nbsp; 
-<a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-E" class="summary-letter"><b>E</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-F" class="summary-letter"><b>F</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Concept-Index-1_cp_letter-O" class="summary-letter"><b>O</b></a>
  &nbsp; 
 <a href="#Concept-Index-1_cp_letter-R" class="summary-letter"><b>R</b></a>
  &nbsp; 
@@ -1691,7 +2075,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Class-Index-1"></a>
-<h2 class="section">7.2 Class Index</h2>
+<h2 class="section">12.2 Class Index</h2>
 
 
 <hr size="6">
@@ -1713,7 +2097,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Function-_002f-Macro-Index-1"></a>
-<h2 class="section">7.3 Function / Macro Index</h2>
+<h2 class="section">12.3 Function / Macro Index</h2>
      
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-_002f-Macro-Index-1_fn_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
@@ -1722,42 +2106,44 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Function-_002f-Macro-Index-1_fn_letter-C">C</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg-1"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a-1"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration-1"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema-1"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype-1"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator-1"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor-1"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator-1"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration-1"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema-1"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration-1"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration-1"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection-1"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues-1"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation-1"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg-1"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a-1"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction-1"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration-1"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema-1"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype-1"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator-1"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor-1"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator-1"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration-1"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema-1"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration-1"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration-1"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection-1"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues-1"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation-1"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-_002f-Macro-Index-1_fn_letter-C" class="summary-letter"><b>C</b></a>
@@ -1783,7 +2169,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Variable-Index-1"></a>
-<h2 class="section">7.4 Variable Index</h2>
+<h2 class="section">12.4 Variable Index</h2>
      
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-Index-1_vr_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
@@ -1792,12 +2178,12 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Variable-Index-1_vr_letter-C">C</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a-1"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a-1"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a-1"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">5. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a-1"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a-1"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a-1"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">10. System reference</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-Index-1_vr_letter-C" class="summary-letter"><b>C</b></a>
@@ -1823,17 +2209,29 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
     <li><a name="toc-Feedback-1" href="#Feedback">1.3 Feedback</a></li>
     <li><a name="toc-Conventions-1" href="#Conventions">1.4 Conventions</a></li>
   </ul></li>
-  <li><a name="toc-Output-backends-1" href="#Output-backends">2. Output backends</a></li>
-  <li><a name="toc-Examples-1" href="#Examples">3. Examples</a></li>
-  <li><a name="toc-Configuration-editing-1" href="#Configuration-editing">4. Configuration editing</a></li>
-  <li><a name="toc-System-reference-1" href="#System-reference">5. System reference</a></li>
-  <li><a name="toc-References-1" href="#References">6. References</a></li>
-  <li><a name="toc-Index-1" href="#Index">7. Index</a>
+  <li><a name="toc-Overview-1" href="#Overview">2. Overview</a></li>
+  <li><a name="toc-Configuration-schemas-1" href="#Configuration-schemas">3. Configuration schemas</a>
   <ul class="toc">
-    <li><a name="toc-Concept-Index-1" href="#Concept-Index">7.1 Concept Index</a></li>
-    <li><a name="toc-Class-Index-1" href="#Class-Index">7.2 Class Index</a></li>
-    <li><a name="toc-Function-_002f-Macro-Index-1" href="#Function-_002f-Macro-Index">7.3 Function / Macro Index</a></li>
-    <li><a name="toc-Variable-Index-1" href="#Variable-Index">7.4 Variable Index</a></li>
+    <li><a name="toc-Built_002din-option-types-1" href="#Built_002din-option-types">3.1 Built-in option types</a>
+    <ul class="toc">
+      <li><a name="toc-Text" href="#Text">3.1.1 Text</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Configurations-1" href="#Configurations">4. Configurations</a></li>
+  <li><a name="toc-Working-with-configurations-1" href="#Working-with-configurations">5. Working with configurations</a></li>
+  <li><a name="toc-Configurations-serialization-1" href="#Configurations-serialization">6. Configurations serialization</a></li>
+  <li><a name="toc-Examples-1" href="#Examples">7. Examples</a></li>
+  <li><a name="toc-Configuration-editing-1" href="#Configuration-editing">8. Configuration editing</a></li>
+  <li><a name="toc-Custom-option-types-1" href="#Custom-option-types">9. Custom option types</a></li>
+  <li><a name="toc-System-reference-1" href="#System-reference">10. System reference</a></li>
+  <li><a name="toc-References-1" href="#References">11. References</a></li>
+  <li><a name="toc-Index-1" href="#Index">12. Index</a>
+  <ul class="toc">
+    <li><a name="toc-Concept-Index-1" href="#Concept-Index">12.1 Concept Index</a></li>
+    <li><a name="toc-Class-Index-1" href="#Class-Index">12.2 Class Index</a></li>
+    <li><a name="toc-Function-_002f-Macro-Index-1" href="#Function-_002f-Macro-Index">12.3 Function / Macro Index</a></li>
+    <li><a name="toc-Variable-Index-1" href="#Variable-Index">12.4 Variable Index</a></li>
   </ul>
 </li>
 </ul>
@@ -1848,7 +2246,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 </tr></table>
 <h1>About This Document</h1>
 <p>
-  This document was generated by <em>root</em> on <em>April 10, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Mariano</em> on <em>April 16, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
 </p>
 <p>
   The buttons in the navigation panels have the following meaning:
@@ -1950,7 +2348,7 @@ CL-USER&gt; (asdf-install:asdf-install 'cl-config)
 <hr size="1">
 <p>
  <font size="-1">
-  This document was generated by <em>root</em> on <em>April 10, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Mariano</em> on <em>April 16, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 
