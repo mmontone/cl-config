@@ -1,0 +1,24 @@
+@anchor{Macro cl-config:define-configurable-function}
+@deffn {Macro} cl-config:define-configurable-function name args &body body
+@findex cl-config:define-configurable-function
+Defines a configurable function.
+   See macroexpansion to understand what it does
+
+   Example:
+
+@lisp
+   (cfg:define-configurable-function connect (&configuration (conf 'postgres-database-configuration))
+       (cfg:with-configuration-values (database-name username password host)
+	   configuration
+       (connect database-name username password host)))
+@end lisp
+
+   And then:
+
+@lisp
+   (connect :database-name "My database"
+            :host "localhost"
+            :username "foo"
+            :password "bar")
+@end lisp
+@end deffn
