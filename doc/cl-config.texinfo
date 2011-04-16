@@ -88,6 +88,7 @@ This is cl-config Common Lisp library documentation
 * Working with configurations::         The API to work with configurations
 * Configurations serialization::        Configurations serialization
 * Examples::                            Some examples
+* Use cases::                           Typical use cases
 * Configuration editing::               Web tool for configuration editing
 * Custom option types::                 How to define custom option types
 * System reference::                    The system reference
@@ -286,7 +287,7 @@ Here is a simple example:
 
 That is a typical configuration schema needed to connect to a database.
 
-It has only one section @emph{Database configuration} where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type @emph{:text}.
+It has only one section @emph{database-configuration} where the user is supposed to specify the connection type, the database name, the username, password, and extra parameters needed to connect to a database. In this case, most of the options are of type @emph{:text}.
 
 @node Built-in option types
 @section Built-in option types
@@ -301,6 +302,80 @@ Example:
 @example
 (:username "Username" :text :documentation "The database engine username")
 (:password "Password" :text :documentation "The database engine password")
+@end example
+
+@subsection Integer
+
+The integer option type is specified with @emph{:integer}. It ensures that the the option value is of type integer.
+
+Example:
+
+@example
+(:port "Port" :integer :documentation "Web application port")
+@end example
+
+@subsection Boolean
+
+The boolean option type is specified with @emph{:boolean}. It ensures that the the option value is of type boolean (t or nil).
+
+Example:
+
+@example
+(:catch-errors-p "Catch errors?" :boolean :documentation "Whether to handle application errors")
+@end example
+
+@subsection Email
+
+The integer option type is specified with @emph{:email}. It ensures that the the option value is a valid email string.
+
+Example:
+
+@example
+(:port "Email" :email :documentation "User email")
+@end example
+
+@subsection Url
+
+The integer option type is specified with @emph{:url}. It ensures that the the option value is a valid url. The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
+
+Example:
+
+@example
+(:host "Host" :url :documentation "The web application host")
+@end example
+
+@subsection Pathname
+
+The pathaname option type is specified with @emph{:path}. It ensures that the the option value is a valid pathname and the file or directory exists. The option value is converted to a pathname if it is a string, or left unmodified if already a pathname.
+
+Example:
+
+@example
+(:stylesheet "Stylesheet" :pathname :documentation "The stylesheet file")
+@end example
+
+@subsection One of
+
+The @emph{one of} option type is specified with @emph{:one-of} followed by the list of options, all between parenthesis. It is ensured that the option value is one of the options listed. Options are specified as a list with the option-identifier as a keyword, and the option title with a string.
+
+Example:
+
+@example
+(:connection-type "Connection type"
+      (:one-of (:socket "Socket")
+	       (:tcp "TCP")))
+@end example
+
+@subsection List
+
+The @emph{list} option type is specified with @emph{:list} followed by the list of options, all between parenthesis. It is ensured that the option value is a subset of the options listed. Options are specified as a list with the option-identifier as a keyword, and the option title with a string.
+
+Example:
+
+@example
+(:debugging-levels "Debugging levels" (:list (:info "Info")
+					     (:warning "Warning")
+					     (:profile "Profile")))
 @end example
 
 @node Configurations
@@ -451,7 +526,6 @@ There are two output backends: an sexp-backend and a xml-backend
        (:active-layers (:debugging :database) :inherit t)
        (:debugging-levels (:warning :error)))
     (:documentation "Testing configuration scheme"))
-
 @end example
 
 The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
@@ -506,6 +580,15 @@ And then we attach the desired configuration to the application:
    ...
    (:configuration 'debug-configuration-scheme))
 @end example
+
+@node Use cases
+@chapter Use cases
+
+@section Application debugging
+@section Application logging
+@section Application testing
+@section Application deployment
+@section Branch switching
 
 @node Configuration editing
 @chapter Configuration editing

@@ -83,7 +83,8 @@
 		    :initform (error "Provide the direct-sections"))
    (documentation :initarg :documentation
 		  :accessor documentation*
-		  :initform "")))
+		  :initform ""))
+  (:documentation "The configuration class"))
 
 (defmethod print-object ((configuration configuration) stream)
   (print-unreadable-object (configuration stream :type t :identity t)
