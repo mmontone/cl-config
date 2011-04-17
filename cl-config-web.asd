@@ -42,8 +42,11 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "config")
 	     (:file "cl-config-web")
 	     (:file "form")
+	     (:file "common")
+	     (:file "option-editors")
 	     (:file "configuration-editor")
-	     (:file "configuration-schema-editor"))
+	     (:file "configuration-schema-editor")
+	     (:file "installer"))
 	    :serial t))
   :depends-on (:cl-config :hunchentoot :cl-who
 			  :parenscript :ironclad))

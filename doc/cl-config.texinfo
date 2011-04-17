@@ -87,6 +87,7 @@ This is cl-config Common Lisp library documentation
 * Configurations::                      What configurations are and how to define them
 * Working with configurations::         The API to work with configurations
 * Configurations serialization::        Configurations serialization
+* Installer::                           How to create an application installer
 * Examples::                            Some examples
 * Use cases::                           Typical use cases
 * Configuration editing::               Web tool for configuration editing
@@ -393,6 +394,12 @@ The API for working with configurations
 @cindex serialization
 
 There are two output backends: an sexp-backend and a xml-backend
+
+@node Installer
+@chapter Installer
+@cindex installer
+
+Explanations on how to build an application installer
 
 @node Examples
 @chapter Examples

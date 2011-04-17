@@ -894,19 +894,21 @@ ul.toc {list-style: none}
 <tr><td align="left" valign="top"><a href="#Working-with-configurations">5. Working with configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The API to work with configurations
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Configurations-serialization">6. Configurations serialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"></td></tr>
-<tr><td align="left" valign="top"><a href="#Examples">7. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Some examples
+<tr><td align="left" valign="top"><a href="#Installer">7. Installer</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           How to create an application installer
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Use-cases">8. Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
+<tr><td align="left" valign="top"><a href="#Examples">8. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Some examples
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Configuration-editing">9. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               Web tool for configuration editing
+<tr><td align="left" valign="top"><a href="#Use-cases">9. Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Custom-option-types">10. Custom option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 How to define custom option types
+<tr><td align="left" valign="top"><a href="#Configuration-editing">10. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               Web tool for configuration editing
 </td></tr>
-<tr><td align="left" valign="top"><a href="#System-reference">11. System reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    The system reference
+<tr><td align="left" valign="top"><a href="#Custom-option-types">11. Custom option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 How to define custom option types
 </td></tr>
-<tr><td align="left" valign="top"><a href="#References">12. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          Related work
+<tr><td align="left" valign="top"><a href="#System-reference">12. System reference</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    The system reference
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Index">13. Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                               Complete index.
+<tr><td align="left" valign="top"><a href="#References">13. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                          Related work
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Index">14. Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                               Complete index.
 </td></tr>
 </table>
 
@@ -1520,11 +1522,11 @@ Define your own option configurations types and provide validation for them.
 <a name="Configurations-serialization"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Working-with-configurations" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Working-with-configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1541,12 +1543,36 @@ Define your own option configurations types and provide validation for them.
 <p>There are two output backends: an sexp-backend and a xml-backend
 </p>
 <hr size="6">
-<a name="Examples"></a>
+<a name="Installer"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Configurations-serialization" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Use-cases" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configurations-serialization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installer-1"></a>
+<h1 class="chapter">7. Installer</h1>
+<a name="index-installer"></a>
+
+<p>Explanations on how to build an application installer
+</p>
+<hr size="6">
+<a name="Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installer" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Use-cases" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1559,7 +1585,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Examples-1"></a>
-<h1 class="chapter">7. Examples</h1>
+<h1 class="chapter">8. Examples</h1>
 <a name="index-examples"></a>
 
 <table><tr><td>&nbsp;</td><td><pre class="example">
@@ -1761,7 +1787,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Use-cases-1"></a>
-<h1 class="chapter">8. Use cases</h1>
+<h1 class="chapter">9. Use cases</h1>
 
 <hr size="6">
 <a name="Application-debugging"></a>
@@ -1781,7 +1807,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<h2 class="section">8.1 Application debugging</h2>
+<h2 class="section">9.1 Application debugging</h2>
 <hr size="6">
 <a name="Application-logging"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -1800,7 +1826,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<h2 class="section">8.2 Application logging</h2>
+<h2 class="section">9.2 Application logging</h2>
 <hr size="6">
 <a name="Application-testing"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -1819,7 +1845,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<h2 class="section">8.3 Application testing</h2>
+<h2 class="section">9.3 Application testing</h2>
 <hr size="6">
 <a name="Application-deployment"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -1838,7 +1864,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<h2 class="section">8.4 Application deployment</h2>
+<h2 class="section">9.4 Application deployment</h2>
 <hr size="6">
 <a name="Branch-switching"></a>
 <table cellpadding="1" cellspacing="1" border="0">
@@ -1857,7 +1883,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<h2 class="section">8.5 Branch switching</h2>
+<h2 class="section">9.5 Branch switching</h2>
 
 <hr size="6">
 <a name="Configuration-editing"></a>
@@ -1878,7 +1904,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Configuration-editing-1"></a>
-<h1 class="chapter">9. Configuration editing</h1>
+<h1 class="chapter">10. Configuration editing</h1>
 
 <p>Configurations can be edited from a web interface.
 </p>
@@ -1913,7 +1939,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Custom-option-types-1"></a>
-<h1 class="chapter">10. Custom option types</h1>
+<h1 class="chapter">11. Custom option types</h1>
 
 <p>How to define custom option types
 </p>
@@ -1936,7 +1962,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="System-reference-1"></a>
-<h1 class="chapter">11. System reference</h1>
+<h1 class="chapter">12. System reference</h1>
 
 <p><a name="Function-cl_002dconfig_003acfg_002a"></a>
 </p><dl>
@@ -2246,7 +2272,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="References-1"></a>
-<h1 class="chapter">12. References</h1>
+<h1 class="chapter">13. References</h1>
 <a name="index-reference"></a>
 
 <p> [Common Lisp Directory]
@@ -2274,15 +2300,15 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Index-1"></a>
-<h1 class="chapter">13. Index</h1>
+<h1 class="chapter">14. Index</h1>
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#Concept-Index">13.1 Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The concept index
+<tr><td align="left" valign="top"><a href="#Concept-Index">14.1 Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The concept index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Class-Index">13.2 Class Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            The classes index
+<tr><td align="left" valign="top"><a href="#Class-Index">14.2 Class Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            The classes index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Function-_002f-Macro-Index">13.3 Function / Macro Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> The functions and macros index
+<tr><td align="left" valign="top"><a href="#Function-_002f-Macro-Index">14.3 Function / Macro Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> The functions and macros index
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Variable-Index">13.4 Variable Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The variables index
+<tr><td align="left" valign="top"><a href="#Variable-Index">14.4 Variable Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         The variables index
 </td></tr>
 </table>
 
@@ -2305,7 +2331,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Concept-Index-1"></a>
-<h2 class="section">13.1 Concept Index</h2>
+<h2 class="section">14.1 Concept Index</h2>
 
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-Index-1_cp_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
@@ -2330,13 +2356,14 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><td valign="top"><a href="#index-conventions">conventions</a></td><td valign="top"><a href="#Conventions">1.4 Conventions</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-E">E</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">7. Examples</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-examples">examples</a></td><td valign="top"><a href="#Examples">8. Examples</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-F">F</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-feedback">feedback</a></td><td valign="top"><a href="#Feedback">1.3 Feedback</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-I">I</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-installation">installation</a></td><td valign="top"><a href="#Installation">1.2 Installation</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-installer">installer</a></td><td valign="top"><a href="#Installer">7. Installer</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-introduction">introduction</a></td><td valign="top"><a href="#Introduction">1. Introduction</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-O">O</a></th><td></td><td></td></tr>
@@ -2344,7 +2371,7 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><td valign="top"><a href="#index-overview">overview</a></td><td valign="top"><a href="#Overview">2. Overview</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-R">R</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-reference">reference</a></td><td valign="top"><a href="#References">12. References</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-reference">reference</a></td><td valign="top"><a href="#References">13. References</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-S">S</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-serialization">serialization</a></td><td valign="top"><a href="#Configurations-serialization">6. Configurations serialization</a></td></tr>
@@ -2386,7 +2413,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Class-Index-1"></a>
-<h2 class="section">13.2 Class Index</h2>
+<h2 class="section">14.2 Class Index</h2>
 
 
 <hr size="6">
@@ -2408,7 +2435,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Function-_002f-Macro-Index-1"></a>
-<h2 class="section">13.3 Function / Macro Index</h2>
+<h2 class="section">14.3 Function / Macro Index</h2>
      
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-_002f-Macro-Index-1_fn_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
@@ -2417,44 +2444,44 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Function-_002f-Macro-Index-1_fn_letter-C">C</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg-1"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a-1"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction-1"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration-1"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema-1"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype-1"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator-1"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor-1"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator-1"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration-1"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema-1"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration-1"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration-1"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection-1"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues-1"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation-1"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astart_002dcl_002dconfig_002dweb-1"><code>cl-config.web:start-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_002eweb_003astop_002dcl_002dconfig_002dweb-1"><code>cl-config.web:stop-cl-config-web</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg-1"><code>cl-config:cfg</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003acfg_002a-1"><code>cl-config:cfg*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfigurable_002dfunction-1"><code>cl-config:define-configurable-function</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration-1"><code>cl-config:define-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema-1"><code>cl-config:define-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype-1"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator-1"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor-1"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator-1"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration-1"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema-1"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration-1"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration-1"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dsection-1"><code>cl-config:with-configuration-section</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues-1"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation-1"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-_002f-Macro-Index-1_fn_letter-C" class="summary-letter"><b>C</b></a>
@@ -2480,7 +2507,7 @@ Define your own option configurations types and provide validation for them.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Variable-Index-1"></a>
-<h2 class="section">13.4 Variable Index</h2>
+<h2 class="section">14.4 Variable Index</h2>
      
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-Index-1_vr_letter-C" class="summary-letter"><b>C</b></a>
  &nbsp; 
@@ -2489,12 +2516,12 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Variable-Index-1_vr_letter-C">C</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a-1"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a-1"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a-1"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">11. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002a-1"><code>cl-config:*configuration*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfiguration_002dschemas_002a-1"><code>cl-config:*configuration-schemas*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003a_002aconfigurations_002a-1"><code>cl-config:*configurations*</code></a></td><td valign="top"><a href="#System-reference">12. System reference</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 </table>
 <table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-Index-1_vr_letter-C" class="summary-letter"><b>C</b></a>
@@ -2539,25 +2566,26 @@ Define your own option configurations types and provide validation for them.
   <li><a name="toc-Configurations-1" href="#Configurations">4. Configurations</a></li>
   <li><a name="toc-Working-with-configurations-1" href="#Working-with-configurations">5. Working with configurations</a></li>
   <li><a name="toc-Configurations-serialization-1" href="#Configurations-serialization">6. Configurations serialization</a></li>
-  <li><a name="toc-Examples-1" href="#Examples">7. Examples</a></li>
-  <li><a name="toc-Use-cases-1" href="#Use-cases">8. Use cases</a>
+  <li><a name="toc-Installer-1" href="#Installer">7. Installer</a></li>
+  <li><a name="toc-Examples-1" href="#Examples">8. Examples</a></li>
+  <li><a name="toc-Use-cases-1" href="#Use-cases">9. Use cases</a>
   <ul class="toc">
-    <li><a name="toc-Application-debugging" href="#Application-debugging">8.1 Application debugging</a></li>
-    <li><a name="toc-Application-logging" href="#Application-logging">8.2 Application logging</a></li>
-    <li><a name="toc-Application-testing" href="#Application-testing">8.3 Application testing</a></li>
-    <li><a name="toc-Application-deployment" href="#Application-deployment">8.4 Application deployment</a></li>
-    <li><a name="toc-Branch-switching" href="#Branch-switching">8.5 Branch switching</a></li>
+    <li><a name="toc-Application-debugging" href="#Application-debugging">9.1 Application debugging</a></li>
+    <li><a name="toc-Application-logging" href="#Application-logging">9.2 Application logging</a></li>
+    <li><a name="toc-Application-testing" href="#Application-testing">9.3 Application testing</a></li>
+    <li><a name="toc-Application-deployment" href="#Application-deployment">9.4 Application deployment</a></li>
+    <li><a name="toc-Branch-switching" href="#Branch-switching">9.5 Branch switching</a></li>
   </ul></li>
-  <li><a name="toc-Configuration-editing-1" href="#Configuration-editing">9. Configuration editing</a></li>
-  <li><a name="toc-Custom-option-types-1" href="#Custom-option-types">10. Custom option types</a></li>
-  <li><a name="toc-System-reference-1" href="#System-reference">11. System reference</a></li>
-  <li><a name="toc-References-1" href="#References">12. References</a></li>
-  <li><a name="toc-Index-1" href="#Index">13. Index</a>
+  <li><a name="toc-Configuration-editing-1" href="#Configuration-editing">10. Configuration editing</a></li>
+  <li><a name="toc-Custom-option-types-1" href="#Custom-option-types">11. Custom option types</a></li>
+  <li><a name="toc-System-reference-1" href="#System-reference">12. System reference</a></li>
+  <li><a name="toc-References-1" href="#References">13. References</a></li>
+  <li><a name="toc-Index-1" href="#Index">14. Index</a>
   <ul class="toc">
-    <li><a name="toc-Concept-Index-1" href="#Concept-Index">13.1 Concept Index</a></li>
-    <li><a name="toc-Class-Index-1" href="#Class-Index">13.2 Class Index</a></li>
-    <li><a name="toc-Function-_002f-Macro-Index-1" href="#Function-_002f-Macro-Index">13.3 Function / Macro Index</a></li>
-    <li><a name="toc-Variable-Index-1" href="#Variable-Index">13.4 Variable Index</a></li>
+    <li><a name="toc-Concept-Index-1" href="#Concept-Index">14.1 Concept Index</a></li>
+    <li><a name="toc-Class-Index-1" href="#Class-Index">14.2 Class Index</a></li>
+    <li><a name="toc-Function-_002f-Macro-Index-1" href="#Function-_002f-Macro-Index">14.3 Function / Macro Index</a></li>
+    <li><a name="toc-Variable-Index-1" href="#Variable-Index">14.4 Variable Index</a></li>
   </ul>
 </li>
 </ul>

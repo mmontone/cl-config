@@ -34,4 +34,5 @@
 	   #:define-configuration-schema-option-type
 	   #:define-option-validator
 	   #:define-option-processor
-	   ))
+	   #:define-installer
+	   #:repl-installer))
