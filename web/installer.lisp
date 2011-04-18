@@ -23,8 +23,7 @@
 							       (:sexp (make-instance cfg::sexp-writer)))))
 				(funcall when-done))))))
 		 (with-html-output (stream)
-		   (with-form (action
-			       :on-submit #'save-configuration)
+		   (with-form (action :on-submit #'save-configuration)
 		     (htm
 		      (:div :class "configuration-installer"
 			    (when errors

@@ -25,9 +25,9 @@
 	    :accessor backend)
    (output-file :initform (error "Provide the output file")
 		:accessor output-file)
-   (pre-install-code :initform (lambda ())
+   (pre-install-code :initform #'identity
 		     :accessor pre-install-code)
-   (post-install-code :initform (lambda ())
+   (post-install-code :initform #'identity
 		      :accessor post-install-code)))
 
 (defun repl-installer (installer)
