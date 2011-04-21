@@ -8,3 +8,4 @@ HTML: texi2html --css-include=cl-config.css cl-config.texinfo
 PDF:  texi2pdf cl-config.texinfo
 INFO: makeinfo cl-config.texinfo
       sudo ginstall-info --info-dir=/usr/share/info cl-config.info
+TXT:  makeinfo --plaintext cl-config.texinfo -o cl-config.txt

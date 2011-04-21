@@ -1,89 +1,11 @@
-This is cl-config.info, produced by makeinfo version 4.13 from cl-config.texinfo.
-
 START-INFO-DIR-ENTRY
 * cl-config: (cl-config.info). A configuration library for Common Lisp.
 END-INFO-DIR-ENTRY
-
-   This manual is for cl-config version 0.1.
-
-   Copyright (C) 2011 Mariano Montone
-
-     Permission is granted to copy, distribute and/or modify this
-     document under the terms of the GNU Free Documentation License,
-     Version 1.3 or any later version published by the Free Software
-     Foundation; with no Invariant Sections, with the Front-Cover texts
-     being "A GNU Manual," and with the Back-Cover Texts as in (a)
-     below.  A copy of the license is included in the section entitled
-     "GNU Free Documentation License."
-
-     (a) The FSF's Back-Cover Text is: "You have the freedom to copy and
-     modify this GNU manual.  Buying copies from the FSF supports it in
-     developing GNU and promoting software freedom."
-
-     This document is part of a collection distributed under the GNU
-     Free Documentation License.  If you want to distribute this
-     document separately from the collection, you can do so by adding a
-     copy of the license to the document, as described in section 6 of
-     the license.
-
-
-File: cl-config.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
 cl-config - A configuration library for Common Lisp
 ***************************************************
 
 This is cl-config Common Lisp library documentation
-
-* Menu:
-
-* Introduction::                        What is cl-config?
-* Overview::                            A cl-config overview
-* Configuration schemas::               What configuration schemas are and how to define them
-* Configurations::                      What configurations are and how to define them
-* Installer::                           How to create an application installer
-* Examples::                            Some examples
-* Configuration editing::               Web tool for configuration editing
-* Custom option types::                 How to define custom option types
-* System reference::                    The system reference
-* References::                          Related work
-* Index::                               Complete index.
-
- --- The Detailed Node Listing ---
-
-Introduction
-
-* Summary::                     A brief summary of what Gestalt is
-* Installation::                How to install Gestalt
-* Feedback::                    Bug reports, ideas, patches etc.
-* Conventions::                 Type-setting conventions in the manual
-
-Overview
-
-Configuration schemas
-
-Configurations
-
-* Working with configurations::         The API to work with configurations
-* Configurations serialization::        Configurations serialization
-
-Installer
-
-Examples
-
-* Use cases::                           Typical use cases
-
-Configuration editing
-
-Custom option types
-
-System References
-
-References
-
-Index
-
-
-File: cl-config.info,  Node: Introduction,  Next: Overview,  Prev: Top,  Up: Top
 
 1 Introduction
 **************
@@ -93,23 +15,10 @@ cl-config is a configuration library for Common Lisp
    You can get a copy and this manual at
 `http://common-lisp.net/project/cl-config'
 
-* Menu:
-
-* Summary::                     A brief summary of what cl-config is
-* Installation::                How to install cl-config
-* Feedback::                    Bug reports, ideas, patches etc.
-* Conventions::                 Type-setting conventions in the manual
-
-
-File: cl-config.info,  Node: Summary,  Next: Installation,  Up: Introduction
-
 1.1 Summary
 ===========
 
 cl-config is a configuration library for Common Lisp
-
-
-File: cl-config.info,  Node: Installation,  Next: Feedback,  Prev: Summary,  Up: Introduction
 
 1.2 Installation
 ================
@@ -120,16 +29,10 @@ following:
      CL-USER> (require :asdf-install)
      CL-USER> (asdf-install:asdf-install 'cl-config)
 
-
-File: cl-config.info,  Node: Feedback,  Next: Conventions,  Prev: Installation,  Up: Introduction
-
 1.3 Feedback
 ============
 
 Mail marianomontone at gmail dot com with feedback
-
-
-File: cl-config.info,  Node: Conventions,  Prev: Feedback,  Up: Introduction
 
 1.4 Conventions
 ===============
@@ -162,9 +65,6 @@ Hear are some coding conventions we'd like to follow:
      `http://web.archive.org/web/20050305123711/www.lisp.org/table/style.htm'
 
 
-
-File: cl-config.info,  Node: Overview,  Next: Configuration schemas,  Prev: Introduction,  Up: Top
-
 2 Overview
 **********
 
@@ -189,17 +89,10 @@ CL-CONFIG is a configuration library for Common Lisp.
    * Define your own option configurations types and provide validation
      for them.
 
-
-File: cl-config.info,  Node: Configuration schemas,  Next: Configurations,  Prev: Overview,  Up: Top
-
 3 Configuration schemas
 ***********************
 
-* Menu:
-
-* Built-in option types::       The built-in option types
-
-   Configuration schemas define the structure of a configuration.
+Configuration schemas define the structure of a configuration.
 
    The syntax to define configuration schemas is the following:
 
@@ -297,25 +190,8 @@ supposed to specify the connection type, the database name, the
 username, password, and extra parameters needed to connect to a
 database. In this case, most of the options are of type _:text_.
 
-
-File: cl-config.info,  Node: Built-in option types,  Up: Configuration schemas
-
 3.1 Built-in option types
 =========================
-
-* Menu:
-
-* Text::                           The text option type
-* Integer::                        The integer option type
-* Boolean::                        The boolean option type
-* Email::                          The email option type
-* Url::                            The URL option type
-* Pathname::                       The pathname option type
-* One of::                         The ``one of'' option type
-* List::                           The list option type
-
-
-File: cl-config.info,  Node: Text,  Next: Integer,  Up: Built-in option types
 
 3.1.1 Text
 ----------
@@ -328,9 +204,6 @@ option value is of type string.
      (:username "Username" :text :documentation "The database engine username")
      (:password "Password" :text :documentation "The database engine password")
 
-
-File: cl-config.info,  Node: Integer,  Next: Boolean,  Prev: Text,  Up: Built-in option types
-
 3.1.2 Integer
 -------------
 
@@ -340,9 +213,6 @@ the the option value is of type integer.
    Example:
 
      (:port "Port" :integer :documentation "Web application port")
-
-
-File: cl-config.info,  Node: Boolean,  Next: Email,  Prev: Integer,  Up: Built-in option types
 
 3.1.3 Boolean
 -------------
@@ -354,9 +224,6 @@ the the option value is of type boolean (t or nil).
 
      (:catch-errors-p "Catch errors?" :boolean :documentation "Whether to handle application errors")
 
-
-File: cl-config.info,  Node: Email,  Next: Url,  Prev: Boolean,  Up: Built-in option types
-
 3.1.4 Email
 -----------
 
@@ -366,9 +233,6 @@ the option value is a valid email string.
    Example:
 
      (:port "Email" :email :documentation "User email")
-
-
-File: cl-config.info,  Node: Url,  Next: Pathname,  Prev: Email,  Up: Built-in option types
 
 3.1.5 Url
 ---------
@@ -381,9 +245,6 @@ option value is a valid url. The option value is converted to a url
 
      (:host "Host" :url :documentation "The web application host")
 
-
-File: cl-config.info,  Node: Pathname,  Next: One of,  Prev: Url,  Up: Built-in option types
-
 3.1.6 Pathname
 --------------
 
@@ -395,9 +256,6 @@ or left unmodified if already a pathname.
    Example:
 
      (:stylesheet "Stylesheet" :pathname :documentation "The stylesheet file")
-
-
-File: cl-config.info,  Node: One of,  Next: List,  Prev: Pathname,  Up: Built-in option types
 
 3.1.7 One of
 ------------
@@ -414,9 +272,6 @@ string.
            (:one-of (:socket "Socket")
      	       (:tcp "TCP")))
 
-
-File: cl-config.info,  Node: List,  Prev: One of,  Up: Built-in option types
-
 3.1.8 List
 ----------
 
@@ -432,52 +287,28 @@ a string.
      					     (:warning "Warning")
      					     (:profile "Profile")))
 
-
-File: cl-config.info,  Node: Configurations,  Next: Installer,  Prev: Configuration schemas,  Up: Top
-
 4 Configurations
 ****************
 
 How to define configurations
-
-* Menu:
-
-* Working with configurations::         The API to work with configurations
-* Configurations serialization::        Configurations serialization
-
-
-File: cl-config.info,  Node: Working with configurations,  Next: Configurations serialization,  Up: Configurations
 
 4.1 Working with configurations
 ===============================
 
 The API for working with configurations
 
-
-File: cl-config.info,  Node: Configurations serialization,  Prev: Working with configurations,  Up: Configurations
-
 4.2 Configurations serialization
 ================================
 
 There are two output backends: an sexp-backend and a xml-backend
-
-
-File: cl-config.info,  Node: Installer,  Next: Examples,  Prev: Configurations,  Up: Top
 
 5 Installer
 ***********
 
 Explanations on how to build an application installer
 
-
-File: cl-config.info,  Node: Examples,  Next: Configuration editing,  Prev: Installer,  Up: Top
-
 6 Examples
 **********
-
-* Menu:
-
-* Use cases::                           Typical use cases
 
 
      (define-configuration-schema database-configuration ()
@@ -670,45 +501,20 @@ configurations with files, for example:
         ...
         (:configuration 'debug-configuration-scheme))
 
-
-File: cl-config.info,  Node: Use cases,  Up: Examples
-
 6.1 Use cases
 =============
-
-* Menu:
-
-* Debugging::          Example of application debugging configuration
-* Logging::            Example of application logging configuration
-* Testing::            Example of application testing configuration
-* Deployment::         Example of application deployment configuration
-
-
-File: cl-config.info,  Node: Debugging,  Next: Logging,  Up: Use cases
 
 6.1.1 Debugging
 ---------------
 
-
-File: cl-config.info,  Node: Logging,  Next: Testing,  Prev: Debugging,  Up: Use cases
-
 6.1.2 Logging
 -------------
-
-
-File: cl-config.info,  Node: Testing,  Next: Deployment,  Prev: Logging,  Up: Use cases
 
 6.1.3 Testing
 -------------
 
-
-File: cl-config.info,  Node: Deployment,  Prev: Testing,  Up: Use cases
-
 6.1.4 Deployment
 ----------------
-
-
-File: cl-config.info,  Node: Configuration editing,  Next: Custom option types,  Prev: Examples,  Up: Top
 
 7 Configuration editing
 ***********************
@@ -723,18 +529,10 @@ Configurations can be edited from a web interface.
 
    and then point your browser to http://localhost:4242
 
- [image src="web-editor.png" ]
-
-
-File: cl-config.info,  Node: Custom option types,  Next: System reference,  Prev: Configuration editing,  Up: Top
-
-8 Custom option types
+ 8 Custom option types
 *********************
 
 How to define custom option types
-
-
-File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom option types,  Up: Top
 
 9 System reference
 ******************
@@ -949,9 +747,6 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
      The defined configurations. Use find-configuration to access
      configurations by name
 
-
-File: cl-config.info,  Node: References,  Next: Index,  Prev: System reference,  Up: Top
-
 10 References
 *************
 
@@ -960,166 +755,64 @@ File: cl-config.info,  Node: References,  Next: Index,  Prev: System reference, 
    [Common Lisp Directory]: http://common-lisp.net  [Common Lisp Wiki]:
 http://www.cliki.net
 
-
-File: cl-config.info,  Node: Index,  Prev: References,  Up: Top
-
 11 Index
 ********
-
-* Menu:
-
-* Concept Index::          The concept index
-* Class Index::            The classes index
-* Function / Macro Index:: The functions and macros index
-* Variable Index::         The variables index
-
-
-File: cl-config.info,  Node: Concept Index,  Next: Class Index,  Up: Index
 
 11.1 Concept Index
 ==================
 
- [index ]
-* Menu:
-
-* boolean:                               Boolean.               (line 6)
-* configuration schema:                  Configuration schemas. (line 6)
-* conventions:                           Conventions.           (line 6)
-* debugging:                             Debugging.             (line 6)
-* deployment:                            Deployment.            (line 6)
-* email:                                 Email.                 (line 6)
-* examples:                              Examples.              (line 6)
-* feedback:                              Feedback.              (line 6)
-* installation:                          Installation.          (line 6)
-* installer:                             Installer.             (line 6)
-* integer:                               Integer.               (line 6)
-* introduction:                          Introduction.          (line 6)
-* list:                                  List.                  (line 6)
-* logging:                               Logging.               (line 6)
-* one of:                                One of.                (line 6)
-* option type:                           Built-in option types. (line 6)
-* overview:                              Overview.              (line 6)
-* pathaname:                             Pathname.              (line 6)
-* reference:                             References.            (line 6)
-* serialization:                         Configurations serialization.
-                                                                (line 6)
-* summary:                               Summary.               (line 6)
-* testing:                               Testing.               (line 6)
-* text:                                  Text.                  (line 6)
-* url:                                   Url.                   (line 6)
-
-
-File: cl-config.info,  Node: Class Index,  Next: Function / Macro Index,  Prev: Concept Index,  Up: Index
-
+boolean:                                       Véase 3.1.3.  (línea 220)
+configuration schema:                          Véase 3.      (línea  95)
+conventions:                                   Véase 1.4.    (línea  40)
+debugging:                                     Véase 6.1.1.  (línea 510)
+deployment:                                    Véase 6.1.4.  (línea 519)
+email:                                         Véase 3.1.4.  (línea 230)
+examples:                                      Véase 6.      (línea 313)
+feedback:                                      Véase 1.3.    (línea  35)
+installation:                                  Véase 1.2.    (línea  26)
+installer:                                     Véase 5.      (línea 308)
+integer:                                       Véase 3.1.2.  (línea 210)
+introduction:                                  Véase 1.      (línea  13)
+list:                                          Véase 3.1.8.  (línea 278)
+logging:                                       Véase 6.1.2.  (línea 513)
+one of:                                        Véase 3.1.7.  (línea 263)
+option type:                                   Véase 3.1.    (línea 196)
+overview:                                      Véase 2.      (línea  71)
+pathaname:                                     Véase 3.1.6.  (línea 251)
+reference:                                     Véase 10.     (línea 753)
+serialization:                                 Véase 4.2.    (línea 303)
+summary:                                       Véase 1.1.    (línea  21)
+testing:                                       Véase 6.1.3.  (línea 516)
+text:                                          Véase 3.1.1.  (línea 199)
+url:                                           Véase 3.1.5.  (línea 240)
 11.2 Class Index
 ================
-
- [index ]
-* Menu:
-
-File: cl-config.info,  Node: Function / Macro Index,  Next: Variable Index,  Prev: Class Index,  Up: Index
 
 11.3 Function / Macro Index
 ===========================
 
- [index ]
-* Menu:
-
-* cl-config.web:start-cl-config-web:     System reference.    (line  27)
-* cl-config.web:stop-cl-config-web:      System reference.    (line  35)
-* cl-config:cfg:                         System reference.    (line  38)
-* cl-config:cfg*:                        System reference.    (line   7)
-* cl-config:define-configurable-function: System reference.   (line  51)
-* cl-config:define-configuration:        System reference.    (line 125)
-* cl-config:define-configuration-schema: System reference.    (line  77)
-* cl-config:define-configuration-schema-option-type: System reference.
-                                                              (line  70)
-* cl-config:define-configuration-validator: System reference. (line 110)
-* cl-config:define-option-processor:     System reference.    (line 141)
-* cl-config:define-option-validator:     System reference.    (line 145)
-* cl-config:find-configuration:          System reference.    (line  24)
-* cl-config:find-configuration-schema:   System reference.    (line  21)
-* cl-config:make-configuration:          System reference.    (line 155)
-* cl-config:with-configuration:          System reference.    (line 178)
-* cl-config:with-configuration-section:  System reference.    (line 158)
-* cl-config:with-configuration-values:   System reference.    (line 168)
-* cl-config:with-current-configuration-values: System reference.
-                                                              (line 184)
-* cl-config:with-schema-validation:      System reference.    (line 195)
-
-
-File: cl-config.info,  Node: Variable Index,  Prev: Function / Macro Index,  Up: Index
-
+cl-config.web:start-cl-config-web:             Véase 9.      (línea 561)
+cl-config.web:stop-cl-config-web:              Véase 9.      (línea 569)
+cl-config:cfg:                                 Véase 9.      (línea 572)
+cl-config:cfg*:                                Véase 9.      (línea 541)
+cl-config:define-configurable-function:        Véase 9.      (línea 585)
+cl-config:define-configuration:                Véase 9.      (línea 659)
+cl-config:define-configuration-schema:         Véase 9.      (línea 611)
+cl-config:define-configuration-schema-option-type:Véase 9.   (línea 604)
+cl-config:define-configuration-validator:      Véase 9.      (línea 644)
+cl-config:define-option-processor:             Véase 9.      (línea 675)
+cl-config:define-option-validator:             Véase 9.      (línea 679)
+cl-config:find-configuration:                  Véase 9.      (línea 558)
+cl-config:find-configuration-schema:           Véase 9.      (línea 555)
+cl-config:make-configuration:                  Véase 9.      (línea 689)
+cl-config:with-configuration:                  Véase 9.      (línea 712)
+cl-config:with-configuration-section:          Véase 9.      (línea 692)
+cl-config:with-configuration-values:           Véase 9.      (línea 702)
+cl-config:with-current-configuration-values:   Véase 9.      (línea 718)
+cl-config:with-schema-validation:              Véase 9.      (línea 729)
 11.4 Variable Index
 ===================
 
- [index ]
-* Menu:
-
-* cl-config:*configuration*:             System reference.    (line 210)
-* cl-config:*configuration-schemas*:     System reference.    (line 206)
-* cl-config:*configurations*:            System reference.    (line 213)
-
-
-
-Tag Table:
-Node: Top1230
-Node: Introduction2886
-Node: Summary3412
-Node: Installation3571
-Node: Feedback3870
-Node: Conventions4050
-Node: Overview5525
-Node: Configuration schemas6455
-Node: Built-in option types10580
-Node: Text11189
-Node: Integer11572
-Node: Boolean11891
-Node: Email12257
-Node: Url12559
-Node: Pathname12960
-Node: One of13430
-Node: List13963
-Node: Configurations14507
-Node: Working with configurations14832
-Node: Configurations serialization15056
-Node: Installer15307
-Node: Examples15479
-Node: Use cases24340
-Node: Debugging24713
-Node: Logging24820
-Node: Testing24939
-Node: Deployment25059
-Node: Configuration editing25169
-Node: Custom option types25590
-Node: System reference25787
-Ref: Function cl-config:cfg*25932
-Ref: Function cl-config:find-configuration-schema26442
-Ref: Function cl-config:find-configuration26542
-Ref: Function cl-config.web:start-cl-config-web26628
-Ref: Function cl-config.web:stop-cl-config-web26908
-Ref: Macro cl-config:cfg26996
-Ref: Macro cl-config:define-configurable-function27459
-Ref: Macro cl-config:define-configuration-schema-option-type28118
-Ref: Macro cl-config:define-configuration-schema28463
-Ref: Macro cl-config:define-configuration-validator29875
-Ref: Macro cl-config:define-configuration30587
-Ref: Macro cl-config:define-option-processor31363
-Ref: Macro cl-config:define-option-validator31473
-Ref: Macro cl-config:make-configuration31870
-Ref: Macro cl-config:with-configuration-section31995
-Ref: Macro cl-config:with-configuration-values32304
-Ref: Macro cl-config:with-configuration32676
-Ref: Macro cl-config:with-current-configuration-values32933
-Ref: Macro cl-config:with-schema-validation33328
-Ref: Variable cl-config:*configuration-schemas*33784
-Ref: Variable cl-config:*configuration*33957
-Ref: Variable cl-config:*configurations*34071
-Node: References34207
-Node: Index34467
-Node: Concept Index34758
-Node: Class Index36720
-Node: Function / Macro Index36884
-Node: Variable Index38596
-
-End Tag Table
+cl-config:*configuration*:                     Véase 9.      (línea 744)
+cl-config:*configuration-schemas*:             Véase 9.      (línea 740)
+cl-config:*configurations*:                    Véase 9.      (línea 747)

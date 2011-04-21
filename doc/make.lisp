@@ -60,6 +60,7 @@
 					       (format nil "~A" +texinfo-file+))
 		    :wait t)
 (sb-ext:run-program "/usr/bin/texi2pdf" (list (format nil "~A" +texinfo-file+)))
+(sb-ext:run-program "makeinfo" (list "--plaintext cl-config.texinfo -o cl-config.txt"))
 (sb-ext:run-program "makeinfo" (list "cl-config.texinfo"))
 (sb-ext:run-program "ginstall-info" (list (format nil "--info-dir=~A" +info-dir-path+)
 					  "cl-config.info"))

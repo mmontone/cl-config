@@ -85,16 +85,50 @@ This is cl-config Common Lisp library documentation
 * Overview::                            A cl-config overview
 * Configuration schemas::               What configuration schemas are and how to define them
 * Configurations::                      What configurations are and how to define them
-* Working with configurations::         The API to work with configurations
-* Configurations serialization::        Configurations serialization
 * Installer::                           How to create an application installer
 * Examples::                            Some examples
-* Use cases::                           Typical use cases
 * Configuration editing::               Web tool for configuration editing
 * Custom option types::                 How to define custom option types
 * System reference::                    The system reference
 * References::                          Related work
 * Index::                               Complete index.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Introduction
+
+* Summary::                     A brief summary of what Gestalt is
+* Installation::                How to install Gestalt
+* Feedback::                    Bug reports, ideas, patches etc.
+* Conventions::                 Type-setting conventions in the manual
+
+Overview
+
+Configuration schemas
+
+Configurations
+
+* Working with configurations::         The API to work with configurations
+* Configurations serialization::        Configurations serialization
+
+Installer
+
+Examples
+
+* Use cases::                           Typical use cases
+
+Configuration editing
+
+Custom option types
+
+System References
+
+References
+
+Index
+
+@end detailmenu
 @end menu
 
 @node Introduction
@@ -186,16 +220,20 @@ Define your own option configurations types and provide validation for them.
 @chapter Configuration schemas
 @cindex configuration schema
 
+@menu
+* Built-in option types::       The built-in option types
+@end menu
+
 Configuration schemas define the structure of a configuration.
 
 The syntax to define configuration schemas is the following:
 
 @example
 (define-configuration-schema @emph{configuration-schema-name}
-        ({@emph{parent-configuration-schema}}*)
+        (@{@emph{parent-configuration-schema}@}*)
         (:title @emph{configuration-schema-title})
         [(:documentation @emph{configuration-schema-documentation})]
-        {@emph{configuration-schema-section}}*)
+        @{@emph{configuration-schema-section}@}*)
 @end example
 
 Where:
@@ -219,7 +257,7 @@ Each configuration schema section follows this syntax:
 @example
    (:section @emph{section-identifier} @emph{section-title}
       [(:documentation @emph{section-documentation})]
-      {@emph{option-schema}}*)
+      @{@emph{option-schema}@}*)
 @end example
 
 Where:
@@ -234,7 +272,7 @@ Where:
 And option schemas are specified like this:
 
 @example
-(@emph{option-identifier} @emph{option-title} @emph{option-type} {@emph{option-parameter}*})
+(@emph{option-identifier} @emph{option-title} @emph{option-type} @{@emph{option-parameter}*@})
 @end example
 
 where:
@@ -294,7 +332,20 @@ It has only one section @emph{database-configuration} where the user is supposed
 @section Built-in option types
 @cindex option type
 
+@menu
+* Text::                           The text option type
+* Integer::                        The integer option type
+* Boolean::                        The boolean option type
+* Email::                          The email option type
+* Url::                            The URL option type
+* Pathname::                       The pathname option type
+* One of::                         The ``one of'' option type
+* List::                           The list option type
+@end menu
+
+@node Text
 @subsection Text
+@cindex text
 
 The text option type is specified with @emph{:text}. It ensures that the the option value is of type string.
 
@@ -305,7 +356,9 @@ Example:
 (:password "Password" :text :documentation "The database engine password")
 @end example
 
+@node Integer
 @subsection Integer
+@cindex integer
 
 The integer option type is specified with @emph{:integer}. It ensures that the the option value is of type integer.
 
@@ -315,7 +368,9 @@ Example:
 (:port "Port" :integer :documentation "Web application port")
 @end example
 
+@node Boolean
 @subsection Boolean
+@cindex boolean
 
 The boolean option type is specified with @emph{:boolean}. It ensures that the the option value is of type boolean (t or nil).
 
@@ -325,9 +380,11 @@ Example:
 (:catch-errors-p "Catch errors?" :boolean :documentation "Whether to handle application errors")
 @end example
 
+@node Email
 @subsection Email
+@cindex email
 
-The integer option type is specified with @emph{:email}. It ensures that the the option value is a valid email string.
+The email option type is specified with @emph{:email}. It ensures that the the option value is a valid email string.
 
 Example:
 
@@ -335,9 +392,11 @@ Example:
 (:port "Email" :email :documentation "User email")
 @end example
 
+@node Url
 @subsection Url
+@cindex url
 
-The integer option type is specified with @emph{:url}. It ensures that the the option value is a valid url. The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
+The url option type is specified with @emph{:url}. It ensures that the the option value is a valid url. The option value is converted to a url (cl-url) if it is a string, or left unmodified if already a url.
 
 Example:
 
@@ -345,7 +404,9 @@ Example:
 (:host "Host" :url :documentation "The web application host")
 @end example
 
+@node Pathname
 @subsection Pathname
+@cindex pathaname
 
 The pathaname option type is specified with @emph{:path}. It ensures that the the option value is a valid pathname and the file or directory exists. The option value is converted to a pathname if it is a string, or left unmodified if already a pathname.
 
@@ -355,7 +416,9 @@ Example:
 (:stylesheet "Stylesheet" :pathname :documentation "The stylesheet file")
 @end example
 
+@node One of
 @subsection One of
+@cindex one of
 
 The @emph{one of} option type is specified with @emph{:one-of} followed by the list of options, all between parenthesis. It is ensured that the option value is one of the options listed. Options are specified as a list with the option-identifier as a keyword, and the option title with a string.
 
@@ -367,7 +430,9 @@ Example:
 	       (:tcp "TCP")))
 @end example
 
+@node List
 @subsection List
+@cindex list
 
 The @emph{list} option type is specified with @emph{:list} followed by the list of options, all between parenthesis. It is ensured that the option value is a subset of the options listed. Options are specified as a list with the option-identifier as a keyword, and the option title with a string.
 
@@ -384,13 +449,18 @@ Example:
 
 How to define configurations
 
+@menu
+* Working with configurations::         The API to work with configurations
+* Configurations serialization::        Configurations serialization
+@end menu
+
 @node Working with configurations
-@chapter Working with configurations
+@section Working with configurations
 
 The API for working with configurations
 
 @node Configurations serialization
-@chapter Configurations serialization
+@section Configurations serialization
 @cindex serialization
 
 There are two output backends: an sexp-backend and a xml-backend
@@ -404,6 +474,10 @@ Explanations on how to build an application installer
 @node Examples
 @chapter Examples
 @cindex examples
+
+@menu
+* Use cases::                           Typical use cases
+@end menu
 
 @example
 
@@ -589,13 +663,30 @@ And then we attach the desired configuration to the application:
 @end example
 
 @node Use cases
-@chapter Use cases
+@section Use cases
 
-@section Application debugging
-@section Application logging
-@section Application testing
-@section Application deployment
-@section Branch switching
+@menu
+* Debugging::          Example of application debugging configuration
+* Logging::            Example of application logging configuration
+* Testing::            Example of application testing configuration
+* Deployment::         Example of application deployment configuration
+@end menu
+
+@node Debugging
+@subsection Debugging
+@cindex debugging
+
+@node Logging
+@subsection Logging
+@cindex logging
+
+@node Testing
+@subsection Testing
+@cindex testing
+
+@node Deployment
+@subsection Deployment
+@cindex deployment
 
 @node Configuration editing
 @chapter Configuration editing
