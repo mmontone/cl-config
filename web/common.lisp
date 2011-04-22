@@ -87,3 +87,8 @@
 
 (defun $id (str)
   (format nil "#~A" str))
+
+(defvar *global-scripts* ())
+
+(defun add-global-script (string)
+  (push string *global-scripts*))

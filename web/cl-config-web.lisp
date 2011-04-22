@@ -102,6 +102,7 @@
 (defun render-main-page (stream body)
   (start-session)
   (initialize-continuations)
+  (setf *global-scripts* nil)
   (with-html-output (stream)
     (htm
      (:html
@@ -130,7 +131,11 @@
 	      :rel "stylesheet"
 	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
-       (funcall body stream))))))
+       (funcall body stream)
+       (:script :language "javascript"
+	   (loop for script in *global-scripts*
+		do
+		(htm (str script)))))))))
 
 (defun root-page ()
   (with-output-to-string (s)

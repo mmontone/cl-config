@@ -384,7 +384,8 @@
 				                                           (show-unset t))
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"
-			"even")))
+			"even"))
+	(cfg-option-id (gensym "CFG-OPTION-")))
     (multiple-value-bind (value option-instance section-instance origin)
 	(cfg::get-option-value
 	  (list (cfg::name section)
@@ -392,7 +393,8 @@
 	  configuration nil)
     (with-html-output (stream)
       (htm
-       (:tr :class (format nil "~A~{,~A~}~{,~A~}"
+       (:tr :id cfg-option-id
+	    :class (format nil "~A~{,~A~}~{,~A~}"
 			   odd-even
 			   (if (cfg::optional option)
 			       (list "optional"))
@@ -422,10 +424,41 @@
 							      (list (cfg::name section)
 								    (cfg::name option))
 							      configuration)))))
-		       (htm (:input :type "checkbox" :name unset)))))
+		       (htm (:input :type "checkbox" :name unset :title "Unset this option")))))
 	    (:td :class "origin"
 		 (when (and show-origin origin)
 		   (fmt "(~A)"
 			(if (equalp origin :default)
 			    "Default"
-			    (cfg::title origin)))))))))))
+			    (cfg::title origin)))))))
+      (:script :language "javascript"
+	       (str
+       (ps* `(chain ($ document)
+		    (ready (lambda ()
+                             ;; Hide options initially
+			     (chain ($ ,(format nil "~A .origin" ($id cfg-option-id)))
+				    (hide))
+			     (chain ($ ,(format nil "~A .unset" ($id cfg-option-id)))
+				    (hide))
+			     
+			     ;; Show on mouseover
+			     (chain ($ ,($id cfg-option-id))
+				    (mouseover (lambda ()
+						 (chain ($ ,(format nil "~A .origin" ($id cfg-option-id)))
+				    (show)))))
+			     (chain ($ ,($id cfg-option-id))
+				    (mouseover (lambda ()
+						 (chain ($ ,(format nil "~A .unset" ($id cfg-option-id)))
+				    (show)))))
+
+			     ;; Hide on mouseout
+			     (chain ($ ,($id cfg-option-id))
+				    (mouseout (lambda ()
+						 (chain ($ ,(format nil "~A .origin" ($id cfg-option-id)))
+				    (hide)))))
+			     (chain ($ ,($id cfg-option-id))
+				    (mouseout (lambda ()
+						 (chain ($ ,(format nil "~A .unset" ($id cfg-option-id)))
+				    (hide)))))
+
+			     ))))))))))
