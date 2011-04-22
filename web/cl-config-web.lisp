@@ -170,9 +170,48 @@
   (with-html-output-to-string (s)
     (with-main-page (s)
       (htm
+       (:div 
+	(:h2 "Homepage")
+	(:a :href "http://github.com/mmontone/cl-config"
+	    :target "_blank"
+	    (str "http://github.com/mmontone/cl-config")))
        (:div
-	(str (cfg (:general-settings :about)
-		  'standard-cl-config-web-configuration)))))))
+	(:h2 "Documentation")
+	(:ul
+	 (:li (:a :href "/static/doc/cl-config.html"
+		  :target "_blank"
+		  (str "Manual in HTML format")))
+	 (:li (:a :href "/static/doc/cl-config.pdf"
+		  :target "_blank"
+		  (str "Manual in PDF format")))))
+       (:div
+	(:h2 "License")
+	(:p
+	 (str "Copyright (c) 2011 Mariano Montone"))
+	(:p
+	 (str"
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the \"Software\"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:"))
+	(:p (str "
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software."))
+	(:p (str "
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.")))
+       
+       ))))
 
 (define-easy-handler (configuration-schemas :uri "/schemas") ()
   (with-html-output-to-string (s)
