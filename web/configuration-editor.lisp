@@ -147,7 +147,7 @@
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
-(defun edit-configuration (configuration stream &key (save-as-new t) (show-title t))
+(defun edit-configuration (configuration stream &key (save-as-new t) (show-title t) (show-origin t) (show-unset t))
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
 	(save-as-title "")
@@ -219,7 +219,8 @@
 									(let ((section* section))
 									  (lambda (s)
 									    (declare (ignore s))
-									    (edit-configuration-section configuration-copy section* stream)))))
+									    (edit-configuration-section configuration-copy section* stream
+													:show-origin show-origin :show-unset show-unset)))))
 						       (list
 							(cons "Advanced settings"
 							     (lambda (s)
@@ -329,7 +330,7 @@
 											    (submit)))))))))))))))))))))))
       (render-editor nil stream))))
 
-(defun edit-configuration-section (configuration section stream)
+(defun edit-configuration-section (configuration section stream &key (show-origin t) (show-unset t))
   (let ((direct-options (cfg::direct-options-list section
 						  :exclude-advanced t))
 	(advanced-options (cfg::advanced-options-list section))
@@ -365,7 +366,7 @@
 				   (edit-configuration-option configuration
 							      section
 							      option
-							      stream)
+							      stream :show-origin show-origin :show-unset show-unset)
 				   (switch-odd-even)))))))
 	   (if (plusp (length advanced-options))
 	       (htm
@@ -379,7 +380,8 @@
 							 stream)
 			      (switch-odd-even)))))))))))
 
-(defun edit-configuration-option (configuration section option stream)
+(defun edit-configuration-option (configuration section option stream &key (show-origin t)
+				                                           (show-unset t))
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"
 			"even")))
@@ -412,7 +414,7 @@
 							      configuration)
 							     val)))))
 	    (:td :class "unset"
-		 (if (eql origin configuration)
+		 (if (and show-unset (eql origin configuration))
 		     (with-form-field (unset :writer (lambda (val)
 						       (cfg::with-schema-validation (nil)
 							 (if val
@@ -422,7 +424,7 @@
 							      configuration)))))
 		       (htm (:input :type "checkbox" :name unset)))))
 	    (:td :class "origin"
-		 (when origin
+		 (when (and show-origin origin)
 		   (fmt "(~A)"
 			(if (equalp origin :default)
 			    "Default"

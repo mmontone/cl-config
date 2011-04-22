@@ -184,7 +184,11 @@
 (define-easy-handler (import/export :uri "/import-export") ()
   (with-html-output-to-string (s)
     (with-main-page (s)
-      (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s :save-as-new nil :show-title nil))))
+      (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s
+			  :save-as-new nil
+			  :show-title nil
+			  :show-origin nil
+			  :show-unset nil))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
