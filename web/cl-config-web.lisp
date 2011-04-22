@@ -113,10 +113,7 @@
 		:src "/static/jquery-ui-1.8.11/js/jquery-ui-1.8.11.custom.min.js")
        (:link :type "text/css"
 	      :rel "stylesheet"
-	      :href
-	      ;"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/cupertino/jquery-ui.css"
-	      "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/hot-sneaks/jquery-ui.css"
-	      )
+	      :href"/static/jquery-ui-1.8.11/css/hot-sneaks/jquery-ui-1.8.11.custom.css")
        (:script :type "text/javascript"
 		:src "/static/multiselect/js/ui.multiselect.js")
        (:script :type "text/javascript"
