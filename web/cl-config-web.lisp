@@ -107,6 +107,11 @@
     (htm
      (:html
       (:head
+       (:title (str (cfg (:general-settings :title)
+			 (find-configuration 'standard-cl-config-web-configuration))))
+       (:meta :content "text/html; charset=UTF-8"
+	      :http-equiv "Content-Type")
+       (:meta :content "IE=8" :http-equiv "x-ua-compatible")
        (:script :type "text/javascript"
 		:src  "/static/jquery-1.5.1.min.js")
        (:script :type "text/javascript"
