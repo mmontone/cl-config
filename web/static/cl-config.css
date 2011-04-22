@@ -5,7 +5,7 @@
 
 /* CSS Reset
    ----------------------------------*/
-body, ul, ol, li, form, fieldset, legend, label, p, h1, h2, h3, h4, h5, h6, img, dl, dt, dd, input, select, checkbox, button, table, tr, th, td, blockquote {
+body, ul, ol, li, form, fieldset, legend, label, p, h1, h2, h3, h4, h5, h6, img, dl, dt, dd, input, select, option, checkbox, button, table, tr, th, td, blockquote {
     margin: 0;
     padding: 0;
     border: 0;
@@ -42,7 +42,7 @@ a {
     text-decoration: none;
 }
 input[type="text"] {
-    border: 1px #96A6C5 solid;
+    border: 1px #333333 solid;
     color: #333;
     height:30px;
     font-size: 16px;
@@ -56,12 +56,17 @@ input[type="submit"] {
     margin-top:20px;
 }
 select {
-    border: 1px #96A6C5 solid;
+    border: 1px #333333  solid;
     color: #333;
     height:30px;
     font-size: 16px;
+    font-weight:bold;
     width:459px;
+    background-color:#93C3CD;
 }
+select {
+        -webkit-appearance: none;
+    }
 button {
     cursor: pointer;
 }
