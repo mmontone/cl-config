@@ -140,14 +140,14 @@
 					     (chain ($ "#configuration-select")
 						    (change (lambda ()
 							      (setf (@ window location)
-								    (concatenate 'string "/?conf="
+								    (concatenate 'string "/editconfs?conf="
 										 (chain ($ "#configuration-select") (val))))
 							      t)))
 					     t))))))))
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
-(defun edit-configuration (configuration stream &key (save-as-new t))
+(defun edit-configuration (configuration stream &key (save-as-new t) (show-title t))
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
 	(save-as-title "")
@@ -204,8 +204,10 @@
 					 (htm
 					  (:li
 					   (str (cfg::error-msg error)))))))))
-			  (:div :class "title"
-				(:h2 (fmt "~A editor" (cfg::title configuration-copy))))
+			  (when show-title
+			    (htm
+			     (:div :class "title"
+				   (:h1 (fmt "~A editor" (cfg::title configuration-copy))))))
 			  (:form :action action
 				 :method "post"
 				 :id "edit-configuration-form"
@@ -243,7 +245,7 @@
 								     (:td :class "title"
 									  (:p (str "Schema:")))
 								     (:td :class "editor"
-									  (:a :href (format nil "/showsc?schema=~A"
+									  (:a :class "open-in-tab" :href (format nil "/showsc?schema=~A"
 											    (cfg::complete-symbol-name
 											     (cfg::name
 											      (cfg::configuration-schema

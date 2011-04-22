@@ -173,15 +173,18 @@
   (with-html-output-to-string (s)
     (with-main-page (s)
       (htm
-       (:div
-	(str "Configuration schemas"))))))
-
+       (:ul
+	(loop for name being the hash-keys of *configuration-schemas*
+	      using (hash-value schema)
+	     do
+	     (htm
+	      (:li (:a :href (format nil "/showsc?schema=~A" (cfg::complete-symbol-name name))
+		       (str (cfg::title schema)))))))))))
+	      
 (define-easy-handler (import/export :uri "/import-export") ()
   (with-html-output-to-string (s)
     (with-main-page (s)
-      (htm
-       (:div
-	(str "Import/Export configurations"))))))
+      (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s :save-as-new nil :show-title nil))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))

@@ -53,7 +53,12 @@
 		 (str (ps* `(chain ($ document)
 				   (ready (lambda ()
 					    (chain ($ ,(format nil "#~A" widget-id))
-						   (tabs))))))))))))
+						   (tabs (create "load" (lambda (event ui)
+									  (chain ($ ".open-in-tab" (@ ui panel))
+										 (click (lambda ()
+											  (chain ($ (@ ui panel))
+												 (load (@ this href)))
+											  (return nil))))))))))))))))))
 
 (defun jquery.ui-accordion (stream sections)
   (let ((widget-id (gensym "ACCORDION-")))
