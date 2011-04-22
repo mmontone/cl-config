@@ -71,10 +71,6 @@ button {
     font-weight: bold;
 }
 
-.option p {
-    vertical-align: top;
-}
-
 .attributes-table td {
     padding:5px;
 }
@@ -106,6 +102,6 @@ textarea {
     min-height:171px;
 }
 
-.title {
+.title, .origin, .unset {
     vertical-align:top;
 }
