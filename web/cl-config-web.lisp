@@ -127,7 +127,8 @@
 	      :rel "stylesheet"
 	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
-       (funcall body stream))))))
+       (:div :class "container"
+	     (funcall body stream)))))))
 
 (defun root-page (&optional conf)
   (with-output-to-string (s)

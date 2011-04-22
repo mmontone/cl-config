@@ -3,3 +3,97 @@
 #sortable1, #sortable2 { list-style-type: none; margin: 0; padding: 0; float: left; margin-right: 10px; }
 #sortable1 li, #sortable2 li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
 
+/* CSS Reset
+   ----------------------------------*/
+body, ul, ol, li, form, fieldset, legend, label, p, h1, h2, h3, h4, h5, h6, img, dl, dt, dd, input, select, checkbox, button, table, tr, th, td, blockquote {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size:15px;
+    font-family: Helvetica,Arial,sans-serif;
+}
+
+/* General styling
+   ----------------------------------*/
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+}
+ul, ol {
+    list-style-type: none;
+}
+a, button, input, select, textarea {
+    outline: none;
+}
+table {
+    border-collapse: collapse;
+}
+a {
+    color: #671b10;
+    text-decoration: none;
+}
+input[type="text"] {
+    border: 1px #96A6C5 solid;
+    color: #333;
+    height:30px;
+    font-size: 16px;
+    padding: 6px;
+    width:459px;
+    margin-top: 2px;
+    margin: 0;
+    padding-bottom: 4px;
+}
+input[type="submit"] {
+    margin-top:20px;
+}
+select {
+    border: 1px #96A6C5 solid;
+    color: #333;
+    height:30px;
+    font-size: 16px;
+    width:459px;
+}
+button {
+    cursor: pointer;
+}
+.option {
+    display: inline;
+    margin-right:10px;
+    font-weight: bold;
+}
+
+.option p {
+    vertical-align: top;
+}
+
+.attributes-table td {
+    padding:5px;
+}
+
+td.title {
+    font-weight:bold;
+    padding-right:20px;
+}
+
+td.origin {
+    font-style:italic;
+    font-size:12px;
+}
+
+.container {
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    width: 970px;
+}
+
+textarea {
+    border: 1px #96A6C5 solid;
+    width:459px;
+    font-size: 16px;
+    padding: 6px;
+    min-height:171px;
+}
+
+.title {
+    vertical-align:top;
+}

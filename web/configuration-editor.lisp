@@ -35,11 +35,12 @@
 		       (:form :action action
 			      :method "post"
 			      :id "newconf"
-			      (:table
+			      (:table :class "attributes-table"
 			       (:tbody
 				(:tr
-				 (:td (str "Name:"))
-				 (:td 
+				 (:td :class "title"
+				      (:p (str "Name:")))
+				 (:td :class "editor"
 				  (with-form-field (field :writer (lambda (val)
 								    (setf name val)))
 				    (htm
@@ -51,8 +52,9 @@
 				   (if error
 				       (htm (:td (str (getf error :error-msg))))))	    )
 				(:tr
-				 (:td (str "Title:"))
-				 (:td
+				 (:td :class "title"
+				      (:p (str "Title:")))
+				 (:td :class "editor"
 				  (with-form-field (field :writer (lambda (val)
 								    (cfg::with-schema-validation (nil)
 								      (setf title val))))
@@ -65,8 +67,9 @@
 				   (if error
 				       (htm (:td (str (getf error :error-msg)))))))
 				(:tr
-				 (:td (str "Schema:"))
-				 (:td
+				 (:td :class "title"
+				      (:p (str "Schema:")))
+				 (:td :class "editor"
 				  (with-form-field (field :reader #'cfg::read-symbol
 							  :writer (lambda (val)
 								    (setf schema val)))
@@ -78,8 +81,9 @@
 						     (:option :value (cfg::complete-symbol-name (cfg::name configuration-schema))
 							      (str (cfg::title configuration-schema))))))))))
 				(:tr
-				 (:td (str "Parents:"))
-				 (:td
+				 (:td :class "title"
+				      (:p (str "Parents:")))
+				 (:td :class "editor"
 				  (with-form-field (field :writer (lambda (val)
 								    (setf parents val))
 							  :reader (lambda (val)
@@ -96,8 +100,9 @@
 						     (:option :value (cfg::complete-symbol-name (cfg::name configuration))
 							      (str (cfg::title configuration))))))))))
 				(:tr
-				 (:td (str "Documentation:"))
-				 (:td
+				 (:td :class "title"
+				      (:p (str "Documentation:")))
+				 (:td :class "editor"
 				  (with-form-field (field :writer (lambda (val)
 								    (setf documentation val)))
 				    (htm
@@ -117,9 +122,10 @@
 				  (first (hash-table-values *configurations*)))))
 	   (htm
 	    (:div :id "configuration-selector"
-		  (:p "Configuration:")
+		  (:p :class "option" "Configuration:")
 		  (:select :id "configuration-select"
 			   :name "configuration-select"
+			   :class "option-value"
 			   (loop for conf being the hash-values of *configurations*
 			      do  (htm
 				    (:option :value (cfg::complete-symbol-name (cfg::name conf))
@@ -218,69 +224,89 @@
 							     (lambda (s)
 							       (declare (ignore s))
 							       (htm
-							       (:div :class "name"
-								     (:p (fmt "Name: ~A" (cfg::complete-symbol-name
-											  (cfg::name configuration-copy)))))
-							       (:p "Title:")
-							       (with-form-field (field :writer (lambda (val)
-												 (setf (cfg::title configuration-copy) val)))
-								 (htm
-								  (:input :type "text" :name field :value (cfg::title configuration-copy))))
-							       (:div :class "schema"
-								     (:span (:p (str "Schema:")))
-								     (:span (:a :href (format nil "/showsc?schema=~A"
-											      (cfg::complete-symbol-name
-											       (cfg::name
-												(cfg::configuration-schema
-												 configuration-copy))))
-										(str (cfg::title
-										      (cfg::configuration-schema configuration-copy))))))
-							       (:p "Documentation:")
-							       (with-form-field (field :writer (lambda (val)
-												 (setf (cfg::documentation* configuration-copy) val)))
-								 (htm
-								  (:textarea :name field
-									     (str (cfg::documentation* configuration-copy)))))
-							       (:p "Parents:")
-							       (with-form-field (field :writer (lambda (val)
-												 (setf (cfg::parents configuration-copy) val))
-										       :reader (lambda (val)
-												 (if (listp val)
-												     (mapcar #'cfg::read-symbol val)
-												     (list (cfg::read-symbol val)))))
-								 (htm
-								  (:select :id "parents"
-									   :name field
-									   :multiple "true"
-									   :class "multiselect"
-									   (loop for conf being the hash-values of *configurations*
-									      when (not (eql conf configuration))
-									      do (htm
-										  (:option :value (cfg::complete-symbol-name (cfg::name conf))
-											   :selected (if (find (cfg::name conf)
-													       (cfg::parents configuration-copy))
-													 "selected")
-											   (str (cfg::title conf))))))))))))))
+								(:table :class "attributes-table"
+								   (:tbody
+								    (:tr
+								     (:td :class "title"
+									  (:p (fmt "Name:")))
+								     (:td :class "editor"
+									  (:p (fmt (cfg::complete-symbol-name
+										       (cfg::name configuration-copy))))))
+								    (:tr
+								     (:td :class "title"
+									  (:p "Title:"))
+								     (:td :class "editor"
+									  (with-form-field (field :writer (lambda (val)
+													    (setf (cfg::title configuration-copy) val)))
+									    (htm
+									     (:input :type "text" :name field :value (cfg::title configuration-copy))))))
+								    (:tr
+								     (:td :class "title"
+									  (:p (str "Schema:")))
+								     (:td :class "editor"
+									  (:a :href (format nil "/showsc?schema=~A"
+											    (cfg::complete-symbol-name
+											     (cfg::name
+											      (cfg::configuration-schema
+											       configuration-copy))))
+									      (str (cfg::title
+										    (cfg::configuration-schema configuration-copy))))))
+								    (:tr
+								     (:td :class "title"
+									  (:p "Documentation:"))
+								     (:td :class "editor"
+									  (with-form-field (field :writer (lambda (val)
+													    (setf (cfg::documentation* configuration-copy) val)))
+									    (htm
+									     (:textarea :name field
+											(str (cfg::documentation* configuration-copy)))))))
+								    (:tr
+								     (:td :class "title"
+									  (:p "Parents:"))
+								     (:td :class "editor"
+									  (with-form-field (field :writer (lambda (val)
+													    (setf (cfg::parents configuration-copy) val))
+												  :reader (lambda (val)
+													    (if (listp val)
+														(mapcar #'cfg::read-symbol val)
+														(list (cfg::read-symbol val)))))
+									    (htm
+									     (:select :id "parents"
+										      :name field
+										      :multiple "true"
+										      :class "multiselect"
+										      (loop for conf being the hash-values of *configurations*
+											 when (not (eql conf configuration))
+											 do (htm
+											     (:option :value (cfg::complete-symbol-name (cfg::name conf))
+												      :selected (if (find (cfg::name conf)
+															  (cfg::parents configuration-copy))
+														    "selected")
+												      (str (cfg::title conf)))))))))))))
+
+								)))))
 							       
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
-				    (:div
-				     (:table
-				      (:tbody
-				       (:tr
-					(:td (:p "Name: "))
-					(:td
-					 (with-form-field (field :writer (lambda (val)
-									   (setf save-as-name val)))
-					   (htm
-					    (:input :type "text" :name field)))))
-				       (:tr (:td (:p "Title: "))
-					    (:td
-					     (with-form-field (field :writer (lambda (val)
-									       (setf save-as-title val)))
-					       (htm
-						(:input :type "text" :name field))))))))
+				    (:div :style "height:20px;")
+				     (:table :class "attributes-table"
+					     (:tbody
+					      (:tr
+					       (:td :class "title"
+						    (:p "Name: "))
+					       (:td :class "editor"
+						    (with-form-field (field :writer (lambda (val)
+										      (setf save-as-name val)))
+						      (htm
+						       (:input :type "text" :name field)))))
+					      (:tr (:td :class "title"
+							(:p "Title: "))
+						   (:td :class "editor"
+							(with-form-field (field :writer (lambda (val)
+											  (setf save-as-title val)))
+							  (htm
+							   (:input :type "text" :name field)))))))
 				    (:input :type "submit" :value "Save as new")
 				    (with-form-field (field :writer (lambda (val)
 								      (when (equalp val "true")
@@ -330,7 +356,7 @@
 									(chain ($ ,(format nil "#~A" advanced-section-id))
 									       (toggle)))))))))))))))
 	   (htm
-	    (:table :class "section"
+	    (:table :class "section attributes-table"
 		    (:tbody
 		     (:div :class "options"
 			   (loop for option in direct-options
@@ -363,7 +389,7 @@
 	  configuration nil)
     (with-html-output (stream)
       (htm
-       (:tr :class (format nil "option,~A~{,~A~}~{,~A~}"
+       (:tr :class (format nil "~A~{,~A~}~{,~A~}"
 			   odd-even
 			   (if (cfg::optional option)
 			       (list "optional"))
