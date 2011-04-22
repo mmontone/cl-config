@@ -130,19 +130,58 @@
 	      :rel "stylesheet"
 	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
-       (:div :class "container"
-	     (funcall body stream)))))))
+       (funcall body stream))))))
 
-(defun root-page (&optional conf)
+(defun root-page ()
   (with-output-to-string (s)
     (with-main-page (s)
-      (apply #'configurations-editor
-	     s
-	     (when conf
-	       (list (find-configuration (cfg::read-symbol conf))))))))
+      (render-root s))))
 
-(define-easy-handler (main :uri "/") (conf)
-  (root-page conf))
+(defun render-root (s)
+  (with-html-output (s)
+    (htm
+     (:div :class "container"
+	   (:h1 (str (cfg (:general-settings :title)
+			  'standard-cl-config-web-configuration)))
+	   (with-jquery.ui-tabs s
+	     '(("Configurations" "/editconfs")
+	       ("Configuration schemas" "/schemas")
+	       ("Import/Export" "/import-export")
+	       ("About" "/about")
+	       ))))))
+
+(define-easy-handler (main :uri "/") ()
+  (root-page))
+
+(define-easy-handler (editconfs :uri "/editconfs") (conf)
+    (with-html-output-to-string (s)
+      (with-main-page (s)
+	(apply #'configurations-editor
+	       s
+	       (when conf
+		 (list (find-configuration (cfg::read-symbol conf))))))))
+
+(define-easy-handler (about :uri "/about") ()
+  (with-html-output-to-string (s)
+    (with-main-page (s)
+      (htm
+       (:div
+	(str (cfg (:general-settings :about)
+		  'standard-cl-config-web-configuration)))))))
+
+(define-easy-handler (configuration-schemas :uri "/schemas") ()
+  (with-html-output-to-string (s)
+    (with-main-page (s)
+      (htm
+       (:div
+	(str "Configuration schemas"))))))
+
+(define-easy-handler (import/export :uri "/import-export") ()
+  (with-html-output-to-string (s)
+    (with-main-page (s)
+      (htm
+       (:div
+	(str "Import/Export configurations"))))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))

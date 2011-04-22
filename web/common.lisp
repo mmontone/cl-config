@@ -24,24 +24,36 @@
 								(val "true")))))
 					))))))))
 	 ,@body)))
-  
-  (defmacro with-jquery.ui-accordion ((&key (header :h2) (animate t))
-				      &rest sections)
-    (let ((widget-id (gensym "ACCORDION-")))
-      `(htm
-	(:div :id ,(symbol-name widget-id)
-	      ,@(loop for section in sections
-		     for title = (car section)
-		     for content = (cadr section)
-		     collect
-		     `((,header (:a :href "#" (str ,title)))
-		       (:div
-			,content))))
+
+  )
+
+(defun with-jquery.ui-tabs (stream sections)
+    (let ((widget-id (gensym "TABS-"))
+	  (divs))
+      (with-html-output (stream)
+	(htm
+	 (:div :id (symbol-name widget-id)
+	      (:ul
+	       (loop for section in sections
+		  for title = (car section)
+		  for content = (cadr section)
+		  do (htm
+		      (:li
+		       (if (stringp content)
+			   (htm
+			    (:a :href content (str title)))
+			   (let ((tab-id (gensym "TAB-")))
+			     (push (cons tab-id content) divs)
+			     (htm (:a :href ($id tab-id) (str title)))))))))
+	      (loop for div in divs
+		 do (htm
+		     (:div :id (car div)
+			   (funcall div stream)))))
 	(:script :language "javascript"
 		 (str (ps* `(chain ($ document)
 				   (ready (lambda ()
 					    (chain ($ ,(format nil "#~A" widget-id))
-						   (accordion))))))))))))
+						   (tabs))))))))))))
 
 (defun jquery.ui-accordion (stream sections)
   (let ((widget-id (gensym "ACCORDION-")))

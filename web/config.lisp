@@ -16,9 +16,18 @@
 	    (:host "Host" :text :default "localhost")
 	    (:port "Port" :integer :default 4242)
 	    (:logo "Logo" :pathname :optional t)
-	    (:stylesheet "Stylesheet" :url :optional t)))
+	    (:stylesheet "Stylesheet" :url :optional t))
+  (:section :general-settings "General settings"
+	    (:title "Title" :text :default "CL-CONFIG configurator")
+	    (:about "About" :text)))
 
 (define-configuration standard-cl-config-web-configuration ()
   (:configuration-schema cl-config-web-configuration)
   (:title "Standard CL-CONFIG Web application configuration")
-  (:documentation "Standard CL-CONFIG Web application configuration"))
+  (:documentation "Standard CL-CONFIG Web application configuration")
+  (:section :general-settings
+   (:about #.(with-open-file (s (asdf::system-relative-pathname :cl-config
+							      "README"))
+	       (let* ((len (file-length s))
+		      (data (make-string len)))
+		 (values data (read-sequence data s)))))))

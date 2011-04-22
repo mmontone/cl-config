@@ -95,7 +95,7 @@ td.origin {
     overflow: hidden;
     position: relative;
     width: 1000px;
-    padding:50px;
+    padding:0px 50px 50px 50px;
     background-color:white;
 }
 

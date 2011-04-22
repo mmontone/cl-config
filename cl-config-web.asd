@@ -40,9 +40,9 @@ OTHER DEALINGS IN THE SOFTWARE."
 	    :components
 	    ((:file "package")
 	     (:file "config")
+	     (:file "common")
 	     (:file "cl-config-web")
 	     (:file "form")
-	     (:file "common")
 	     (:file "option-editors")
 	     (:file "configuration-editor")
 	     (:file "configuration-schema-editor")
