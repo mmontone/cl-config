@@ -114,7 +114,8 @@
 (defun configurations-editor (stream &optional selected-configuration)
   (with-html-output (stream)
     (htm
-     (:h1 "Configurations editor")
+     (:h1 :class "title"
+	  "Configurations editor")
      (if (zerop (hash-table-count *configurations*))
 	 (htm
 	  (:p "There are no configurations"))

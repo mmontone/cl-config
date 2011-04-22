@@ -17,6 +17,16 @@ body, ul, ol, li, form, fieldset, legend, label, p, h1, h2, h3, h4, h5, h6, img,
    ----------------------------------*/
 h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
+    margin:0px;
+}
+body {
+    background-color:#4F6F6C;
+}
+h1.title {
+    font-weight:bold;
+    font-size:40px;
+    margin:0px;
+    margin-bottom:20px;
 }
 ul, ol {
     list-style-type: none;
@@ -83,7 +93,9 @@ td.origin {
     margin: 0 auto;
     overflow: hidden;
     position: relative;
-    width: 970px;
+    width: 1000px;
+    padding:50px;
+    background-color:white;
 }
 
 textarea {
