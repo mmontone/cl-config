@@ -49,4 +49,4 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "xml-backend")
 	     (:file "installer"))
 	    :serial t))
-  :depends-on (:alexandria :xml-emitter :cl-store))
+  :depends-on (:alexandria :xml-emitter :cl-store :cl-cont))
