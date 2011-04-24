@@ -16,6 +16,10 @@
   (:report (lambda (c s)
 	     (format s "~A on ~A" (error-msg c) (target c)))))
 
+(defmethod print-object ((error validation-error) stream)
+  (print-unreadable-object (error stream :type t :identity t)
+    (format stream "~A on ~A" (error-msg error) (target error))))
+
 (define-condition option-value-not-found-error ()
   ((option :initarg :option
 	   :initform (error "Provide the option")
@@ -44,6 +48,6 @@
 	((cfg::validation-error
 	  (lambda (c)
 	    (push c errors)
-	    (continue))))
+	    (continue c))))
       (funcall func))
     (values errors (plusp (length errors)))))
