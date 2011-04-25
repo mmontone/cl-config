@@ -165,14 +165,8 @@
 		  :install-function (cl-cont:lambda/cc () ,@body)))
 
 (defmacro with-input (bindings &body body)
-  `(input ',(mapcar (lambda (binding)
-		      (or (and (listp binding) (cadr binding))
-			  binding))
-		      bindings)
-	  (lambda ,(mapcar (lambda (binding)
-			(or (and (listp binding) (car binding))
-			    binding))
-		      bindings)
+  `(input ',bindings
+	  (lambda (&key ,@bindings)
 	    ,@body)))
 
 (defmacro idefun (name args &body body)
@@ -211,7 +205,7 @@
 	      (apply function args)
 	      (funcall c))))
      
-     ;; Return wich are the required arguments
+     ;; Return which are the required arguments
      (list :input vars))))
 
 (cl-cont:defun/cc choose (message &rest options)
