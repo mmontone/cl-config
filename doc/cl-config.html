@@ -1885,55 +1885,50 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
     (:documentation &quot;Testing configuration scheme&quot;))
 </pre></td></tr></table>
 
-<p>The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
+<p>An installer example:
 </p>
-<p>Configurations can inherit from several configurations (that act like mixins). The same as with classes or models or templates. So, for example, web-app-configuration inherits from logging-configuration. That means the web-app-configuration will have the sections defined in logging-configuration too.
-</p>
-<p>Documentation is used as a section or configuration help from the UI. From the UI, each section is shown collapsable and there&rsquo;s and option for showing/hiding advanced fields, and the help button.
-</p>
-<p>The user can define several configuration schemes for an application and switch between the configurations. For example, there will probably be a &ldquo;development configuration&rdquo;, a &ldquo;deployment configuration&rdquo;, a &ldquo;testing configuration&rdquo;, and so on.
-</p>
-<p>There&rsquo;s no need for a GUI, although it is desirable. We can define configurations with files, for example:
-</p>
-<table><tr><td>&nbsp;</td><td><pre class="example">(define-configuration-scheme standard-configuration-scheme ()
-   (:configuration standard-configuration)
-   (:database-configuration
-       (:connection-type :socket
-           (:db-socket-configuration
-              (:path &quot;/tmp/my-socket.soc&quot;)))
-       (:username &quot;root&quot;)
-       (:password &quot;root&quot;)
-       (:database-name &quot;standard-database&quot;))
-   (:webapp-configuration
-       (:host &quot;localhost&quot;)
-       (:http-server :hunchentoot)))
+<table><tr><td>&nbsp;</td><td><pre class="example">(defmacro configure-section (section configuration options)
+  (let ((fname (gensym &quot;CONFIGURE-SECTION-&quot;)))
+  `(labels ((,fname ()
+	    (with-input ,(mapcar (lambda (option)
+			  (intern (symbol-name option)))
+			options)
+	      (collecting-validation-errors (errors found-p)
+		  (progn
+		    ,@(loop for option in options
+			 collect
+			   `(setf (get-option-value (list ,section ,option)
+						    ,configuration)
+				  ,(intern (symbol-name option)))))
+		(when found-p
+		  (install-errors errors)
+		  (,fname))))))
+     (,fname))))
 
-(define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
-    (:database-configuration
-        (:database-name &quot;debug-database&quot;))
-    (:logging-configuration
-       (:output-location :file &quot;/tmp/debug.log&quot;)
-       (:active-layers :debugging :database
-           (:debugging-levels :info :warning :error)))
-    (:documentation &quot;Debugging configuration scheme&quot;))
+(define-wizard-installer my-installer
+    (:title &quot;My installer&quot;
+	    :documentation &quot;This is my installer&quot;)
+  (let ((configuration (cfg:with-schema-validation (nil)
+			 (make-configuration my-config ()
+					     (:title &quot;My config&quot;)
+					     (:configuration-schema standard-configuration)))))
 
-(define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
-    (:database-configuration
-        (:database-name &quot;test-database&quot;))
-    (:logging-configuration
-       (:output-location :file &quot;/tmp/test.log&quot;)
-       (:active-layers :debugging :database
-           (:debugging-levels :warning :error)))
-    (:documentation &quot;Testing configuration scheme&quot;))
-</pre></td></tr></table>
+    ;; Configure web section
+    (start-section :webapp-configuration &quot;Web configuration&quot;)
+    (configure-section :webapp-configuration configuration
+		       (:http-server :host :port))
+    
+    ;; Configure the database section
+    (start-section :database-configuration &quot;Database configuration&quot;)
+    (configure-section :database-configuration configuration
+		       (:name :host :username :password :connection-type))
 
-<p>And then we attach the desired configuration to the application:
-</p>
-<table><tr><td>&nbsp;</td><td><pre class="example">(defapplication my-application (standard-application)
-   ...
-   (:configuration 'debug-configuration-scheme))
+    ;; Configure logging section
+    (start-section :logging-configuration &quot;Logging configuration&quot;)
+    (configure-section :logging-configuration configuration
+		       (:backend :debugging-levels :output-location :active-layers))
+    (validate-configuration configuration)
+    configuration))
 </pre></td></tr></table>
 
 <hr size="6">

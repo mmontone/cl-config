@@ -700,57 +700,51 @@ We finish the installation and we get the configured configuration as result.
     (:documentation "Testing configuration scheme"))
 @end example
 
-The typical attributes types are, :text, where the user fill text in; :one-of options*, where the user chooses one of the options in options*; :list list*, where the user selects one or more of the items of the list *list; :bool, a boolean, :maybe option, where the user can disable or enable option, etc.
-
-Configurations can inherit from several configurations (that act like mixins). The same as with classes or models or templates. So, for example, web-app-configuration inherits from logging-configuration. That means the web-app-configuration will have the sections defined in logging-configuration too.
-
-Documentation is used as a section or configuration help from the UI. From the UI, each section is shown collapsable and there's and option for showing/hiding advanced fields, and the help button.
-
-The user can define several configuration schemes for an application and switch between the configurations. For example, there will probably be a ``development configuration'', a ``deployment configuration'', a ``testing configuration'', and so on.
-
-There's no need for a GUI, although it is desirable. We can define configurations with files, for example:
+An installer example:
 
 @example
-(define-configuration-scheme standard-configuration-scheme ()
-   (:configuration standard-configuration)
-   (:database-configuration
-       (:connection-type :socket
-           (:db-socket-configuration
-              (:path "/tmp/my-socket.soc")))
-       (:username "root")
-       (:password "root")
-       (:database-name "standard-database"))
-   (:webapp-configuration
-       (:host "localhost")
-       (:http-server :hunchentoot)))
+(defmacro configure-section (section configuration options)
+  (let ((fname (gensym "CONFIGURE-SECTION-")))
+  `(labels ((,fname ()
+	    (with-input ,(mapcar (lambda (option)
+			  (intern (symbol-name option)))
+			options)
+	      (collecting-validation-errors (errors found-p)
+		  (progn
+		    ,@@(loop for option in options
+			 collect
+			   `(setf (get-option-value (list ,section ,option)
+						    ,configuration)
+				  ,(intern (symbol-name option)))))
+		(when found-p
+		  (install-errors errors)
+		  (,fname))))))
+     (,fname))))
 
-(define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
-    (:database-configuration
-        (:database-name "debug-database"))
-    (:logging-configuration
-       (:output-location :file "/tmp/debug.log")
-       (:active-layers :debugging :database
-           (:debugging-levels :info :warning :error)))
-    (:documentation "Debugging configuration scheme"))
+(define-wizard-installer my-installer
+    (:title "My installer"
+	    :documentation "This is my installer")
+  (let ((configuration (cfg:with-schema-validation (nil)
+			 (make-configuration my-config ()
+					     (:title "My config")
+					     (:configuration-schema standard-configuration)))))
 
-(define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
-    (:configuration standard-configuration)
-    (:database-configuration
-        (:database-name "test-database"))
-    (:logging-configuration
-       (:output-location :file "/tmp/test.log")
-       (:active-layers :debugging :database
-           (:debugging-levels :warning :error)))
-    (:documentation "Testing configuration scheme"))
-@end example
+    ;; Configure web section
+    (start-section :webapp-configuration "Web configuration")
+    (configure-section :webapp-configuration configuration
+		       (:http-server :host :port))
+    
+    ;; Configure the database section
+    (start-section :database-configuration "Database configuration")
+    (configure-section :database-configuration configuration
+		       (:name :host :username :password :connection-type))
 
-And then we attach the desired configuration to the application:
-
-@example
-(defapplication my-application (standard-application)
-   ...
-   (:configuration 'debug-configuration-scheme))
+    ;; Configure logging section
+    (start-section :logging-configuration "Logging configuration")
+    (configure-section :logging-configuration configuration
+		       (:backend :debugging-levels :output-location :active-layers))
+    (validate-configuration configuration)
+    configuration))
 @end example
 
 @node Use cases
