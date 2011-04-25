@@ -1,5 +1,14 @@
 (in-package :cfg)
 
+(defvar *installer* nil)
+(defvar *installers* (make-hash-table :test #'equalp))
+
+(defun find-installer (name)
+  (gethash name *installers*))
+
+(defun register-installer (installer)
+  (setf (gethash (name installer) *installers*) installer))
+
 (defclass installer ()
   ((name :initarg :name
 	 :initform (error "Provide a name")
@@ -116,24 +125,24 @@
   (:metaclass sb-mop:funcallable-standard-class)
   (:documentation "standard-intallers are installers used for installing configurations in a wizard fashion"))
 
-(defvar *installer* nil)
-
 (defmacro define-installer (name (&key title documentation) &body body)
   "Define a vanilla installer"
-  `(make-instance 'installer :name ',name
-		  :title ,title
-		  :documentation ,documentation
-		  :install-function (lambda (installer)
-				      (let ((*installer* installer)) 
-					,@body))))
+  `(register-installer
+    (make-instance 'installer :name ',name
+		   :title ,title
+		   :documentation ,documentation
+		   :install-function (lambda (installer)
+				       (let ((*installer* installer)) 
+					 ,@body)))))
 
 (defmacro define-wizard-installer (name (&key title documentation) &body body)
   "Define a wizard installer"
-  `(make-instance 'wizard-installer
-		  :name ',name
-		  :title ,title
-		  :documentation ,documentation
-		  :install-function (cl-cont:lambda/cc () ,@body)))
+  `(register-installer
+    (make-instance 'wizard-installer
+		   :name ',name
+		   :title ,title
+		   :documentation ,documentation
+		   :install-function (cl-cont:lambda/cc () ,@body))))
 
 (cl-cont:defun/cc install-configuration-section (section-name configuration)
   (let ((section (gethash section-name (sections configuration))))
@@ -162,14 +171,15 @@
 						backend output-file)
 					  &body body)
   "Defines a standard-installer"
-  `(make-instance 'standard-installer
-		  :name ',name
-		  :title ,title
-		  :documentation ,documentation
-		  :configuration-schema ,configuration-schema
-		  :backend ,backend
-		  :output-file ,output-file
-		  :install-function (cl-cont:lambda/cc () ,@body)))
+  `(register-installer
+    (make-instance 'standard-installer
+		   :name ',name
+		   :title ,title
+		   :documentation ,documentation
+		   :configuration-schema ,configuration-schema
+		   :backend ,backend
+		   :output-file ,output-file
+		   :install-function (cl-cont:lambda/cc () ,@body))))
 
 (defun installer-continuation (c)
   (let ((installer *installer*))
