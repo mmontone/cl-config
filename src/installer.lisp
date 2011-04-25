@@ -48,9 +48,14 @@
 	(let ((install-function (install-function installer)))
 	  (lambda (&rest args)
 	    (let ((*installer* installer))
+	      (handler-bind
+		  ((error (lambda (c)
+			    (install-error c)
+			    (continue c))))
 	      (cl-cont:with-call/cc
-		(apply install-function args) 
-		(reset-installer installer)))))))
+		(let ((result (apply install-function args)))
+		    (reset-installer installer)
+		    result))))))))
 
 (defmethod reset-installer ((installer wizard-installer))
   (setf (current-continuation installer) nil)
@@ -92,15 +97,16 @@
 			 :direct-sections nil)))
   (setf (install-function installer)
 	(let ((install-function (install-function installer)))
-	  (lambda ()
+	  (lambda (&rest args)
 	    (let ((*installer* installer))
 	      (flet ((install-configuration ()
 		       (install-configuration (configuration installer)))
 		     (install-configuration-section (section-name)
 		       (install-configuration-section section-name (configuration installer))))
 		(cl-cont:with-call/cc
-		  (funcall install-function) 
-		  (reset-installer installer))))))))
+		  (let ((result (apply install-function args) ))
+		    (reset-installer installer)
+		    result))))))))
 
 (defclass standard-installer (wizard-installer configuration-installer)
   ()
