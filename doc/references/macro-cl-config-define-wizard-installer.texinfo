@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:define-wizard-installer}
+@deffn {Macro} cl-config:define-wizard-installer name &key &body body
+@findex cl-config:define-wizard-installer
+Define a wizard installer
+@end deffn

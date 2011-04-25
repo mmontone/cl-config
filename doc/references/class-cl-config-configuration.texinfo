@@ -1,0 +1,17 @@
+@anchor{Class cl-config:configuration}
+@deftp {Class} cl-config:configuration
+@tindex cl-config:configuration
+Class precedence list: @code{@w{configuration}, @w{standard-object}, @w{t}}
+
+Slots:
+@itemize
+@item @code{name} --- initargs: @code{@w{:name}}
+
+The configuration name
+@item @code{title} --- initargs: @code{@w{:title}}
+
+Configuration title
+@end itemize
+
+The configuration class
+@end deftp

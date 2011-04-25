@@ -469,7 +469,98 @@ There are two output backends: an sexp-backend and a xml-backend
 @chapter Installer
 @cindex installer
 
-Explanations on how to build an application installer
+CL-Config provides machinery for building your application installers.
+
+In CL-Config an application installer is an instance of the class @emph{installer}. Installers are funcallable, and the idea is to think of installers as a function returning other function, that is, they follow a Continuation Passing Style design.
+
+Some installers features:
+
+@itemize @bullet
+@item
+They are funcallable
+@item
+They are indenpendent of the UI. You can think of an installer as some kind of Controller in MVC. There's a web frontend available for installers; we plan to build some lighter-weight frontends, such as installing from the REPL or from an ncurses interface.
+@item
+They follow a continuation passing design.
+@end itemize
+
+There's a Domain Specific Language for defining installers and in particular, wizard installers. Wizard installers are those that asks for data in different sections or ``pages'' to complete the installation.
+
+To define installers, there are three macros: @emph{define-installer}. @emph{define-wizard-installer} and @emph{define-standard-installer}.
+
+An example of an installer session:
+
+@example
+CFG> *i*
+#<WIZARD-INSTALLER MY-INSTALLER "My installer" {1006C2AB99}>
+@end example
+
+We use funcall to start interacting with the installer:
+
+@example
+CFG> (funcall *i*)
+(:SECTION :WEBAPP-CONFIGURATION "Web configuration")
+@end example
+
+The web configuration section starts
+
+@example
+CFG> (funcall *i*)
+(:INPUT (HTTP-SERVER HOST PORT))
+@end example
+
+We are asked to input the :http-server, the :host and the :port
+
+@example
+CFG> (funcall *i* :http-server :apache :host "localhost" :port 8080)
+(:SECTION :DATABASE-CONFIGURATION "Database configuration")
+@end example
+
+Success. Now we enter the database configuration section.
+
+@example
+CFG> (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+@end example
+
+We are asked to enter database parameters:
+
+@example
+CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :foo)
+(:ERRORS
+ (#<VALIDATION-ERROR
+    FOO value should be one of (SOCKET TCP) on #<ONE-OF-CONFIGURATION-OPTION
+                                                 #<CONFIGURATION-SCHEMA-OPTION
+                                                   CONNECTION-TYPE "Connection type"
+                                                   {1005BDF081}> FOO
+                                                 {10085A57F1}>
+    {10085A6701}>))
+@end example
+
+We entered the parameters, but the :connection-type is not valid. We have to try again.
+
+@example
+CFG> (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :socket)
+(:SECTION :LOGGING-CONFIGURATION "Logging configuration")
+@end example
+
+We succeed this time, and we enter the logging configuration section
+
+@example
+CFG> (funcall *i*)
+(:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+@end example
+
+We are asked for logging section parameters
+
+@example
+CFG> (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+#<CONFIGURATION MY-CONFIG "My config" {1006D3DB91}>
+@end example
+
+We finish the installation and we get the configured configuration as result.
 
 @node Examples
 @chapter Examples

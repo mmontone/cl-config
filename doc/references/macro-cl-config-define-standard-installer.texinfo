@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:define-standard-installer}
+@deffn {Macro} cl-config:define-standard-installer name &key &body body
+@findex cl-config:define-standard-installer
+Defines a standard-installer
+@end deffn

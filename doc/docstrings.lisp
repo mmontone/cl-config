@@ -312,6 +312,7 @@ symbols or lists of symbols."))
 		 :kind (etypecase (find-class x nil)
 			 (structure-class 'structure)
 			 (standard-class 'class)
+			 (sb-mop:funcallable-standard-class 'class)
 			 (sb-pcl::condition-class 'condition)
 			 ((or built-in-class null) 'type))))
 

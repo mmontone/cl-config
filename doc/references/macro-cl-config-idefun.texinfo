@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:idefun}
+@deffn {Macro} cl-config:idefun name args &body body
+@findex cl-config:idefun
+Defines a installer function
+@end deffn

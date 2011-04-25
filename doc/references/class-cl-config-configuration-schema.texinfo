@@ -1,0 +1,26 @@
+@anchor{Class cl-config:configuration-schema}
+@deftp {Class} cl-config:configuration-schema
+@tindex cl-config:configuration-schema
+Class precedence list: @code{@w{configuration-schema}, @w{standard-object}, @w{t}}
+
+Slots:
+@itemize
+@item @code{name} --- initargs: @code{@w{:name}}
+
+The configuration-schema name
+@item @code{parents} --- initargs: @code{@w{:parents}}
+
+Configuration-Schema mixins
+@item @code{title} --- initargs: @code{@w{:title}}
+
+Configuration-Schema title
+@item @code{direct-sections} --- initargs: @code{@w{:direct-sections}}
+
+Configuration-Schema direct-sections
+@item @code{documentation} --- initargs: @code{@w{:documentation}}
+
+Configuration-Schema documentation
+@end itemize
+
+A configuration-schema
+@end deftp

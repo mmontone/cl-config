@@ -4,6 +4,8 @@
   (:export #:with-configuration
 	   #:cfg
 	   #:cfg*
+	   #:configuration
+	   #:configuration-schema
 	   #:*configuration*
 	   #:*configurations*
 	   #:*configuration-schemas*
@@ -34,5 +36,25 @@
 	   #:define-configuration-schema-option-type
 	   #:define-option-validator
 	   #:define-option-processor
+
+	   ;; Installers
+	   #:installer
+	   #:wizard-installer
+	   #:configuration-installer
+	   #:standard-installer
+	   #:go-back
 	   #:define-installer
+	   #:define-wizard-installer
+	   #:define-standard-installer
+	   #:idefun
+	   #:with-input
+	   #:start-section
+	   #:input
+	   #:choose
+	   #:question
+	   #:alert
+	   #:prompt
+	   #:install-warning
+	   #:install-error
+	   #:install-errors
 	   #:repl-installer))

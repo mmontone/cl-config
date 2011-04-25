@@ -34,7 +34,8 @@
 		  :accessor continuations)
    (current-continuation :initform nil
 			 :accessor current-continuation))
-  (:metaclass sb-mop:funcallable-standard-class))
+  (:metaclass sb-mop:funcallable-standard-class)
+  (:documentation "The class for wizard installers"))
 
 (defmethod initialize-instance :after ((installer wizard-installer) &rest initargs)
   (declare (ignore initargs))
@@ -62,6 +63,7 @@
   (setf (continuations installer) nil))
 
 (defmethod go-back ((installer wizard-installer))
+  "Returns to a previous section in a wizard installer"
   (if (continuations installer)
       (progn
 	(pop (continuations installer))
@@ -70,7 +72,7 @@
       ;; else
       (reset-installer installer)))
 
-(defclass configuration-installer ()
+(defclass configuration-installer (installer)
   ((configuration-schema :initarg :configuration-schema
 			 :initform (error "Provide the configuration schema")
 			 :accessor configuration-schema)
@@ -82,7 +84,8 @@
 		:accessor output-file)
    (configuration :accessor configuration
 		  :documentation "Configuration being installed"))
-  (:metaclass sb-mop:funcallable-standard-class))
+  (:metaclass sb-mop:funcallable-standard-class)
+  (:documentation "The class for configuration installers"))
 
 (defmethod initialize-instance :after ((installer configuration-installer) &rest initargs)
   (declare (ignore initargs))
@@ -110,11 +113,13 @@
 
 (defclass standard-installer (wizard-installer configuration-installer)
   ()
-  (:metaclass sb-mop:funcallable-standard-class))
+  (:metaclass sb-mop:funcallable-standard-class)
+  (:documentation "standard-intallers are installers used for installing configurations in a wizard fashion"))
 
 (defvar *installer* nil)
 
 (defmacro define-installer (name (&key title documentation) &body body)
+  "Define a vanilla installer"
   `(make-instance 'installer :name ',name
 		  :title ,title
 		  :documentation ,documentation
@@ -123,6 +128,7 @@
 					,@body))))
 
 (defmacro define-wizard-installer (name (&key title documentation) &body body)
+  "Define a wizard installer"
   `(make-instance 'wizard-installer
 		  :name ',name
 		  :title ,title
@@ -150,12 +156,13 @@
      do
        (install-configuration-section (name section) configuration)))
 
-(defmacro define-configuration-installer (name (&key title
-						     documentation
-						     configuration-schema
-						     backend output-file)
+(defmacro define-standard-installer (name (&key title
+						documentation
+						configuration-schema
+						backend output-file)
 					  &body body)
-  `(make-instance 'configuration-installer
+  "Defines a standard-installer"
+  `(make-instance 'standard-installer
 		  :name ',name
 		  :title ,title
 		  :documentation ,documentation
@@ -164,21 +171,26 @@
 		  :output-file ,output-file
 		  :install-function (cl-cont:lambda/cc () ,@body)))
 
-(defmacro with-input (bindings &body body)
-  `(input ',bindings
-	  (lambda (&key ,@bindings)
-	    ,@body)))
-
-(defmacro idefun (name args &body body)
-  `(cl-cont:defun/cc ,name ,args ,@body))
-
 (defun installer-continuation (c)
   (let ((installer *installer*))
     (cl-cont:lambda/cc (&rest args)
       (let ((*installer* installer))
 	(apply c args)))))
 
+;; Wizard installer operations
+
+(defmacro idefun (name args &body body)
+  "Defines a installer function"
+  `(cl-cont:defun/cc ,name ,args ,@body))
+
+(defmacro with-input (bindings &body body)
+  "Wizard installer operation. Asks for input."
+  `(input ',bindings
+	  (lambda (&key ,@bindings)
+	    ,@body)))
+
 (cl-cont:defun/cc start-section (&optional name title)
+  "Wizard operation. Indicates the installer starts a new section"
   (cl-cont:call/cc
    (lambda (c)
      ;; Keep current continuation
@@ -196,6 +208,7 @@
 	       (list title))))))
 
 (cl-cont:defun/cc input (vars function)
+  "Wizard operation. Ask for input"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -209,6 +222,7 @@
      (list :input vars))))
 
 (cl-cont:defun/cc choose (message &rest options)
+  "Wizard operation. Ask the client to choose one of the options"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -219,6 +233,7 @@
      (list :choose message options))))
 
 (cl-cont:defun/cc question (message)
+  "Wizard operation. As a question to the client"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -229,6 +244,7 @@
      (list :question message))))
 
 (cl-cont:defun/cc alert (message)
+  "Wizard operation. Alert a message"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -239,6 +255,7 @@
      (list :alert message))))
 
 (cl-cont:defun/cc prompt (message)
+  "Wizard operation. Ask the user to enter a string"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -249,6 +266,7 @@
      (list :prompt message))))
 
 (cl-cont:defun/cc install-warning (message)
+  "Wizard operation. Warn the user about something"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -259,6 +277,7 @@
      (list :warning message))))
 
 (cl-cont:defun/cc install-error (message)
+  "Wizard operation. Throws an installation error"
   (cl-cont:call/cc
    (lambda (c)
      ;; Set current continuation to installer
@@ -269,6 +288,7 @@
      (list :error message))))
 
 (cl-cont:defun/cc install-errors (errors)
+  "Wizard operation. Throws several installation errors"
   (cl-cont:call/cc
    (lambda (c)
       ;; Set current continuation to installer

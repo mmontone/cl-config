@@ -1,0 +1,7 @@
+@anchor{Class cl-config:configuration-installer}
+@deftp {Class} cl-config:configuration-installer
+@tindex cl-config:configuration-installer
+Class precedence list: @code{@w{configuration-installer}, @w{installer}, @w{funcallable-standard-object}, @w{function}, @w{standard-object}, @w{t}}
+
+The class for configuration installers
+@end deftp

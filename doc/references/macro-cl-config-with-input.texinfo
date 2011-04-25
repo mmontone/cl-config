@@ -1,0 +1,5 @@
+@anchor{Macro cl-config:with-input}
+@deffn {Macro} cl-config:with-input bindings &body body
+@findex cl-config:with-input
+Wizard installer operation. Asks for input.
+@end deffn

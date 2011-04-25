@@ -22,7 +22,7 @@ separately from the collection, you can do so by adding a copy of the
 license to the document, as described in section 6 of the license.
 
  -->
-<!-- Created on April 21, 2011 by texi2html 1.82
+<!-- Created on April 24, 2011 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -1645,7 +1645,89 @@ Define your own option configurations types and provide validation for them.
 <h1 class="chapter">5. Installer</h1>
 <a name="index-installer"></a>
 
-<p>Explanations on how to build an application installer
+<p>CL-Config provides machinery for building your application installers.
+</p>
+<p>In CL-Config an application installer is an instance of the class <em>installer</em>. Installers are funcallable, and the idea is to think of installers as a function returning other function, that is, they follow a Continuation Passing Style design.
+</p>
+<p>Some installers features:
+</p>
+<ul>
+<li>
+They are funcallable
+</li><li>
+They are indenpendent of the UI. You can think of an installer as some kind of Controller in MVC. There&rsquo;s a web frontend available for installers; we plan to build some lighter-weight frontends, such as installing from the REPL or from an ncurses interface.
+</li><li>
+They follow a continuation passing design.
+</li></ul>
+
+<p>There&rsquo;s a Domain Specific Language for defining installers and in particular, wizard installers. Wizard installers are those that asks for data in different sections or &ldquo;pages&rdquo; to complete the installation.
+</p>
+<p>To define installers, there are three macros: <em>define-installer</em>. <em>define-wizard-installer</em> and <em>define-standard-installer</em>.
+</p>
+<p>An example of an installer session:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; *i*
+#&lt;WIZARD-INSTALLER MY-INSTALLER &quot;My installer&quot; {1006C2AB99&gt;
+</pre></td></tr></table>
+
+<p>We use funcall to start interacting with the installer:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:SECTION :WEBAPP-CONFIGURATION &quot;Web configuration&quot;)
+</pre></td></tr></table>
+
+<p>The web configuration section starts
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (HTTP-SERVER HOST PORT))
+</pre></td></tr></table>
+
+<p>We are asked to input the :http-server, the :host and the :port
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :http-server :apache :host &quot;localhost&quot; :port 8080)
+(:SECTION :DATABASE-CONFIGURATION &quot;Database configuration&quot;)
+</pre></td></tr></table>
+
+<p>Success. Now we enter the database configuration section.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+</pre></td></tr></table>
+
+<p>We are asked to enter database parameters:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :username &quot;mariano&quot; :password &quot;pass&quot; :connection-type :foo)
+(:ERRORS
+ (#&lt;VALIDATION-ERROR
+    FOO value should be one of (SOCKET TCP) on #&lt;ONE-OF-CONFIGURATION-OPTION
+                                                 #&lt;CONFIGURATION-SCHEMA-OPTION
+                                                   CONNECTION-TYPE &quot;Connection type&quot;
+                                                   {1005BDF081&gt; FOO
+                                                 {10085A57F1&gt;
+    {10085A6701&gt;))
+</pre></td></tr></table>
+
+<p>We entered the parameters, but the :connection-type is not valid. We have to try again.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :username &quot;mariano&quot; :password &quot;pass&quot; :connection-type :socket)
+(:SECTION :LOGGING-CONFIGURATION &quot;Logging configuration&quot;)
+</pre></td></tr></table>
+
+<p>We succeed this time, and we enter the logging configuration section
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+</pre></td></tr></table>
+
+<p>We are asked for logging section parameters
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+#&lt;CONFIGURATION MY-CONFIG &quot;My config&quot; {1006D3DB91&gt;
+</pre></td></tr></table>
+
+<p>We finish the installation and we get the configured configuration as result.
 </p>
 <hr size="6">
 <a name="Examples"></a>
@@ -2053,6 +2135,83 @@ Define your own option configurations types and provide validation for them.
 <a name="System-reference-1"></a>
 <h1 class="chapter">9. System reference</h1>
 
+<p><a name="Class-cl_002dconfig_003aconfiguration_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003aconfiguration_002dinstaller"></a><u>Class:</u> <b>cl-config:configuration-installer</b></dt>
+<dd><a name="index-cl_002dconfig_003aconfiguration_002dinstaller-1"></a>
+<p>Class precedence list: <code>configuration-installer, installer, funcallable-standard-object, function, standard-object, t</code>
+</p>
+<p>The class for configuration installers
+</p></dd></dl>
+<p><a name="Class-cl_002dconfig_003aconfiguration_002dschema"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003aconfiguration_002dschema"></a><u>Class:</u> <b>cl-config:configuration-schema</b></dt>
+<dd><a name="index-cl_002dconfig_003aconfiguration_002dschema-1"></a>
+<p>Class precedence list: <code>configuration-schema, standard-object, t</code>
+</p>
+<p>Slots:
+</p><ul>
+<li> <code>name</code> &mdash; initargs: <code>:name</code>
+
+<p>The configuration-schema name
+</p></li><li> <code>parents</code> &mdash; initargs: <code>:parents</code>
+
+<p>Configuration-Schema mixins
+</p></li><li> <code>title</code> &mdash; initargs: <code>:title</code>
+
+<p>Configuration-Schema title
+</p></li><li> <code>direct-sections</code> &mdash; initargs: <code>:direct-sections</code>
+
+<p>Configuration-Schema direct-sections
+</p></li><li> <code>documentation</code> &mdash; initargs: <code>:documentation</code>
+
+<p>Configuration-Schema documentation
+</p></li></ul>
+
+<p>A configuration-schema
+</p></dd></dl>
+<p><a name="Class-cl_002dconfig_003aconfiguration"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003aconfiguration"></a><u>Class:</u> <b>cl-config:configuration</b></dt>
+<dd><a name="index-cl_002dconfig_003aconfiguration-1"></a>
+<p>Class precedence list: <code>configuration, standard-object, t</code>
+</p>
+<p>Slots:
+</p><ul>
+<li> <code>name</code> &mdash; initargs: <code>:name</code>
+
+<p>The configuration name
+</p></li><li> <code>title</code> &mdash; initargs: <code>:title</code>
+
+<p>Configuration title
+</p></li></ul>
+
+<p>The configuration class
+</p></dd></dl>
+<p><a name="Class-cl_002dconfig_003ainstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003ainstaller"></a><u>Class:</u> <b>cl-config:installer</b></dt>
+<dd><a name="index-cl_002dconfig_003ainstaller-1"></a>
+<p>Class precedence list: <code>installer, funcallable-standard-object, function, standard-object, t</code>
+</p>
+<p>The main installer class. Installer instances are funcallable
+</p></dd></dl>
+<p><a name="Class-cl_002dconfig_003astandard_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003astandard_002dinstaller"></a><u>Class:</u> <b>cl-config:standard-installer</b></dt>
+<dd><a name="index-cl_002dconfig_003astandard_002dinstaller-1"></a>
+<p>Class precedence list: <code>standard-installer, wizard-installer, configuration-installer, installer, funcallable-standard-object, function, standard-object, t</code>
+</p>
+<p>standard-intallers are installers used for installing configurations in a wizard fashion
+</p></dd></dl>
+<p><a name="Class-cl_002dconfig_003awizard_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003awizard_002dinstaller"></a><u>Class:</u> <b>cl-config:wizard-installer</b></dt>
+<dd><a name="index-cl_002dconfig_003awizard_002dinstaller-1"></a>
+<p>Class precedence list: <code>wizard-installer, installer, funcallable-standard-object, function, standard-object, t</code>
+</p>
+<p>The class for wizard installers
+</p></dd></dl>
 <p><a name="Function-cl_002dconfig_003acfg_002a"></a>
 </p><dl>
 <dt><a name="index-cl_002dconfig_003acfg_002a"></a><u>Function:</u> <b>cl-config:cfg*</b><i> path &amp;optional configuration</i></dt>
@@ -2231,6 +2390,12 @@ Define your own option configurations types and provide validation for them.
     (:documentation &quot;Debugging configuration scheme&quot;))
 </pre></td></tr></table>
 </dd></dl>
+<p><a name="Macro-cl_002dconfig_003adefine_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003adefine_002dinstaller"></a><u>Macro:</u> <b>cl-config:define-installer</b><i> name &amp;key &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003adefine_002dinstaller-1"></a>
+<p>Define a vanilla installer
+</p></dd></dl>
 <p><a name="Macro-cl_002dconfig_003adefine_002doption_002dprocessor"></a>
 </p><dl>
 <dt><a name="index-cl_002dconfig_003adefine_002doption_002dprocessor"></a><u>Macro:</u> <b>cl-config:define-option-processor</b><i> type value &amp;body body</i></dt>
@@ -2251,6 +2416,24 @@ Define your own option configurations types and provide validation for them.
                 &quot;~A is not a valid email address in ~A&quot; value option)
 </pre></td></tr></table>
 </dd></dl>
+<p><a name="Macro-cl_002dconfig_003adefine_002dstandard_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003adefine_002dstandard_002dinstaller"></a><u>Macro:</u> <b>cl-config:define-standard-installer</b><i> name &amp;key &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003adefine_002dstandard_002dinstaller-1"></a>
+<p>Defines a standard-installer
+</p></dd></dl>
+<p><a name="Macro-cl_002dconfig_003adefine_002dwizard_002dinstaller"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003adefine_002dwizard_002dinstaller"></a><u>Macro:</u> <b>cl-config:define-wizard-installer</b><i> name &amp;key &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003adefine_002dwizard_002dinstaller-1"></a>
+<p>Define a wizard installer
+</p></dd></dl>
+<p><a name="Macro-cl_002dconfig_003aidefun"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003aidefun"></a><u>Macro:</u> <b>cl-config:idefun</b><i> name args &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003aidefun-1"></a>
+<p>Defines a installer function
+</p></dd></dl>
 <p><a name="Macro-cl_002dconfig_003amake_002dconfiguration"></a>
 </p><dl>
 <dt><a name="index-cl_002dconfig_003amake_002dconfiguration"></a><u>Macro:</u> <b>cl-config:make-configuration</b><i> name parents &amp;rest args</i></dt>
@@ -2309,6 +2492,12 @@ Define your own option configurations types and provide validation for them.
 	   username)))
 </pre></td></tr></table>
 </dd></dl>
+<p><a name="Macro-cl_002dconfig_003awith_002dinput"></a>
+</p><dl>
+<dt><a name="index-cl_002dconfig_003awith_002dinput"></a><u>Macro:</u> <b>cl-config:with-input</b><i> bindings &amp;body body</i></dt>
+<dd><a name="index-cl_002dconfig_003awith_002dinput-1"></a>
+<p>Wizard installer operation. Asks for input.
+</p></dd></dl>
 <p><a name="Macro-cl_002dconfig_003awith_002dschema_002dvalidation"></a>
 </p><dl>
 <dt><a name="index-cl_002dconfig_003awith_002dschema_002dvalidation"></a><u>Macro:</u> <b>cl-config:with-schema-validation</b><i> &amp;optional &amp;body body</i></dt>
@@ -2552,6 +2741,30 @@ Define your own option configurations types and provide validation for them.
 <a name="Class-Index-1"></a>
 <h2 class="section">11.2 Class Index</h2>
 
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Class-Index-1_tp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-tp">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Class-Index-1_tp_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration"><code>cl-config:configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration-1"><code>cl-config:configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration_002dinstaller"><code>cl-config:configuration-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration_002dinstaller-1"><code>cl-config:configuration-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration_002dschema"><code>cl-config:configuration-schema</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aconfiguration_002dschema-1"><code>cl-config:configuration-schema</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003ainstaller"><code>cl-config:installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003ainstaller-1"><code>cl-config:installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003astandard_002dinstaller"><code>cl-config:standard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003astandard_002dinstaller-1"><code>cl-config:standard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awizard_002dinstaller"><code>cl-config:wizard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awizard_002dinstaller-1"><code>cl-config:wizard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Class-Index-1_tp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+</td></tr></table>
 
 <hr size="6">
 <a name="Function-_002f-Macro-Index"></a>
@@ -2599,14 +2812,22 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dschema_002doption_002dtype-1"><code>cl-config:define-configuration-schema-option-type</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dconfiguration_002dvalidator-1"><code>cl-config:define-configuration-validator</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dinstaller"><code>cl-config:define-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dinstaller-1"><code>cl-config:define-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dprocessor-1"><code>cl-config:define-option-processor</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002doption_002dvalidator-1"><code>cl-config:define-option-validator</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dstandard_002dinstaller"><code>cl-config:define-standard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dstandard_002dinstaller-1"><code>cl-config:define-standard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dwizard_002dinstaller"><code>cl-config:define-wizard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003adefine_002dwizard_002dinstaller-1"><code>cl-config:define-wizard-installer</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration-1"><code>cl-config:find-configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003afind_002dconfiguration_002dschema-1"><code>cl-config:find-configuration-schema</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aidefun"><code>cl-config:idefun</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003aidefun-1"><code>cl-config:idefun</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003amake_002dconfiguration-1"><code>cl-config:make-configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration"><code>cl-config:with-configuration</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
@@ -2617,6 +2838,8 @@ Define your own option configurations types and provide validation for them.
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dconfiguration_002dvalues-1"><code>cl-config:with-configuration-values</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dcurrent_002dconfiguration_002dvalues-1"><code>cl-config:with-current-configuration-values</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dinput"><code>cl-config:with-input</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dinput-1"><code>cl-config:with-input</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-cl_002dconfig_003awith_002dschema_002dvalidation-1"><code>cl-config:with-schema-validation</code></a></td><td valign="top"><a href="#System-reference">9. System reference</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
@@ -2741,7 +2964,7 @@ Define your own option configurations types and provide validation for them.
 </tr></table>
 <h1>About This Document</h1>
 <p>
-  This document was generated by <em>Mariano</em> on <em>April 21, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Mariano</em> on <em>April 24, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
 </p>
 <p>
   The buttons in the navigation panels have the following meaning:
@@ -2843,7 +3066,7 @@ Define your own option configurations types and provide validation for them.
 <hr size="1">
 <p>
  <font size="-1">
-  This document was generated by <em>Mariano</em> on <em>April 21, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Mariano</em> on <em>April 24, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 

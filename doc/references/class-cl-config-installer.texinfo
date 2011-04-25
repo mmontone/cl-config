@@ -1,0 +1,7 @@
+@anchor{Class cl-config:installer}
+@deftp {Class} cl-config:installer
+@tindex cl-config:installer
+Class precedence list: @code{@w{installer}, @w{funcallable-standard-object}, @w{function}, @w{standard-object}, @w{t}}
+
+The main installer class. Installer instances are funcallable
+@end deftp

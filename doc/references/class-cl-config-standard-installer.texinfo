@@ -1,0 +1,7 @@
+@anchor{Class cl-config:standard-installer}
+@deftp {Class} cl-config:standard-installer
+@tindex cl-config:standard-installer
+Class precedence list: @code{@w{standard-installer}, @w{wizard-installer}, @w{configuration-installer}, @w{installer}, @w{funcallable-standard-object}, @w{function}, @w{standard-object}, @w{t}}
+
+standard-intallers are installers used for installing configurations in a wizard fashion
+@end deftp

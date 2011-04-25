@@ -1,0 +1,7 @@
+@anchor{Class cl-config:wizard-installer}
+@deftp {Class} cl-config:wizard-installer
+@tindex cl-config:wizard-installer
+Class precedence list: @code{@w{wizard-installer}, @w{installer}, @w{funcallable-standard-object}, @w{function}, @w{standard-object}, @w{t}}
+
+The class for wizard installers
+@end deftp
