@@ -277,7 +277,7 @@
      ;; Return what to do
      (list :prompt message))))
 
-(cl-cont:defun/cc install-warning (message)
+(cl-cont:defun/cc install-warning (message &rest args)
   "Wizard operation. Warn the user about something"
   (cl-cont:call/cc
    (lambda (c)
@@ -286,9 +286,9 @@
 	   (installer-continuation c))
 			
       ;; Return what to do
-     (list :warning message))))
+     (list :warning (format nil message args)))))
 
-(cl-cont:defun/cc install-error (message)
+(cl-cont:defun/cc install-error (message &rest args)
   "Wizard operation. Throws an installation error"
   (cl-cont:call/cc
    (lambda (c)
@@ -297,7 +297,7 @@
 	   (installer-continuation c))
      
      ;; Return what to do
-     (list :error message))))
+     (list :error (format nil message args)))))
 
 (cl-cont:defun/cc install-errors (errors)
   "Wizard operation. Throws several installation errors"

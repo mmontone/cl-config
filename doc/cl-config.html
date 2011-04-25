@@ -895,7 +895,7 @@ ul.toc {list-style: none}
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Examples">6. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Some examples
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Configuration-editing">7. Configuration editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               Web tool for configuration editing
+<tr><td align="left" valign="top"><a href="#Frontend">7. Frontend</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                            Tools for configuration editing
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Custom-option-types">8. Custom option types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 How to define custom option types
 </td></tr>
@@ -930,12 +930,25 @@ Configurations
 <tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 Installer
 
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Installers-overview">5.1 Installers overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           An overview of installers
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Defining-installers">5.2 Defining installers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           How to define installers
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Working-with-installers">5.3 Working with installers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       How to work with an installer
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-language">5.4 Installer language</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Explanation of the installer&rsquo;s language
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-examples">5.5 Installer examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Some installers examples
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-frontends">5.6 Installer frontends</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           The installer frontends
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 Examples
 
 </pre></th></tr><tr><td align="left" valign="top"><a href="#Use-cases">6.1 Use cases</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           Typical use cases
 </td></tr>
 <tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
-Configuration editing
+Frontend
 
 Custom option types
 
@@ -1627,7 +1640,7 @@ Define your own option configurations types and provide validation for them.
 <a name="Installer"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Configurations-serialization" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installers-overview" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Configurations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
@@ -1645,6 +1658,42 @@ Define your own option configurations types and provide validation for them.
 <h1 class="chapter">5. Installer</h1>
 <a name="index-installer"></a>
 
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Installers-overview">5.1 Installers overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           An overview of installers
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Defining-installers">5.2 Defining installers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           How to define installers
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Working-with-installers">5.3 Working with installers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       How to work with an installer
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-language">5.4 Installer language</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Explanation of the installer&rsquo;s language
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-examples">5.5 Installer examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            Some installers examples
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Installer-frontends">5.6 Installer frontends</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           The installer frontends
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Installers-overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installer" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-installers" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installers-overview-1"></a>
+<h2 class="section">5.1 Installers overview</h2>
+
 <p>CL-Config provides machinery for building your application installers.
 </p>
 <p>In CL-Config an application installer is an instance of the class <em>installer</em>. Installers are funcallable, and the idea is to think of installers as a function returning other function, that is, they follow a Continuation Passing Style design.
@@ -1660,14 +1709,56 @@ They are indenpendent of the UI. You can think of an installer as some kind of C
 They follow a continuation passing design.
 </li></ul>
 
+<hr size="6">
+<a name="Defining-installers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installers-overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-installers" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Defining-installers-1"></a>
+<h2 class="section">5.2 Defining installers</h2>
+
 <p>There&rsquo;s a Domain Specific Language for defining installers and in particular, wizard installers. Wizard installers are those that asks for data in different sections or &ldquo;pages&rdquo; to complete the installation.
 </p>
 <p>To define installers, there are three macros: <em>define-installer</em>. <em>define-wizard-installer</em> and <em>define-standard-installer</em>.
 </p>
+<hr size="6">
+<a name="Working-with-installers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Defining-installers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-language" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Working-with-installers-1"></a>
+<h2 class="section">5.3 Working with installers</h2>
+
 <p>An example of an installer session:
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; *i*
-#&lt;WIZARD-INSTALLER MY-INSTALLER &quot;My installer&quot; {1006C2AB99&gt;
+#&lt;WIZARD-INSTALLER MY-INSTALLER &quot;My installer&quot; {1006C2AB99}&gt;
 </pre></td></tr></table>
 
 <p>We use funcall to start interacting with the installer:
@@ -1702,9 +1793,9 @@ They follow a continuation passing design.
     FOO value should be one of (SOCKET TCP) on #&lt;ONE-OF-CONFIGURATION-OPTION
                                                  #&lt;CONFIGURATION-SCHEMA-OPTION
                                                    CONNECTION-TYPE &quot;Connection type&quot;
-                                                   {1005BDF081&gt; FOO
-                                                 {10085A57F1&gt;
-    {10085A6701&gt;))
+                                                   {1005BDF081}&gt; FOO
+                                                 {10085A57F1}&gt;
+    {10085A6701}&gt;))
 </pre></td></tr></table>
 
 <p>We entered the parameters, but the :connection-type is not valid. We have to try again.
@@ -1724,20 +1815,407 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <p>We are asked for logging section parameters
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
-#&lt;CONFIGURATION MY-CONFIG &quot;My config&quot; {1006D3DB91&gt;
+#&lt;CONFIGURATION MY-CONFIG &quot;My config&quot; {1006D3DB91}&gt;
 </pre></td></tr></table>
 
 <p>We finish the installation and we get the configured configuration as result.
 </p>
 <hr size="6">
+<a name="Installer-language"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Working-with-installers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installer-language-1"></a>
+<h2 class="section">5.4 Installer language</h2>
+
+<p>There&rsquo;s a Domain Specific Language for defining installers. The special installer language forms are the following:
+</p>
+<ul>
+<li>
+<em>with-input</em> with-input is used to ask for client input.
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(with-input <em>bindings</em> &amp;body <em>body</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:input <em>bindings</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">   (with-input (username password1 password2)
+       (if (equalp password1 password2)
+          ...
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:input (username password1 password2))
+</pre></td></tr></table>
+
+<p>and to provide the data:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(funcall *i* :username &quot;foo&quot; :password1 &quot;bar&quot; :password2 &quot;bar&quot;)
+</pre></td></tr></table>
+
+<p>In general, input data can be obtained, for example, from a web form.
+</p>
+</li><li>
+<em>start-section</em> start-section is used to indicate the beginning of a installing section.
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(start-section &amp;optional <em>name</em> <em>title</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:section &amp;optional <em>name</em> <em>title</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(start-section :database-configuration &quot;Database configuration&quot;)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:section :database-configuration &quot;Database configuration&quot;)
+</pre></td></tr></table>
+
+<p>In general, a section change involves a &ldquo;page switch&rdquo; in the installer&rsquo;s frontend.
+</p>
+</li><li>
+<em>choose</em> choose is used to ask the client to choose among a list of options.
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(choose <em>message</em> &amp;rest <em>options</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:choose <em>message</em> <em>options</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(choose &quot;Connection type&quot; :socket :url)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:choose &quot;Connection type&quot; (:socket :url))
+</pre></td></tr></table>
+
+<p>and to provide the data:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(funcall *i* :socket)
+</pre></td></tr></table>
+
+</li><li>
+<em>question</em> question is used to ask the client to choose among a list of options.
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(question <em>message</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:question <em>message</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(question &quot;Handle errors?&quot;)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:question &quot;Handle errors?&quot;)
+</pre></td></tr></table>
+
+<p>and to provide the decision (t or nil):
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(funcall *i* t)
+</pre></td></tr></table>
+
+</li><li>
+<em>alert</em> alert is used to inform the user about something
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(alert <em>message</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:alert <em>message</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(alert &quot;This is an alert&quot;)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:alert &quot;This is an alert&quot;)
+</pre></td></tr></table>
+
+</li><li>
+<em>prompt</em> prompt is used to ask the client to enter some text (string).
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(prompt <em>message</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:prompt <em>message</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(prompt &quot;Username&quot;)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:prompt &quot;Username&quot;)
+</pre></td></tr></table>
+
+<p>and to provide the data:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(funcall *i* &quot;Mariano&quot;)
+</pre></td></tr></table>
+
+</li><li>
+<em>install-warning</em> and <em>install-error</em> are used to signal warnings and errors in the installation.
+
+<p>Syntax:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(install-warning <em>message</em>)
+(install-error <em>message</em>)
+</pre></td></tr></table>
+
+<p>Installer result:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">(:install-warning <em>message</em> &amp;rest <em>args</em>)
+(:install-error <em>message</em> &amp;rest <em>args</em>)
+</pre></td></tr></table>
+
+<p>Example:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(install-error &quot;Cannot write to file ~A&quot; #p&quot;/home/foo/bar&quot;)
+</pre></td></tr></table>
+
+<p>and the installer result:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(:install-error &quot;Cannot write to file /home/foo/bar&quot;)
+</pre></td></tr></table>
+
+</li></ul>
+
+<hr size="6">
+<a name="Installer-examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installer-language" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-frontends" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installer-examples-1"></a>
+<h2 class="section">5.5 Installer examples</h2>
+
+<p>An example of an installer session:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; *i*
+#&lt;WIZARD-INSTALLER MY-INSTALLER &quot;My installer&quot; {1006C2AB99}&gt;
+</pre></td></tr></table>
+
+<p>We use funcall to start interacting with the installer:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:SECTION :WEBAPP-CONFIGURATION &quot;Web configuration&quot;)
+</pre></td></tr></table>
+
+<p>The web configuration section starts
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (HTTP-SERVER HOST PORT))
+</pre></td></tr></table>
+
+<p>We are asked to input the :http-server, the :host and the :port
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :http-server :apache :host &quot;localhost&quot; :port 8080)
+(:SECTION :DATABASE-CONFIGURATION &quot;Database configuration&quot;)
+</pre></td></tr></table>
+
+<p>Success. Now we enter the database configuration section.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+</pre></td></tr></table>
+
+<p>We are asked to enter database parameters:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :username &quot;mariano&quot; :password &quot;pass&quot; :connection-type :foo)
+(:ERRORS
+ (#&lt;VALIDATION-ERROR
+    FOO value should be one of (SOCKET TCP) on #&lt;ONE-OF-CONFIGURATION-OPTION
+                                                 #&lt;CONFIGURATION-SCHEMA-OPTION
+                                                   CONNECTION-TYPE &quot;Connection type&quot;
+                                                   {1005BDF081}&gt; FOO
+                                                 {10085A57F1}&gt;
+    {10085A6701}&gt;))
+</pre></td></tr></table>
+
+<p>We entered the parameters, but the :connection-type is not valid. We have to try again.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :username &quot;mariano&quot; :password &quot;pass&quot; :connection-type :socket)
+(:SECTION :LOGGING-CONFIGURATION &quot;Logging configuration&quot;)
+</pre></td></tr></table>
+
+<p>We succeed this time, and we enter the logging configuration section
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i*)
+(:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+</pre></td></tr></table>
+
+<p>We are asked for logging section parameters
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">CFG&gt; (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+#&lt;CONFIGURATION MY-CONFIG &quot;My config&quot; {1006D3DB91}&gt;
+</pre></td></tr></table>
+
+<p>We finish the installation and we get the configured configuration as result.
+</p>
+<hr size="6">
+<a name="Installer-frontends"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installer-examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Web-installer-frontend" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Installer-frontends-1"></a>
+<h2 class="section">5.6 Installer frontends</h2>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Web-installer-frontend">5.6.1 Web installer frontend</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              The web installer frontend
+</td></tr>
+<tr><td align="left" valign="top"><a href="#REPL-installer-frontend">5.6.2 REPL installer frontend</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             The simple REPL installer frontend
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Ncurses-installer-frontend">5.6.3 Ncurses installer frontend</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          The Ncurses installer frontend
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Web-installer-frontend"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Installer-frontends" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#REPL-installer-frontend" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-frontends" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Web-installer-frontend-1"></a>
+<h3 class="subsection">5.6.1 Web installer frontend</h3>
+
+<hr size="6">
+<a name="REPL-installer-frontend"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Web-installer-frontend" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Ncurses-installer-frontend" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-frontends" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="REPL-installer-frontend-1"></a>
+<h3 class="subsection">5.6.2 REPL installer frontend</h3>
+
+<hr size="6">
+<a name="Ncurses-installer-frontend"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#REPL-installer-frontend" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Installer-frontends" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Ncurses-installer-frontend-1"></a>
+<h3 class="subsection">5.6.3 Ncurses installer frontend</h3>
+
+<hr size="6">
 <a name="Examples"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Installer" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#Ncurses-installer-frontend" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Installer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1939,7 +2417,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Examples" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1971,7 +2449,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -1993,7 +2471,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -2015,7 +2493,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -2033,11 +2511,11 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <a name="Deployment"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Testing" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Use-cases" title="Up section"> Up </a>]</td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -2052,7 +2530,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <a name="index-deployment"></a>
 
 <hr size="6">
-<a name="Configuration-editing"></a>
+<a name="Frontend"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Deployment" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Custom-option-types" title="Next section in reading order"> &gt; </a>]</td>
@@ -2069,8 +2547,8 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <td valign="middle" align="left">[<a href="#Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<a name="Configuration-editing-1"></a>
-<h1 class="chapter">7. Configuration editing</h1>
+<a name="Frontend-1"></a>
+<h1 class="chapter">7. Frontend</h1>
 
 <p>Configurations can be edited from a web interface.
 </p>
@@ -2089,10 +2567,10 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
 <hr size="6">
 <a name="Custom-option-types"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#Configuration-editing" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#Frontend" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#System-reference" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
-<td valign="middle" align="left">[<a href="#Configuration-editing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Frontend" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
 <td valign="middle" align="left">[<a href="#System-reference" title="Next chapter"> &gt;&gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
@@ -2939,7 +3417,21 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
     <li><a name="toc-Working-with-configurations-1" href="#Working-with-configurations">4.1 Working with configurations</a></li>
     <li><a name="toc-Configurations-serialization-1" href="#Configurations-serialization">4.2 Configurations serialization</a></li>
   </ul></li>
-  <li><a name="toc-Installer-1" href="#Installer">5. Installer</a></li>
+  <li><a name="toc-Installer-1" href="#Installer">5. Installer</a>
+  <ul class="toc">
+    <li><a name="toc-Installers-overview-1" href="#Installers-overview">5.1 Installers overview</a></li>
+    <li><a name="toc-Defining-installers-1" href="#Defining-installers">5.2 Defining installers</a></li>
+    <li><a name="toc-Working-with-installers-1" href="#Working-with-installers">5.3 Working with installers</a></li>
+    <li><a name="toc-Installer-language-1" href="#Installer-language">5.4 Installer language</a></li>
+    <li><a name="toc-Installer-examples-1" href="#Installer-examples">5.5 Installer examples</a></li>
+    <li><a name="toc-Installer-frontends-1" href="#Installer-frontends">5.6 Installer frontends</a>
+    <ul class="toc">
+      <li><a name="toc-Web-installer-frontend-1" href="#Web-installer-frontend">5.6.1 Web installer frontend</a></li>
+      <li><a name="toc-REPL-installer-frontend-1" href="#REPL-installer-frontend">5.6.2 REPL installer frontend</a></li>
+      <li><a name="toc-Ncurses-installer-frontend-1" href="#Ncurses-installer-frontend">5.6.3 Ncurses installer frontend</a></li>
+    </ul>
+</li>
+  </ul></li>
   <li><a name="toc-Examples-1" href="#Examples">6. Examples</a>
   <ul class="toc">
     <li><a name="toc-Use-cases-1" href="#Use-cases">6.1 Use cases</a>
@@ -2951,7 +3443,7 @@ CFG&gt; (funcall *i* :name &quot;my-database&quot; :host &quot;localhost&quot; :
     </ul>
 </li>
   </ul></li>
-  <li><a name="toc-Configuration-editing-1" href="#Configuration-editing">7. Configuration editing</a></li>
+  <li><a name="toc-Frontend-1" href="#Frontend">7. Frontend</a></li>
   <li><a name="toc-Custom-option-types-1" href="#Custom-option-types">8. Custom option types</a></li>
   <li><a name="toc-System-reference-1" href="#System-reference">9. System reference</a></li>
   <li><a name="toc-References-1" href="#References">10. References</a></li>

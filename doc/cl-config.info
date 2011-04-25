@@ -42,7 +42,7 @@ This is cl-config Common Lisp library documentation
 * Configurations::                      What configurations are and how to define them
 * Installer::                           How to create an application installer
 * Examples::                            Some examples
-* Configuration editing::               Web tool for configuration editing
+* Frontend::                            Tools for configuration editing
 * Custom option types::                 How to define custom option types
 * System reference::                    The system reference
 * References::                          Related work
@@ -68,11 +68,18 @@ Configurations
 
 Installer
 
+* Installers overview::           An overview of installers
+* Defining installers::           How to define installers
+* Working with installers::       How to work with an installer
+* Installer language::            Explanation of the installer's language
+* Installer examples::            Some installers examples
+* Installer frontends::           The installer frontends
+
 Examples
 
 * Use cases::                           Typical use cases
 
-Configuration editing
+Frontend
 
 Custom option types
 
@@ -467,10 +474,372 @@ File: cl-config.info,  Node: Installer,  Next: Examples,  Prev: Configurations, 
 5 Installer
 ***********
 
-Explanations on how to build an application installer
+* Menu:
+
+* Installers overview::           An overview of installers
+* Defining installers::           How to define installers
+* Working with installers::       How to work with an installer
+* Installer language::            Explanation of the installer's language
+* Installer examples::            Some installers examples
+* Installer frontends::           The installer frontends
 
 
-File: cl-config.info,  Node: Examples,  Next: Configuration editing,  Prev: Installer,  Up: Top
+File: cl-config.info,  Node: Installers overview,  Next: Defining installers,  Up: Installer
+
+5.1 Installers overview
+=======================
+
+CL-Config provides machinery for building your application installers.
+
+   In CL-Config an application installer is an instance of the class
+_installer_. Installers are funcallable, and the idea is to think of
+installers as a function returning other function, that is, they follow
+a Continuation Passing Style design.
+
+   Some installers features:
+
+   * They are funcallable
+
+   * They are indenpendent of the UI. You can think of an installer as
+     some kind of Controller in MVC. There's a web frontend available
+     for installers; we plan to build some lighter-weight frontends,
+     such as installing from the REPL or from an ncurses interface.
+
+   * They follow a continuation passing design.
+
+
+File: cl-config.info,  Node: Defining installers,  Next: Working with installers,  Prev: Installers overview,  Up: Installer
+
+5.2 Defining installers
+=======================
+
+There's a Domain Specific Language for defining installers and in
+particular, wizard installers. Wizard installers are those that asks
+for data in different sections or "pages" to complete the installation.
+
+   To define installers, there are three macros: _define-installer_.
+_define-wizard-installer_ and _define-standard-installer_.
+
+
+File: cl-config.info,  Node: Working with installers,  Next: Installer language,  Prev: Defining installers,  Up: Installer
+
+5.3 Working with installers
+===========================
+
+An example of an installer session:
+
+     CFG> *i*
+     #<WIZARD-INSTALLER MY-INSTALLER "My installer" {1006C2AB99}>
+
+   We use funcall to start interacting with the installer:
+
+     CFG> (funcall *i*)
+     (:SECTION :WEBAPP-CONFIGURATION "Web configuration")
+
+   The web configuration section starts
+
+     CFG> (funcall *i*)
+     (:INPUT (HTTP-SERVER HOST PORT))
+
+   We are asked to input the :http-server, the :host and the :port
+
+     CFG> (funcall *i* :http-server :apache :host "localhost" :port 8080)
+     (:SECTION :DATABASE-CONFIGURATION "Database configuration")
+
+   Success. Now we enter the database configuration section.
+
+     CFG> (funcall *i*)
+     (:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+
+   We are asked to enter database parameters:
+
+     CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :foo)
+     (:ERRORS
+      (#<VALIDATION-ERROR
+         FOO value should be one of (SOCKET TCP) on #<ONE-OF-CONFIGURATION-OPTION
+                                                      #<CONFIGURATION-SCHEMA-OPTION
+                                                        CONNECTION-TYPE "Connection type"
+                                                        {1005BDF081}> FOO
+                                                      {10085A57F1}>
+         {10085A6701}>))
+
+   We entered the parameters, but the :connection-type is not valid. We
+have to try again.
+
+     CFG> (funcall *i*)
+     (:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+     CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :socket)
+     (:SECTION :LOGGING-CONFIGURATION "Logging configuration")
+
+   We succeed this time, and we enter the logging configuration section
+
+     CFG> (funcall *i*)
+     (:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+
+   We are asked for logging section parameters
+
+     CFG> (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+     #<CONFIGURATION MY-CONFIG "My config" {1006D3DB91}>
+
+   We finish the installation and we get the configured configuration
+as result.
+
+
+File: cl-config.info,  Node: Installer language,  Next: Installer examples,  Prev: Working with installers,  Up: Installer
+
+5.4 Installer language
+======================
+
+There's a Domain Specific Language for defining installers. The special
+installer language forms are the following:
+
+   * _with-input_ with-input is used to ask for client input.
+
+     Syntax:
+
+          (with-input _bindings_ &body _body_)
+
+     Installer result:
+          (:input _bindings_)
+
+     Example:
+
+             (with-input (username password1 password2)
+                 (if (equalp password1 password2)
+                    ...
+
+     and the installer result:
+
+          (:input (username password1 password2))
+
+     and to provide the data:
+
+          (funcall *i* :username "foo" :password1 "bar" :password2 "bar")
+
+     In general, input data can be obtained, for example, from a web
+     form.
+
+   * _start-section_ start-section is used to indicate the beginning of
+     a installing section.
+
+     Syntax:
+
+          (start-section &optional _name_ _title_)
+
+     Installer result:
+          (:section &optional _name_ _title_)
+
+     Example:
+
+          (start-section :database-configuration "Database configuration")
+
+     and the installer result:
+
+          (:section :database-configuration "Database configuration")
+
+     In general, a section change involves a "page switch" in the
+     installer's frontend.
+
+   * _choose_ choose is used to ask the client to choose among a list
+     of options.
+
+     Syntax:
+
+          (choose _message_ &rest _options_)
+
+     Installer result:
+          (:choose _message_ _options_)
+
+     Example:
+
+          (choose "Connection type" :socket :url)
+
+     and the installer result:
+
+          (:choose "Connection type" (:socket :url))
+
+     and to provide the data:
+
+          (funcall *i* :socket)
+
+   * _question_ question is used to ask the client to choose among a
+     list of options.
+
+     Syntax:
+
+          (question _message_)
+
+     Installer result:
+          (:question _message_)
+
+     Example:
+
+          (question "Handle errors?")
+
+     and the installer result:
+
+          (:question "Handle errors?")
+
+     and to provide the decision (t or nil):
+
+          (funcall *i* t)
+
+   * _alert_ alert is used to inform the user about something
+
+     Syntax:
+
+          (alert _message_)
+
+     Installer result:
+          (:alert _message_)
+
+     Example:
+
+          (alert "This is an alert")
+
+     and the installer result:
+
+          (:alert "This is an alert")
+
+   * _prompt_ prompt is used to ask the client to enter some text
+     (string).
+
+     Syntax:
+
+          (prompt _message_)
+
+     Installer result:
+          (:prompt _message_)
+
+     Example:
+
+          (prompt "Username")
+
+     and the installer result:
+
+          (:prompt "Username")
+
+     and to provide the data:
+
+          (funcall *i* "Mariano")
+
+   * _install-warning_ and _install-error_ are used to signal warnings
+     and errors in the installation.
+
+     Syntax:
+
+          (install-warning _message_)
+          (install-error _message_)
+
+     Installer result:
+          (:install-warning _message_ &rest _args_)
+          (:install-error _message_ &rest _args_)
+
+     Example:
+
+          (install-error "Cannot write to file ~A" #p"/home/foo/bar")
+
+     and the installer result:
+
+          (:install-error "Cannot write to file /home/foo/bar")
+
+
+
+File: cl-config.info,  Node: Installer examples,  Next: Installer frontends,  Prev: Installer language,  Up: Installer
+
+5.5 Installer examples
+======================
+
+An example of an installer session:
+
+     CFG> *i*
+     #<WIZARD-INSTALLER MY-INSTALLER "My installer" {1006C2AB99}>
+
+   We use funcall to start interacting with the installer:
+
+     CFG> (funcall *i*)
+     (:SECTION :WEBAPP-CONFIGURATION "Web configuration")
+
+   The web configuration section starts
+
+     CFG> (funcall *i*)
+     (:INPUT (HTTP-SERVER HOST PORT))
+
+   We are asked to input the :http-server, the :host and the :port
+
+     CFG> (funcall *i* :http-server :apache :host "localhost" :port 8080)
+     (:SECTION :DATABASE-CONFIGURATION "Database configuration")
+
+   Success. Now we enter the database configuration section.
+
+     CFG> (funcall *i*)
+     (:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+
+   We are asked to enter database parameters:
+
+     CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :foo)
+     (:ERRORS
+      (#<VALIDATION-ERROR
+         FOO value should be one of (SOCKET TCP) on #<ONE-OF-CONFIGURATION-OPTION
+                                                      #<CONFIGURATION-SCHEMA-OPTION
+                                                        CONNECTION-TYPE "Connection type"
+                                                        {1005BDF081}> FOO
+                                                      {10085A57F1}>
+         {10085A6701}>))
+
+   We entered the parameters, but the :connection-type is not valid. We
+have to try again.
+
+     CFG> (funcall *i*)
+     (:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+     CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :socket)
+     (:SECTION :LOGGING-CONFIGURATION "Logging configuration")
+
+   We succeed this time, and we enter the logging configuration section
+
+     CFG> (funcall *i*)
+     (:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+
+   We are asked for logging section parameters
+
+     CFG> (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+     #<CONFIGURATION MY-CONFIG "My config" {1006D3DB91}>
+
+   We finish the installation and we get the configured configuration
+as result.
+
+
+File: cl-config.info,  Node: Installer frontends,  Prev: Installer examples,  Up: Installer
+
+5.6 Installer frontends
+=======================
+
+* Menu:
+
+* Web installer frontend::              The web installer frontend
+* REPL installer frontend::             The simple REPL installer frontend
+* Ncurses installer frontend::          The Ncurses installer frontend
+
+
+File: cl-config.info,  Node: Web installer frontend,  Next: REPL installer frontend,  Up: Installer frontends
+
+5.6.1 Web installer frontend
+----------------------------
+
+
+File: cl-config.info,  Node: REPL installer frontend,  Next: Ncurses installer frontend,  Prev: Web installer frontend,  Up: Installer frontends
+
+5.6.2 REPL installer frontend
+-----------------------------
+
+
+File: cl-config.info,  Node: Ncurses installer frontend,  Prev: REPL installer frontend,  Up: Installer frontends
+
+5.6.3 Ncurses installer frontend
+--------------------------------
+
+
+File: cl-config.info,  Node: Examples,  Next: Frontend,  Prev: Installer,  Up: Top
 
 6 Examples
 **********
@@ -607,68 +976,50 @@ File: cl-config.info,  Node: Examples,  Next: Configuration editing,  Prev: Inst
             (:debugging-levels (:warning :error)))
          (:documentation "Testing configuration scheme"))
 
-   The typical attributes types are, :text, where the user fill text
-in; :one-of options*, where the user chooses one of the options in
-options*; :list list*, where the user selects one or more of the items
-of the list *list; :bool, a boolean, :maybe option, where the user can
-disable or enable option, etc.
+   An installer example:
 
-   Configurations can inherit from several configurations (that act
-like mixins). The same as with classes or models or templates. So, for
-example, web-app-configuration inherits from logging-configuration.
-That means the web-app-configuration will have the sections defined in
-logging-configuration too.
+     (defmacro configure-section (section configuration options)
+       (let ((fname (gensym "CONFIGURE-SECTION-")))
+       `(labels ((,fname ()
+     	    (with-input ,(mapcar (lambda (option)
+     			  (intern (symbol-name option)))
+     			options)
+     	      (collecting-validation-errors (errors found-p)
+     		  (progn
+     		    ,@(loop for option in options
+     			 collect
+     			   `(setf (get-option-value (list ,section ,option)
+     						    ,configuration)
+     				  ,(intern (symbol-name option)))))
+     		(when found-p
+     		  (install-errors errors)
+     		  (,fname))))))
+          (,fname))))
 
-   Documentation is used as a section or configuration help from the
-UI. From the UI, each section is shown collapsable and there's and
-option for showing/hiding advanced fields, and the help button.
+     (define-wizard-installer my-installer
+         (:title "My installer"
+     	    :documentation "This is my installer")
+       (let ((configuration (cfg:with-schema-validation (nil)
+     			 (make-configuration my-config ()
+     					     (:title "My config")
+     					     (:configuration-schema standard-configuration)))))
 
-   The user can define several configuration schemes for an application
-and switch between the configurations. For example, there will probably
-be a "development configuration", a "deployment configuration", a
-"testing configuration", and so on.
+         ;; Configure web section
+         (start-section :webapp-configuration "Web configuration")
+         (configure-section :webapp-configuration configuration
+     		       (:http-server :host :port))
 
-   There's no need for a GUI, although it is desirable. We can define
-configurations with files, for example:
+         ;; Configure the database section
+         (start-section :database-configuration "Database configuration")
+         (configure-section :database-configuration configuration
+     		       (:name :host :username :password :connection-type))
 
-     (define-configuration-scheme standard-configuration-scheme ()
-        (:configuration standard-configuration)
-        (:database-configuration
-            (:connection-type :socket
-                (:db-socket-configuration
-                   (:path "/tmp/my-socket.soc")))
-            (:username "root")
-            (:password "root")
-            (:database-name "standard-database"))
-        (:webapp-configuration
-            (:host "localhost")
-            (:http-server :hunchentoot)))
-
-     (define-configuration-scheme debug-configuration-scheme (standard-configuration-scheme)
-         (:configuration standard-configuration)
-         (:database-configuration
-             (:database-name "debug-database"))
-         (:logging-configuration
-            (:output-location :file "/tmp/debug.log")
-            (:active-layers :debugging :database
-                (:debugging-levels :info :warning :error)))
-         (:documentation "Debugging configuration scheme"))
-
-     (define-configuration-scheme test-configuration-scheme (standard-configuration-scheme)
-         (:configuration standard-configuration)
-         (:database-configuration
-             (:database-name "test-database"))
-         (:logging-configuration
-            (:output-location :file "/tmp/test.log")
-            (:active-layers :debugging :database
-                (:debugging-levels :warning :error)))
-         (:documentation "Testing configuration scheme"))
-
-   And then we attach the desired configuration to the application:
-
-     (defapplication my-application (standard-application)
-        ...
-        (:configuration 'debug-configuration-scheme))
+         ;; Configure logging section
+         (start-section :logging-configuration "Logging configuration")
+         (configure-section :logging-configuration configuration
+     		       (:backend :debugging-levels :output-location :active-layers))
+         (validate-configuration configuration)
+         configuration))
 
 
 File: cl-config.info,  Node: Use cases,  Up: Examples
@@ -708,10 +1059,10 @@ File: cl-config.info,  Node: Deployment,  Prev: Testing,  Up: Use cases
 ----------------
 
 
-File: cl-config.info,  Node: Configuration editing,  Next: Custom option types,  Prev: Examples,  Up: Top
+File: cl-config.info,  Node: Frontend,  Next: Custom option types,  Prev: Examples,  Up: Top
 
-7 Configuration editing
-***********************
+7 Frontend
+**********
 
 Configurations can be edited from a web interface.
 
@@ -726,7 +1077,7 @@ Configurations can be edited from a web interface.
  [image src="web-editor.png" ]
 
 
-File: cl-config.info,  Node: Custom option types,  Next: System reference,  Prev: Configuration editing,  Up: Top
+File: cl-config.info,  Node: Custom option types,  Next: System reference,  Prev: Frontend,  Up: Top
 
 8 Custom option types
 *********************
@@ -738,6 +1089,72 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
 
 9 System reference
 ******************
+
+ -- Class: cl-config:configuration-installer
+     Class precedence list: `configuration-installer, installer,
+     funcallable-standard-object, function, standard-object, t'
+
+     The class for configuration installers
+
+ -- Class: cl-config:configuration-schema
+     Class precedence list: `configuration-schema, standard-object, t'
+
+     Slots:
+        * `name' -- initargs: `:name'
+
+          The configuration-schema name
+
+        * `parents' -- initargs: `:parents'
+
+          Configuration-Schema mixins
+
+        * `title' -- initargs: `:title'
+
+          Configuration-Schema title
+
+        * `direct-sections' -- initargs: `:direct-sections'
+
+          Configuration-Schema direct-sections
+
+        * `documentation' -- initargs: `:documentation'
+
+          Configuration-Schema documentation
+
+     A configuration-schema
+
+ -- Class: cl-config:configuration
+     Class precedence list: `configuration, standard-object, t'
+
+     Slots:
+        * `name' -- initargs: `:name'
+
+          The configuration name
+
+        * `title' -- initargs: `:title'
+
+          Configuration title
+
+     The configuration class
+
+ -- Class: cl-config:installer
+     Class precedence list: `installer, funcallable-standard-object,
+     function, standard-object, t'
+
+     The main installer class. Installer instances are funcallable
+
+ -- Class: cl-config:standard-installer
+     Class precedence list: `standard-installer, wizard-installer,
+     configuration-installer, installer, funcallable-standard-object,
+     function, standard-object, t'
+
+     standard-intallers are installers used for installing
+     configurations in a wizard fashion
+
+ -- Class: cl-config:wizard-installer
+     Class precedence list: `wizard-installer, installer,
+     funcallable-standard-object, function, standard-object, t'
+
+     The class for wizard installers
 
  -- Function: cl-config:cfg* path &optional configuration
      Function for getting a configuration value (the functional version
@@ -758,6 +1175,13 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
 
  -- Function: cl-config:find-configuration name
      Get a configuration by its name
+
+ -- Function: cl-config:find-installer name
+     Gets an installer by name
+
+ -- Function: cl-config:register-installer installer
+     Registers an installer. The installer can then be obtained via
+     find-installer
 
  -- Function: cl-config.web:start-cl-config-web &optional configuration
      Starts the web configuration editor
@@ -873,6 +1297,9 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
           	      (:catch-errors nil))
               (:documentation "Debugging configuration scheme"))
 
+ -- Macro: cl-config:define-installer name &key &body body
+     Define a vanilla installer
+
  -- Macro: cl-config:define-option-processor type value &body body
      Define a processor for a custom type
 
@@ -886,6 +1313,15 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
                   (value option)
                     (valid-mail-address-p value)
                           "~A is not a valid email address in ~A" value option)
+
+ -- Macro: cl-config:define-standard-installer name &key &body body
+     Defines a standard-installer
+
+ -- Macro: cl-config:define-wizard-installer name &key &body body
+     Define a wizard installer
+
+ -- Macro: cl-config:idefun name args &body body
+     Defines a installer function
 
  -- Macro: cl-config:make-configuration name parents &rest args
      Create a configuration without registering it globally
@@ -926,6 +1362,9 @@ File: cl-config.info,  Node: System reference,  Next: References,  Prev: Custom 
                  (with-configuration-section :database-configuration
           	 (with-current-configuration-values (username)
           	   username)))
+
+ -- Macro: cl-config:with-input bindings &body body
+     Wizard installer operation. Asks for input.
 
  -- Macro: cl-config:with-schema-validation &optional &body body
      Executes body validating or or not the configurations created in
@@ -1016,6 +1455,14 @@ File: cl-config.info,  Node: Class Index,  Next: Function / Macro Index,  Prev: 
 
  [index ]
 * Menu:
+
+* cl-config:configuration:               System reference.     (line 39)
+* cl-config:configuration-installer:     System reference.     (line  7)
+* cl-config:configuration-schema:        System reference.     (line 13)
+* cl-config:installer:                   System reference.     (line 53)
+* cl-config:standard-installer:          System reference.     (line 59)
+* cl-config:wizard-installer:            System reference.     (line 67)
+
 
 File: cl-config.info,  Node: Function / Macro Index,  Next: Variable Index,  Prev: Class Index,  Up: Index
 
@@ -1025,27 +1472,34 @@ File: cl-config.info,  Node: Function / Macro Index,  Next: Variable Index,  Pre
  [index ]
 * Menu:
 
-* cl-config.web:start-cl-config-web:     System reference.    (line  27)
-* cl-config.web:stop-cl-config-web:      System reference.    (line  35)
-* cl-config:cfg:                         System reference.    (line  38)
-* cl-config:cfg*:                        System reference.    (line   7)
-* cl-config:define-configurable-function: System reference.   (line  51)
-* cl-config:define-configuration:        System reference.    (line 125)
-* cl-config:define-configuration-schema: System reference.    (line  77)
+* cl-config.web:start-cl-config-web:     System reference.    (line 100)
+* cl-config.web:stop-cl-config-web:      System reference.    (line 108)
+* cl-config:cfg:                         System reference.    (line 111)
+* cl-config:cfg*:                        System reference.    (line  73)
+* cl-config:define-configurable-function: System reference.   (line 124)
+* cl-config:define-configuration:        System reference.    (line 198)
+* cl-config:define-configuration-schema: System reference.    (line 150)
 * cl-config:define-configuration-schema-option-type: System reference.
-                                                              (line  70)
-* cl-config:define-configuration-validator: System reference. (line 110)
-* cl-config:define-option-processor:     System reference.    (line 141)
-* cl-config:define-option-validator:     System reference.    (line 145)
-* cl-config:find-configuration:          System reference.    (line  24)
-* cl-config:find-configuration-schema:   System reference.    (line  21)
-* cl-config:make-configuration:          System reference.    (line 155)
-* cl-config:with-configuration:          System reference.    (line 178)
-* cl-config:with-configuration-section:  System reference.    (line 158)
-* cl-config:with-configuration-values:   System reference.    (line 168)
+                                                              (line 143)
+* cl-config:define-configuration-validator: System reference. (line 183)
+* cl-config:define-installer:            System reference.    (line 214)
+* cl-config:define-option-processor:     System reference.    (line 217)
+* cl-config:define-option-validator:     System reference.    (line 221)
+* cl-config:define-standard-installer:   System reference.    (line 231)
+* cl-config:define-wizard-installer:     System reference.    (line 234)
+* cl-config:find-configuration:          System reference.    (line  90)
+* cl-config:find-configuration-schema:   System reference.    (line  87)
+* cl-config:find-installer:              System reference.    (line  93)
+* cl-config:idefun:                      System reference.    (line 237)
+* cl-config:make-configuration:          System reference.    (line 240)
+* cl-config:register-installer:          System reference.    (line  96)
+* cl-config:with-configuration:          System reference.    (line 263)
+* cl-config:with-configuration-section:  System reference.    (line 243)
+* cl-config:with-configuration-values:   System reference.    (line 253)
 * cl-config:with-current-configuration-values: System reference.
-                                                              (line 184)
-* cl-config:with-schema-validation:      System reference.    (line 195)
+                                                              (line 269)
+* cl-config:with-input:                  System reference.    (line 280)
+* cl-config:with-schema-validation:      System reference.    (line 283)
 
 
 File: cl-config.info,  Node: Variable Index,  Prev: Function / Macro Index,  Up: Index
@@ -1056,70 +1510,92 @@ File: cl-config.info,  Node: Variable Index,  Prev: Function / Macro Index,  Up:
  [index ]
 * Menu:
 
-* cl-config:*configuration*:             System reference.    (line 210)
-* cl-config:*configuration-schemas*:     System reference.    (line 206)
-* cl-config:*configurations*:            System reference.    (line 213)
+* cl-config:*configuration*:             System reference.    (line 298)
+* cl-config:*configuration-schemas*:     System reference.    (line 294)
+* cl-config:*configurations*:            System reference.    (line 301)
 
 
 
 Tag Table:
 Node: Top1230
-Node: Introduction2886
-Node: Summary3412
-Node: Installation3571
-Node: Feedback3870
-Node: Conventions4050
-Node: Overview5525
-Node: Configuration schemas6455
-Node: Built-in option types10580
-Node: Text11189
-Node: Integer11572
-Node: Boolean11891
-Node: Email12257
-Node: Url12559
-Node: Pathname12960
-Node: One of13430
-Node: List13963
-Node: Configurations14507
-Node: Working with configurations14832
-Node: Configurations serialization15056
-Node: Installer15307
-Node: Examples15479
-Node: Use cases24340
-Node: Debugging24713
-Node: Logging24820
-Node: Testing24939
-Node: Deployment25059
-Node: Configuration editing25169
-Node: Custom option types25590
-Node: System reference25787
-Ref: Function cl-config:cfg*25932
-Ref: Function cl-config:find-configuration-schema26442
-Ref: Function cl-config:find-configuration26542
-Ref: Function cl-config.web:start-cl-config-web26628
-Ref: Function cl-config.web:stop-cl-config-web26908
-Ref: Macro cl-config:cfg26996
-Ref: Macro cl-config:define-configurable-function27459
-Ref: Macro cl-config:define-configuration-schema-option-type28118
-Ref: Macro cl-config:define-configuration-schema28463
-Ref: Macro cl-config:define-configuration-validator29875
-Ref: Macro cl-config:define-configuration30587
-Ref: Macro cl-config:define-option-processor31363
-Ref: Macro cl-config:define-option-validator31473
-Ref: Macro cl-config:make-configuration31870
-Ref: Macro cl-config:with-configuration-section31995
-Ref: Macro cl-config:with-configuration-values32304
-Ref: Macro cl-config:with-configuration32676
-Ref: Macro cl-config:with-current-configuration-values32933
-Ref: Macro cl-config:with-schema-validation33328
-Ref: Variable cl-config:*configuration-schemas*33784
-Ref: Variable cl-config:*configuration*33957
-Ref: Variable cl-config:*configurations*34071
-Node: References34207
-Node: Index34467
-Node: Concept Index34758
-Node: Class Index36720
-Node: Function / Macro Index36884
-Node: Variable Index38596
+Node: Introduction3245
+Node: Summary3771
+Node: Installation3930
+Node: Feedback4229
+Node: Conventions4409
+Node: Overview5884
+Node: Configuration schemas6814
+Node: Built-in option types10939
+Node: Text11548
+Node: Integer11931
+Node: Boolean12250
+Node: Email12616
+Node: Url12918
+Node: Pathname13319
+Node: One of13789
+Node: List14322
+Node: Configurations14866
+Node: Working with configurations15191
+Node: Configurations serialization15415
+Node: Installer15666
+Node: Installers overview16167
+Node: Defining installers17017
+Node: Working with installers17531
+Node: Installer language19906
+Node: Installer examples23283
+Node: Installer frontends25643
+Node: Web installer frontend26010
+Node: REPL installer frontend26182
+Node: Ncurses installer frontend26391
+Node: Examples26575
+Node: Use cases34366
+Node: Debugging34739
+Node: Logging34846
+Node: Testing34965
+Node: Deployment35085
+Node: Frontend35195
+Node: Custom option types35577
+Node: System reference35761
+Ref: Class cl-config:configuration-installer35906
+Ref: Class cl-config:configuration-schema36126
+Ref: Class cl-config:configuration36736
+Ref: Class cl-config:installer37023
+Ref: Class cl-config:standard-installer37227
+Ref: Class cl-config:wizard-installer37540
+Ref: Function cl-config:cfg*37739
+Ref: Function cl-config:find-configuration-schema38249
+Ref: Function cl-config:find-configuration38349
+Ref: Function cl-config:find-installer38435
+Ref: Function cl-config:register-installer38511
+Ref: Function cl-config.web:start-cl-config-web38653
+Ref: Function cl-config.web:stop-cl-config-web38933
+Ref: Macro cl-config:cfg39021
+Ref: Macro cl-config:define-configurable-function39484
+Ref: Macro cl-config:define-configuration-schema-option-type40143
+Ref: Macro cl-config:define-configuration-schema40488
+Ref: Macro cl-config:define-configuration-validator41900
+Ref: Macro cl-config:define-configuration42612
+Ref: Macro cl-config:define-installer43388
+Ref: Macro cl-config:define-option-processor43480
+Ref: Macro cl-config:define-option-validator43590
+Ref: Macro cl-config:define-standard-installer43987
+Ref: Macro cl-config:define-wizard-installer44090
+Ref: Macro cl-config:idefun44188
+Ref: Macro cl-config:make-configuration44272
+Ref: Macro cl-config:with-configuration-section44397
+Ref: Macro cl-config:with-configuration-values44706
+Ref: Macro cl-config:with-configuration45078
+Ref: Macro cl-config:with-current-configuration-values45335
+Ref: Macro cl-config:with-input45730
+Ref: Macro cl-config:with-schema-validation45832
+Ref: Variable cl-config:*configuration-schemas*46288
+Ref: Variable cl-config:*configuration*46461
+Ref: Variable cl-config:*configurations*46575
+Node: References46711
+Node: Index46971
+Node: Concept Index47262
+Node: Class Index49224
+Node: Function / Macro Index49828
+Node: Variable Index52051
 
 End Tag Table

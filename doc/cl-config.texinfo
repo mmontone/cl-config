@@ -87,7 +87,7 @@ This is cl-config Common Lisp library documentation
 * Configurations::                      What configurations are and how to define them
 * Installer::                           How to create an application installer
 * Examples::                            Some examples
-* Configuration editing::               Web tool for configuration editing
+* Frontend::                            Tools for configuration editing
 * Custom option types::                 How to define custom option types
 * System reference::                    The system reference
 * References::                          Related work
@@ -114,11 +114,18 @@ Configurations
 
 Installer
 
+* Installers overview::           An overview of installers
+* Defining installers::           How to define installers
+* Working with installers::       How to work with an installer
+* Installer language::            Explanation of the installer's language
+* Installer examples::            Some installers examples
+* Installer frontends::           The installer frontends
+
 Examples
 
 * Use cases::                           Typical use cases
 
-Configuration editing
+Frontend
 
 Custom option types
 
@@ -469,6 +476,18 @@ There are two output backends: an sexp-backend and a xml-backend
 @chapter Installer
 @cindex installer
 
+@menu
+* Installers overview::           An overview of installers
+* Defining installers::           How to define installers
+* Working with installers::       How to work with an installer
+* Installer language::            Explanation of the installer's language
+* Installer examples::            Some installers examples
+* Installer frontends::           The installer frontends
+@end menu
+
+@node Installers overview
+@section Installers overview
+
 CL-Config provides machinery for building your application installers.
 
 In CL-Config an application installer is an instance of the class @emph{installer}. Installers are funcallable, and the idea is to think of installers as a function returning other function, that is, they follow a Continuation Passing Style design.
@@ -484,15 +503,21 @@ They are indenpendent of the UI. You can think of an installer as some kind of C
 They follow a continuation passing design.
 @end itemize
 
+@node Defining installers
+@section Defining installers
+
 There's a Domain Specific Language for defining installers and in particular, wizard installers. Wizard installers are those that asks for data in different sections or ``pages'' to complete the installation.
 
 To define installers, there are three macros: @emph{define-installer}. @emph{define-wizard-installer} and @emph{define-standard-installer}.
+
+@node Working with installers
+@section Working with installers
 
 An example of an installer session:
 
 @example
 CFG> *i*
-#<WIZARD-INSTALLER MY-INSTALLER "My installer" {1006C2AB99}>
+#<WIZARD-INSTALLER MY-INSTALLER "My installer" @{1006C2AB99@}>
 @end example
 
 We use funcall to start interacting with the installer:
@@ -532,9 +557,9 @@ CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :pas
     FOO value should be one of (SOCKET TCP) on #<ONE-OF-CONFIGURATION-OPTION
                                                  #<CONFIGURATION-SCHEMA-OPTION
                                                    CONNECTION-TYPE "Connection type"
-                                                   {1005BDF081}> FOO
-                                                 {10085A57F1}>
-    {10085A6701}>))
+                                                   @{1005BDF081@}> FOO
+                                                 @{10085A57F1@}>
+    @{10085A6701@}>))
 @end example
 
 We entered the parameters, but the :connection-type is not valid. We have to try again.
@@ -557,10 +582,327 @@ We are asked for logging section parameters
 
 @example
 CFG> (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
-#<CONFIGURATION MY-CONFIG "My config" {1006D3DB91}>
+#<CONFIGURATION MY-CONFIG "My config" @{1006D3DB91@}>
 @end example
 
 We finish the installation and we get the configured configuration as result.
+
+@node Installer language
+@section Installer language
+
+There's a Domain Specific Language for defining installers. The special installer language forms are the following:
+
+@itemize @bullet
+@item
+@emph{with-input} with-input is used to ask for client input.
+
+Syntax:
+
+@example
+(with-input @emph{bindings} &body @emph{body})
+@end example
+
+Installer result:
+@example
+(:input @emph{bindings})
+@end example
+
+Example:
+
+@example
+   (with-input (username password1 password2)
+       (if (equalp password1 password2)
+          ...
+@end example
+
+and the installer result:
+
+@example
+(:input (username password1 password2))
+@end example
+
+and to provide the data:
+
+@example
+(funcall *i* :username "foo" :password1 "bar" :password2 "bar")
+@end example
+
+In general, input data can be obtained, for example, from a web form.
+
+@item
+@emph{start-section} start-section is used to indicate the beginning of a installing section.
+
+Syntax:
+
+@example
+(start-section &optional @emph{name} @emph{title})
+@end example
+
+Installer result:
+@example
+(:section &optional @emph{name} @emph{title})
+@end example
+
+Example:
+
+@example
+(start-section :database-configuration "Database configuration")
+@end example
+
+and the installer result:
+
+@example
+(:section :database-configuration "Database configuration")
+@end example
+
+In general, a section change involves a ``page switch'' in the installer's frontend.
+
+@item
+@emph{choose} choose is used to ask the client to choose among a list of options.
+
+Syntax:
+
+@example
+(choose @emph{message} &rest @emph{options})
+@end example
+
+Installer result:
+@example
+(:choose @emph{message} @emph{options})
+@end example
+
+Example:
+
+@example
+(choose "Connection type" :socket :url)
+@end example
+
+and the installer result:
+
+@example
+(:choose "Connection type" (:socket :url))
+@end example
+
+and to provide the data:
+
+@example
+(funcall *i* :socket)
+@end example
+
+@item
+@emph{question} question is used to ask the client to choose among a list of options.
+
+Syntax:
+
+@example
+(question @emph{message})
+@end example
+
+Installer result:
+@example
+(:question @emph{message})
+@end example
+
+Example:
+
+@example
+(question "Handle errors?")
+@end example
+
+and the installer result:
+
+@example
+(:question "Handle errors?")
+@end example
+
+and to provide the decision (t or nil):
+
+@example
+(funcall *i* t)
+@end example
+
+@item
+@emph{alert} alert is used to inform the user about something
+
+Syntax:
+
+@example
+(alert @emph{message})
+@end example
+
+Installer result:
+@example
+(:alert @emph{message})
+@end example
+
+Example:
+
+@example
+(alert "This is an alert")
+@end example
+
+and the installer result:
+
+@example
+(:alert "This is an alert")
+@end example
+
+@item
+@emph{prompt} prompt is used to ask the client to enter some text (string).
+
+Syntax:
+
+@example
+(prompt @emph{message})
+@end example
+
+Installer result:
+@example
+(:prompt @emph{message})
+@end example
+
+Example:
+
+@example
+(prompt "Username")
+@end example
+
+and the installer result:
+
+@example
+(:prompt "Username")
+@end example
+
+and to provide the data:
+
+@example
+(funcall *i* "Mariano")
+@end example
+
+@item
+@emph{install-warning} and @emph{install-error} are used to signal warnings and errors in the installation.
+
+Syntax:
+
+@example
+(install-warning @emph{message})
+(install-error @emph{message})
+@end example
+
+Installer result:
+@example
+(:install-warning @emph{message} &rest @emph{args})
+(:install-error @emph{message} &rest @emph{args})
+@end example
+
+Example:
+
+@example
+(install-error "Cannot write to file ~A" #p"/home/foo/bar")
+@end example
+
+and the installer result:
+
+@example
+(:install-error "Cannot write to file /home/foo/bar")
+@end example
+
+@end itemize
+
+@node Installer examples
+@section Installer examples
+
+An example of an installer session:
+
+@example
+CFG> *i*
+#<WIZARD-INSTALLER MY-INSTALLER "My installer" @{1006C2AB99@}>
+@end example
+
+We use funcall to start interacting with the installer:
+
+@example
+CFG> (funcall *i*)
+(:SECTION :WEBAPP-CONFIGURATION "Web configuration")
+@end example
+
+The web configuration section starts
+
+@example
+CFG> (funcall *i*)
+(:INPUT (HTTP-SERVER HOST PORT))
+@end example
+
+We are asked to input the :http-server, the :host and the :port
+
+@example
+CFG> (funcall *i* :http-server :apache :host "localhost" :port 8080)
+(:SECTION :DATABASE-CONFIGURATION "Database configuration")
+@end example
+
+Success. Now we enter the database configuration section.
+
+@example
+CFG> (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+@end example
+
+We are asked to enter database parameters:
+
+@example
+CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :foo)
+(:ERRORS
+ (#<VALIDATION-ERROR
+    FOO value should be one of (SOCKET TCP) on #<ONE-OF-CONFIGURATION-OPTION
+                                                 #<CONFIGURATION-SCHEMA-OPTION
+                                                   CONNECTION-TYPE "Connection type"
+                                                   @{1005BDF081@}> FOO
+                                                 @{10085A57F1@}>
+    @{10085A6701@}>))
+@end example
+
+We entered the parameters, but the :connection-type is not valid. We have to try again.
+
+@example
+CFG> (funcall *i*)
+(:INPUT (NAME HOST USERNAME PASSWORD CONNECTION-TYPE))
+CFG> (funcall *i* :name "my-database" :host "localhost" :username "mariano" :password "pass" :connection-type :socket)
+(:SECTION :LOGGING-CONFIGURATION "Logging configuration")
+@end example
+
+We succeed this time, and we enter the logging configuration section
+
+@example
+CFG> (funcall *i*)
+(:INPUT (BACKEND DEBUGGING-LEVELS OUTPUT-LOCATION ACTIVE-LAYERS))
+@end example
+
+We are asked for logging section parameters
+
+@example
+CFG> (funcall *i* :backend :log5 :debugging-levels '(:info) :output-location :file :active-layers '(:debugging))
+#<CONFIGURATION MY-CONFIG "My config" @{1006D3DB91@}>
+@end example
+
+We finish the installation and we get the configured configuration as result.
+
+@node Installer frontends
+@section Installer frontends
+
+@menu
+* Web installer frontend::              The web installer frontend
+* REPL installer frontend::             The simple REPL installer frontend
+* Ncurses installer frontend::          The Ncurses installer frontend
+@end menu
+
+@node Web installer frontend
+@subsection Web installer frontend
+
+@node REPL installer frontend
+@subsection REPL installer frontend
+
+@node Ncurses installer frontend
+@subsection Ncurses installer frontend
 
 @node Examples
 @chapter Examples
@@ -773,8 +1115,8 @@ An installer example:
 @subsection Deployment
 @cindex deployment
 
-@node Configuration editing
-@chapter Configuration editing
+@node Frontend
+@chapter Frontend
 
 Configurations can be edited from a web interface.
 
