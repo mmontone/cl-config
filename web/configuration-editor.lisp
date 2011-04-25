@@ -147,7 +147,11 @@
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
-(defun edit-configuration (configuration stream &key (save-as-new t) (show-title t) (show-origin t) (show-unset t))
+(defun edit-configuration (configuration stream &key (save-as-new t)
+			   (show-title t)
+			   (show-origin t)
+			   (show-unset t)
+			   (show-advanced-p t))
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
 	(save-as-title "")
@@ -221,6 +225,7 @@
 									    (declare (ignore s))
 									    (edit-configuration-section configuration-copy section* stream
 													:show-origin show-origin :show-unset show-unset)))))
+						       (when show-advanced-p
 						       (list
 							(cons "Advanced settings"
 							     (lambda (s)
@@ -286,7 +291,7 @@
 														    "selected")
 												      (str (cfg::title conf)))))))))))))
 
-								)))))
+								))))))
 							       
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new

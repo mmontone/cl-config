@@ -234,7 +234,8 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 			  :save-as-new nil
 			  :show-title nil
 			  :show-origin nil
-			  :show-unset nil))))
+			  :show-unset nil
+			  :show-advanced-p nil))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
