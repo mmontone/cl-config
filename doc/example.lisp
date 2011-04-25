@@ -12,7 +12,8 @@
 			 :configuration 'db-tcp-configuration)))
       (:username "Username" :text :documentation "The database engine username")
       (:password "Password" :text :documentation "The database engine password")
-      (:database-name "Database name" :text)
+      (:name "Database name" :text)
+      (:host "Database host" :text)
       (:database-parameters "Database parameters" :text :default "" :advanced t)))
 
 (define-configuration-schema cl-config-application-configuration ()
@@ -94,7 +95,8 @@
 				(:path "/tmp/my-socket.soc")))
 	    (:username "root")
 	    (:password "root")
-	    (:database-name "standard-database"))
+	    (:name "standard-database")
+	    (:host "localhost"))
   (:section :webapp-configuration
 	    (:http-server :hunchentoot))
   (:section :logging-configuration
@@ -107,7 +109,7 @@
     (:configuration-schema standard-configuration)
     (:title "Debug configuration")
     (:section :database-configuration
-        (:database-name "debug-database"))
+        (:name "debug-database"))
     (:section :logging-configuration
        (:output-location :standard-output)
        (:active-layers (:debugging :database))
@@ -120,7 +122,7 @@
     (:configuration-schema standard-configuration)
     (:title "Test configuration")
     (:section :database-configuration
-        (:database-name "test-database"))
+        (:name "test-database"))
     (:section :logging-configuration
        (:output-location :file :value2 "/tmp/test.log")
        (:active-layers (:debugging :database) :inherit t)
@@ -131,3 +133,48 @@
 ;;    ...
 ;;    (:configuration 'debug-configuration-scheme))
 
+
+;; Installer example
+
+(defmacro configure-section (section configuration options)
+  (let ((fname (gensym "CONFIGURE-SECTION-")))
+  `(labels ((,fname ()
+	    (with-input ,(mapcar (lambda (option)
+			  (intern (symbol-name option)))
+			options)
+	      (collecting-validation-errors (errors found-p)
+		  (progn
+		    ,@(loop for option in options
+			 collect
+			   `(setf (get-option-value (list ,section ,option)
+						    ,configuration)
+				  ,(intern (symbol-name option)))))
+		(when found-p
+		  (install-errors errors)
+		  (,fname))))))
+     (,fname))))
+
+(define-wizard-installer my-installer
+    (:title "My installer"
+	    :documentation "This is my installer")
+  (let ((configuration (cfg:with-schema-validation (nil)
+			 (make-configuration my-config ()
+					     (:title "My config")
+					     (:configuration-schema standard-configuration)))))
+
+    ;; Configure web section
+    (start-section :webapp-configuration "Web configuration")
+    (configure-section :webapp-configuration configuration
+		       (:http-server :host :port))
+    
+    ;; Configure the database section
+    (start-section :database-configuration "Database configuration")
+    (configure-section :database-configuration configuration
+		       (:name :host :username :password :connection-type))
+
+    ;; Configure logging section
+    (start-section :logging-configuration "Logging configuration")
+    (configure-section :logging-configuration configuration
+		       (:backend :debugging-levels :output-location :active-layers))
+    (validate-configuration configuration)
+    configuration))
