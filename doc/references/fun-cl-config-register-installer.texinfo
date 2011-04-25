@@ -1,0 +1,5 @@
+@anchor{Function cl-config:register-installer}
+@deffn {Function} cl-config:register-installer installer
+@findex cl-config:register-installer
+Registers an installer. The installer can then be obtained via find-installer
+@end deffn

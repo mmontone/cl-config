@@ -42,6 +42,8 @@
 	   #:wizard-installer
 	   #:configuration-installer
 	   #:standard-installer
+	   #:find-installer
+	   #:register-installer
 	   #:go-back
 	   #:define-installer
 	   #:define-wizard-installer

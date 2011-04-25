@@ -4,9 +4,11 @@
 (defvar *installers* (make-hash-table :test #'equalp))
 
 (defun find-installer (name)
+  "Gets an installer by name"
   (gethash name *installers*))
 
 (defun register-installer (installer)
+  "Registers an installer. The installer can then be obtained via find-installer"
   (setf (gethash (name installer) *installers*) installer))
 
 (defclass installer ()

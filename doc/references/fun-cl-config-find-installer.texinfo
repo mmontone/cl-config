@@ -1,0 +1,5 @@
+@anchor{Function cl-config:find-installer}
+@deffn {Function} cl-config:find-installer name
+@findex cl-config:find-installer
+Gets an installer by name
+@end deffn

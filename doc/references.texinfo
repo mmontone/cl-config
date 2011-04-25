@@ -7,6 +7,8 @@
 @include references/fun-cl-config-cfg-star.texinfo
 @include references/fun-cl-config-find-configuration-schema.texinfo
 @include references/fun-cl-config-find-configuration.texinfo
+@include references/fun-cl-config-find-installer.texinfo
+@include references/fun-cl-config-register-installer.texinfo
 @include references/fun-cl-config.web-start-cl-config-web.texinfo
 @include references/fun-cl-config.web-stop-cl-config-web.texinfo
 @include references/macro-cl-config-cfg.texinfo
