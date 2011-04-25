@@ -6,7 +6,7 @@
 	(lambda () ,expr))
      ,@body))
 
-(define-condition validation-error ()
+(define-condition validation-error (error)
   ((target :initarg :target
 	   :initform (error "Set up the target")
 	   :accessor target)
