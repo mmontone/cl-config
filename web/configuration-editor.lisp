@@ -151,7 +151,10 @@
 			   (show-title t)
 			   (show-origin t)
 			   (show-unset t)
-			   (show-advanced-p t))
+			   (show-advanced-p t)
+			   (include-section (lambda (section-name)
+					      (declare (ignore section-name))
+					      t)))
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
 	(save-as-title "")
@@ -219,6 +222,7 @@
 						      (append
 						       (loop for section being the hash-values of
 							    (cfg::sections (cfg::configuration-schema configuration-copy))
+							    when (funcall include-section (name section))
 							  collect (cons (cfg::title section)
 									(let ((section* section))
 									  (lambda (s)

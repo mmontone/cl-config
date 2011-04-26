@@ -235,7 +235,9 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 			  :show-title nil
 			  :show-origin nil
 			  :show-unset nil
-			  :show-advanced-p nil))))
+			  :show-advanced-p nil
+			  :include-section (lambda (section-name)
+					     (equalp section-name :import/export))))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
