@@ -13,18 +13,19 @@
 			      (cfg::validation-error 'title "Enter a title")))
 		      (with-output-to-string (s)
 			(with-main-page (s)
-			  (if found-p
-			      (render-form s errors)
-			      (let ((configuration
-				     (cfg::with-schema-validation (nil)
-				       (make-instance 'cfg::configuration
-						      :name (cfg::read-symbol name)
-						      :title title
-						      :parents parents
-						      :configuration-schema (find-configuration-schema schema)
-						      :direct-sections nil
-						      :documentation documentation))))
-				(edit-configuration configuration s :save-as-new nil))))))))
+			  (with-active-tab :configurations s
+			    (if found-p
+				(render-form s errors)
+				(let ((configuration
+				       (cfg::with-schema-validation (nil)
+					 (make-instance 'cfg::configuration
+							:name (cfg::read-symbol name)
+							:title title
+							:parents parents
+							:configuration-schema (find-configuration-schema schema)
+							:direct-sections nil
+							:documentation documentation))))
+				  (edit-configuration configuration s :save-as-new nil)))))))))
 	     (with-html-output (stream)
 	       (htm
 		(:h2 (str "New configuration"))
@@ -168,7 +169,8 @@
 						(remhash (cfg::name configuration) cfg::*configurations*)
 						(with-output-to-string (s)
 						  (with-main-page (s)
-						    (configurations-editor s))))
+						    	(with-active-tab :configurations s
+							  (configurations-editor s)))))
 					      ;; else
 					      (if (plusp (length save-as-name))
 						  (let ((new-conf-name
@@ -182,10 +184,12 @@
 								new-conf)
 							  (with-output-to-string (s)
 							    (with-main-page (s)
-							      (configurations-editor s new-conf))))
+							      	(with-active-tab :configurations s
+								  (configurations-editor s new-conf)))))
 							(with-output-to-string (s)
 							  (with-main-page (s)
-							    (configurations-editor s configuration)))))
+							    (with-active-tab :configurations s
+							      (configurations-editor s configuration))))))
 						  ;; else
 						  (progn
 						    (cfg::collecting-validation-errors (errors found-p)
@@ -193,13 +197,15 @@
 						      (if found-p
 							  (with-output-to-string (s)
 							    (with-main-page (s)
-							      (render-editor errors s)))
+							      (with-active-tab :configurations s
+								(render-editor errors s))))
 							  (progn
 							    (setf (gethash (cfg::name configuration) cfg::*configurations*)
 								  configuration-copy)
 							    (with-output-to-string (s)
 							      (with-main-page (s)
-								(render-editor errors s)))))))))))
+								(with-active-tab :configurations s
+								  (render-editor errors s))))))))))))
 		   (htm
 		    (:div :class "configuration-editor"
 			  (when errors

@@ -74,6 +74,12 @@
 
 (defvar *acceptor* nil)
 
+(define-tabs
+    (:configurations "Configurations" "/editconfs")
+    (:schemas "Configuration schemas" "/schemas")
+  (:import/export "Import/Export" "/import-export")
+  (:about "About" "/about"))
+
 (defun start-cl-config-web (&optional (configuration
 				       (find-configuration
 					'standard-cl-config-web-configuration)))
@@ -133,46 +139,36 @@
 	      :rel "stylesheet"
 	      :href "/static/multiselect/css/ui.multiselect.css"))
       (:body
-       (funcall body stream)
+       (:div :id "container" :class "container"
+	     (:h1 (str (cfg (:general-settings :title)
+			    'standard-cl-config-web-configuration)))
+	     (funcall body stream))
        (:script :language "javascript"
 	   (loop for script in *global-scripts*
 		do
 		(htm (str script)))))))))
 
-(defun root-page ()
-  (with-output-to-string (s)
-    (with-main-page (s)
-      (render-root s))))
+(defun render-configurations-editor (&optional conf)
+  (with-html-output-to-string (s)
+      (with-main-page (s)
+	(with-active-tab :configurations s
+	  (apply #'configurations-editor
+		 s
+		 (when conf
+		   (list (find-configuration (cfg::read-symbol conf)))))))))
 
-(defun render-root (s)
-  (with-html-output (s)
-    (htm
-     (:div :class "container"
-	   (:h1 (str (cfg (:general-settings :title)
-			  'standard-cl-config-web-configuration)))
-	   (with-jquery.ui-tabs s
-	     '(("Configurations" "/editconfs")
-	       ("Configuration schemas" "/schemas")
-	       ("Import/Export" "/import-export")
-	       ("About" "/about")
-	       ))))))
-
-(define-easy-handler (main :uri "/") ()
-  (root-page))
+(define-easy-handler (root :uri "/") ()
+  (render-configurations-editor))
 
 (define-easy-handler (editconfs :uri "/editconfs") (conf)
-    (with-html-output-to-string (s)
-      (with-main-page (s)
-	(apply #'configurations-editor
-	       s
-	       (when conf
-		 (list (find-configuration (cfg::read-symbol conf))))))))
+  (render-configurations-editor conf))
 
 (define-easy-handler (about :uri "/about") ()
   (with-html-output-to-string (s)
     (with-main-page (s)
-      (htm
-       (:div 
+      (with-active-tab :about s
+	(htm
+	 (:div 
 	(:h2 "Homepage")
 	(:a :href "http://github.com/mmontone/cl-config"
 	    :target "_blank"
@@ -213,23 +209,25 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.")))
        
-       ))))
+       )))))
 
 (define-easy-handler (configuration-schemas :uri "/schemas") ()
   (with-html-output-to-string (s)
     (with-main-page (s)
-      (htm
+      (with-active-tab :schemas s
+	(htm
        (:ul
 	(loop for name being the hash-keys of *configuration-schemas*
 	      using (hash-value schema)
 	     do
 	     (htm
 	      (:li (:a :href (format nil "/showsc?schema=~A" (cfg::complete-symbol-name name))
-		       (str (cfg::title schema)))))))))))
+		       (str (cfg::title schema))))))))))))
 	      
 (define-easy-handler (import/export :uri "/import-export") ()
   (with-html-output-to-string (s)
     (with-main-page (s)
+      (with-active-tab :import/export s
       (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s
 			  :save-as-new nil
 			  :show-title nil
@@ -237,7 +235,7 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 			  :show-unset nil
 			  :show-advanced-p nil
 			  :include-section (lambda (section-name)
-					     (equalp section-name :import/export))))))
+					     (equalp section-name :import/export)))))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
@@ -327,9 +325,10 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 (define-easy-handler (showsc :uri "/showsc") (schema)
   (with-output-to-string (s)
     (with-main-page (s)
-      (show-configuration-schema (find-configuration-schema
-				  (cfg::read-symbol schema))
-				 s))))
+      (with-active-tab :schemas s
+	(show-configuration-schema (find-configuration-schema
+				    (cfg::read-symbol schema))
+				   s)))))
 
 (defvar *odd-even* :odd)
 

@@ -60,6 +60,39 @@
 												 (load (@ this href)))
 											  (return nil))))))))))))))))))
 
+(defvar *tabs*)
+
+(defun make-tab (id title url)
+  (list :id id :title title :url url))
+
+(defmacro define-tabs (&rest tabs)
+  `(setf *tabs* (mapcar (lambda (args)
+			  (apply #'make-tab args))
+			',tabs)))
+
+(defun with-active-tab% (stream active-tab content)
+  (let ((widget-id (gensym "TABS-")))
+    (with-html-output (stream)
+      (:div :id widget-id :class "ui-tabs ui-widget ui-widget-content ui-corner-all"
+	    (:ul :class "ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"
+		 (loop for tab in *tabs*
+		    for tab-id = (getf tab :id)
+		    for title = (getf tab :title)
+		    for url = (getf tab :url)
+		    do
+		      (htm
+			(:li :class (format nil "ui-state-default ui-corner-top ~{~A~}"
+					      (if (equalp tab-id active-tab)
+						  (list "ui-tabs-selected ui-state-active")))
+			       (:a :href url
+				   (str title))))))
+	      (:div :class "ui-tabs-panel ui-widget-content ui-corner-bottom"
+		    (funcall content stream))))))
+
+(defmacro with-active-tab (active-tab stream &body body)
+  `(with-active-tab% ,stream ,active-tab (lambda (s) (with-html-output (s)
+						  ,@body))))
+
 (defun jquery.ui-accordion (stream sections)
   (let ((widget-id (gensym "ACCORDION-")))
     (with-html-output (stream)
