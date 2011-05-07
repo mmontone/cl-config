@@ -108,19 +108,7 @@
 			 :title "Install config"
 			 :configuration-schema
 			 (find-configuration-schema (configuration-schema installer))
-			 :direct-sections nil)))
-  (setf (install-function installer)
-	(let ((install-function (install-function installer)))
-	  (lambda (&rest args)
-	    (let ((*installer* installer))
-	      (flet ((install-configuration ()
-		       (install-configuration (configuration installer)))
-		     (install-configuration-section (section-name)
-		       (install-configuration-section section-name (configuration installer))))
-		(cl-cont:with-call/cc
-		  (let ((result (apply install-function args) ))
-		    (reset-installer installer)
-		    result))))))))
+			 :direct-sections nil))))
 
 (defclass standard-installer (wizard-installer configuration-installer)
   ()
@@ -167,21 +155,50 @@
      do
        (install-configuration-section (name section) configuration)))
 
+(defmacro generate-configuration-schema-install-function (configuration-schema)
+  (let ((sections (cfg::sections (find-configuration-schema configuration-schema))))
+    `(cl-cont:lambda/cc ()
+       (let ((configuration (cfg:with-schema-validation (nil)
+			    (make-instance 'configuration
+					   :parents nil
+					   :name :install-config
+					   :title "Install config"
+					   :configuration-schema (find-configuration-schema ',configuration-schema)
+					   :direct-sections nil))))
+	 ,@(loop for section being the hash-values of sections
+	      appending (let ((fname (gensym "CONFIGURE-SECTION-")))
+			  `((start-section ,(cfg::name section)
+					 ,(cfg::title section))
+			    (labels ((,fname ()
+				       (with-input ,(loop for option being the hash-values of (cfg::direct-options section)
+						       collect (intern (symbol-name (cfg::name option))))
+					 (cfg::collecting-validation-errors (errors found-p)
+					     (progn
+					       ,@(loop for option being the hash-values of (cfg::direct-options section)
+						    collect `(setf (cfg::get-option-value ',(list (cfg::name section)
+												  (cfg::name option)) configuration)
+								   ,(intern (symbol-name (cfg:name option))))))
+					   (when found-p
+					     (install-errors errors)
+					     (,fname))))))
+			      (,fname)))))))))
+
 (defmacro define-standard-installer (name (&key title
 						documentation
 						configuration-schema
 						backend output-file)
 					  &body body)
   "Defines a standard-installer"
+  (declare (ignore body))
   `(register-installer
     (make-instance 'standard-installer
 		   :name ',name
 		   :title ,title
 		   :documentation ,documentation
-		   :configuration-schema ,configuration-schema
+		   :configuration-schema ',configuration-schema
 		   :backend ,backend
 		   :output-file ,output-file
-		   :install-function (cl-cont:lambda/cc () ,@body))))
+		   :install-function (generate-configuration-schema-install-function ,configuration-schema))))
 
 (defun installer-continuation (c)
   (let ((installer *installer*))
