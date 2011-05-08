@@ -82,26 +82,36 @@
 	     (web-configuration-installer installer s))))
     #'%web-configuration-installer))
 
+(defparameter *data* nil)
+
 (defun web-configuration-installer (configuration-installer stream)
-  (labels ((render-installer-section (section title data stream &optional errors)
-	     (with-form (action :on-submit
-			  (lambda ()
-			    (let ((installer-output (apply configuration-installer data)))
-			      (if (equalp (car installer-output)
-					  :install-errors)
-				  (with-html-output-to-string (s)
-				    (with-web-installer-main-page (configuration-installer s)
-				      (render-installer-section section title data s
-								(cdr installer-output))))
-				  (let* ((section-info (funcall configuration-installer))
-					 (section-name (cadr section-info))
-					 (title (caddr section-info))
-					 (section (gethash section-name
-							   (cfg::sections
-							    (configuration-schema configuration-installer)))))
-				    (with-html-output-to-string (s)
-				      (with-web-installer-main-page (configuration-installer s)
-					(render-installer-section section title nil s))))))))
+  (labels ((render-installer-section (section title stream &optional errors)
+	     (let ((data *data*))
+	       (with-form (action :on-submit
+			    (lambda ()
+			      (let ((*data* *data*))
+				(break "data: ~A" *data*)
+				(let ((installer-output (apply configuration-installer data)))
+				  (break "out: ~A" installer-output)
+				  (if (equalp (car installer-output)
+					      :errors)
+				      (progn
+					(funcall configuration-installer)
+					(with-html-output-to-string (s)
+					  (with-web-installer-main-page (configuration-installer s)
+					    (render-installer-section section title s
+								      (cadr installer-output)))))
+				      ;; else
+				      (let* ((section-name (cadr installer-output))
+					     (title (caddr installer-output))
+					     (section (gethash section-name
+							       (cfg::sections
+								(configuration-schema configuration-installer)))))
+					(funcall configuration-installer)
+					(let ((*data* nil))
+					  (with-html-output-to-string (s)
+					    (with-web-installer-main-page (configuration-installer s)
+					      (render-installer-section section title s))))))))))
 	       (with-html-output (stream)
 		 (with-web-installer-main-page (configuration-installer stream)
 		   (htm
@@ -114,30 +124,35 @@
 				       do
 					 (htm
 					  (:li
-					   (str (cfg::error-msg error)))))))))
+					   (str (cfg::error-msg error))))))))))
 			  (:form :action action
 				 :method "post"
 				 :id "install-configuration-form"
-				 (install-configuration-section section data stream)
+				 (install-configuration-section section stream)
 				 (htm
 				  (:input :type "submit" :value "Next")
 				  (:a :class "button"
-				      :href (action ()
-					      (go-back configuration-installer)
-					      (funcall configuration-installer)
-					      (with-html-output-to-string (s)
-						(with-web-installer-main-page (configuration-installer s)
-						  (render-installer-section section title data s))))
-				      (str "Previous")))))))))))
+				      :href
+				      (let ((data *data*))
+					(action ()
+					  (let ((*data* data))
+					    (go-back configuration-installer)
+					    (funcall configuration-installer)
+					    (with-html-output-to-string (s)
+					      (with-web-installer-main-page (configuration-installer s)
+						(render-installer-section section title s))))))
+					  (str "Previous")))))))))))
     (let* ((section-info (funcall configuration-installer))
 	   (section-name (cadr section-info))
 	   (title (caddr section-info))
 	   (section (gethash section-name
 			     (cfg::sections
-			      (configuration-schema configuration-installer)))))
-      (render-installer-section section title nil stream))))
+			      (configuration-schema configuration-installer))))
+	   (*data* nil))
+      (funcall configuration-installer)
+      (render-installer-section section title stream))))
 
-(defun install-configuration-section (section data stream)
+(defun install-configuration-section (section stream)
   (let ((direct-options (cfg::direct-options-list section
 						  :exclude-advanced t))
 	(section-id (format nil "section#~A"
@@ -155,16 +170,15 @@
 			   (loop for option in direct-options
 			      do (progn
 				   (install-configuration-option option
-								 data
 								 stream)
 				   (switch-odd-even)))))))
 	   )))))
 
-(defun install-configuration-option (option data stream)
+(defun install-configuration-option (option stream)
   (let ((odd-even (if (equalp *odd-even* :odd)
 			"odd"
 			"even"))
-	(value (getf data (cfg::name option))))
+	(value (getf *data* (cfg::name option))))
     (with-html-output (stream)
       (htm
        (:tr :class (format nil "option ~A"
@@ -178,5 +192,5 @@
 				       value
 				       stream
 				       :writer (lambda (val)
-						 (setf (getf data (cfg::name option))
+						 (setf (getf *data* (cfg::name option))
 						       val)))))))))

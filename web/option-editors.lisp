@@ -89,15 +89,16 @@
 							value)
 						  "selected")
 				    (str (cfg::title opt)))))))
-	  (with-form-field (inherit :writer (lambda (val)
-					      (setf (cfg::inherit option) val))
-				    :reader (lambda (val)
-					      (if val t nil)))
-	    (htm
-	     (:input :type "checkbox"
-		     :name inherit
-		     :checked (if (cfg::inherit option)
-				  "checked")))))))))
+	  (when option
+	    (with-form-field (inherit :writer (lambda (val)
+						(setf (cfg::inherit option) val))
+				      :reader (lambda (val)
+						(if val t nil)))
+	      (htm
+	       (:input :type "checkbox"
+		       :name inherit
+		       :checked (if (cfg::inherit option)
+				    "checked"))))))))))
 
 (defmethod render-option-editor ((type cfg::boolean-configuration-schema-option-type)
 				 option-schema
