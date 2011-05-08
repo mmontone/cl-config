@@ -98,6 +98,9 @@
   (:metaclass sb-mop:funcallable-standard-class)
   (:documentation "The class for configuration installers"))
 
+(defmethod configuration-schema ((installer configuration-installer))
+  (find-configuration-schema (slot-value installer 'configuration-schema)))
+
 (defmethod initialize-instance :after ((installer configuration-installer) &rest initargs)
   (declare (ignore initargs))
   (setf (configuration installer)
@@ -106,8 +109,7 @@
 			 :name 'install-config
 			 :parents nil
 			 :title "Install config"
-			 :configuration-schema
-			 (find-configuration-schema (configuration-schema installer))
+			 :configuration-schema (configuration-schema installer)
 			 :direct-sections nil))))
 
 (defclass standard-installer (wizard-installer configuration-installer)

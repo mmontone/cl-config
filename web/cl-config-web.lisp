@@ -38,24 +38,6 @@
 	(str "The request is invalid. Redirecting to http://localhost:4242")
        ))))))
 
-(defun handle-continuation-request ()
-  (let ((id (cdr (assoc "k" (get-parameters*) :test #'equalp))))
-    (let ((cont (gethash id (session-value 'continuations))))
-      (if (not cont)
-	  (invalid-page-request)
-	  ; else
-	  (let ((params (remove "k"
-				(append (get-parameters*)
-					(post-parameters*))
-				:key #'car
-				:test #'equalp)))
-	     ;; Invalidate the continuation
-	    (setf (session-value 'continuations)
-		  (make-hash-table :test #'equalp))
-	    
-	    ;; Process params to form lists if necessary
-	    (funcall cont (process-params params)))))))
-
 (defun continuation-dispatcher (request)
   (funcall
    (create-prefix-dispatcher

@@ -276,7 +276,8 @@ returns non-NIL if it appears to be valid."
 
 (define-option-processor pathname-configuration-schema-option-type
     (value)
-  (pathname value))
+  (when value
+    (pathname value)))
 
 (define-option-validator pathname-configuration-schema-option-type
     (value)

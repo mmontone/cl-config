@@ -19,6 +19,24 @@
   (setf (gethash id (hunchentoot:session-value 'continuations))
 	closure))
 
+(defun handle-continuation-request ()
+  (let ((id (cdr (assoc "k" (get-parameters*) :test #'equalp))))
+    (let ((cont (gethash id (session-value 'continuations))))
+      (if (not cont)
+	  (invalid-page-request)
+	  ; else
+	  (let ((params (remove "k"
+				(append (get-parameters*)
+					(post-parameters*))
+				:key #'car
+				:test #'equalp)))
+	     ;; Invalidate the continuation
+	    (setf (session-value 'continuations)
+		  (make-hash-table :test #'equalp))
+	    
+	    ;; Process params to form lists if necessary
+	    (funcall cont (process-params params)))))))
+
 (defmacro with-form ((action &key on-submit)
 		&body body)
   (let* ((cont-id (form-id body))
@@ -39,6 +57,17 @@
 			      (funcall (getf field :reader) arg-value))))
 	      (funcall ,on-submit)))))))
 
+(defmacro action (args &body body)
+  (declare (ignore args))
+  (let* ((cont-id (form-id body))
+	 (uri (format nil "/do?k=~A"
+		      (hunchentoot:url-encode cont-id))))
+    `(progn
+       (register-continuation ,cont-id (lambda (&rest args)
+					 (declare (ignore args))
+					 ,@body))
+       ,uri)))
+  
 (defmacro with-form-field ((var &key
 				(reader '#'identity)
 				(writer '#'identity)
