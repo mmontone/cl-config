@@ -47,6 +47,7 @@ OTHER DEALINGS IN THE SOFTWARE."
 	     (:file "backend")
 	     (:file "sexp-backend")
 	     (:file "xml-backend")
+	     ;(:file "bin-backend")
 	     (:file "installer"))
 	    :serial t))
   :depends-on (:alexandria :xml-emitter :cl-store :cl-cont))

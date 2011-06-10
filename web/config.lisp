@@ -9,7 +9,7 @@
 	    (:export-on-save "Export on save" :boolean :default t)
 	    (:backend "Backend" (:one-of (:sexp "SEXP backend")
 					 (:xml "XML backend")
-					 (:serialize "Serialize backend"))
+					 (:binary "Binary backend"))
 		      :default :xml))
   (:section :webapp-configuration "Web application settings"
 	    (:documentation "Web application configuration")
