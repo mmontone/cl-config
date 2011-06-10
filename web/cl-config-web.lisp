@@ -203,7 +203,8 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 	      using (hash-value schema)
 	     do
 	     (htm
-	      (:li (:a :href (format nil "/showsc?schema=~A" (cfg::complete-symbol-name name))
+	      (:li (:a :href (format nil "/showsc?schema=~A"
+				     (cfg::complete-symbol-name name))
 		       (str (cfg::title schema))))))))))))
 	      
 (define-easy-handler (import/export :uri "/import-export") ()
@@ -254,26 +255,50 @@ OTHER DEALINGS IN THE SOFTWARE.")))
     (htm
      (:h2 (str (cfg::title configuration-schema)))
      (:p (str (cfg::documentation* configuration-schema)))
-     (:p (str "Parents: "))
-     (let ((parents (slot-value configuration-schema 'cfg::parents)))
-       (if parents
-	   (loop for parent-name in parents
-	      do
-		(let ((parent (cfg::find-configuration-schema parent-name)))
-		  (htm (:p (:a :href (format nil "/showsc?schema=~A"
-					     (cfg::complete-symbol-name parent-name))
-			       (str (cfg::title parent)))))))
-	   (htm (:p "No parents"))))
-     (:p (str "Direct sub-schemas: "))
-     (let ((sub-schemas (cfg::direct-sub-schemas configuration-schema)))
-       (if sub-schemas
-	   (loop for sub-schema in sub-schemas
-	      do
-		(htm (:p (:a :href (format nil "/showsc?schema=~A"
-					     (cfg::complete-symbol-name
-					      (cfg::name sub-schema)))
-			     (str (cfg::title sub-schema))))))
-	   (htm (:p "No direct sub-schemas"))))
+     (:table
+      (:tbody
+       (:tr
+	(:td (:p (str "Parents: ")))
+	(:td
+	 (let ((parents (slot-value configuration-schema 'cfg::parents)))
+	   (if parents
+	       (htm
+		(:p
+		 (let ((parent (cfg::find-configuration-schema (first parents))))
+		   (htm (:a :href (format nil "/showsc?schema=~A"
+						  (cfg::complete-symbol-name (first parents)))
+			       (str (cfg::title parent)))))
+		 (loop for parent-name in (cdr parents)
+		    do
+		    (let ((parent (cfg::find-configuration-schema parent-name)))
+		      (htm
+		       (str ", ")
+		       (:a :href (format nil "/showsc?schema=~A"
+					 (cfg::complete-symbol-name parent-name))
+				    (str (cfg::title parent))))))))
+	       (htm (:p "No parents"))))))
+       (:tr
+	(:td
+	 (:p (str "Direct sub-schemas: ")))
+	(:td
+	 (let ((sub-schemas (cfg::direct-sub-schemas configuration-schema)))
+	   (if sub-schemas
+	       (htm (:p
+		     (let ((sub-schema (first sub-schemas)))
+		       (htm
+			(:a :href (format nil "/showsc?schema=~A"
+					 (cfg::complete-symbol-name
+					  (cfg::name sub-schema)))
+			    (str (cfg::title sub-schema)))))
+		     (loop for sub-schema in (cdr sub-schemas)
+			do
+			  (htm
+			   (str ", ")
+			   (:a :href (format nil "/showsc?schema=~A"
+						 (cfg::complete-symbol-name
+						  (cfg::name sub-schema)))
+				   (str (cfg::title sub-schema)))))))
+	       (htm (:p "No direct sub-schemas"))))))))
      (loop for section being the hash-values of
 	  (cfg::sections configuration-schema)
 	do
