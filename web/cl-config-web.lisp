@@ -254,12 +254,14 @@ OTHER DEALINGS IN THE SOFTWARE.")))
   (with-html-output (stream)
     (htm
      (:h2 (str (cfg::title configuration-schema)))
-     (:p (str (cfg::documentation* configuration-schema)))
-     (:table
+     (:p :class "sc-doc"
+	 (str (cfg::documentation* configuration-schema)))
+     (:table :class "sc-props"
       (:tbody
        (:tr
-	(:td (:p (str "Parents: ")))
-	(:td
+	(:td :class "sc-prop"
+	     (:p (str "Parents: ")))
+	(:td :class "sc-prop-val"
 	 (let ((parents (slot-value configuration-schema 'cfg::parents)))
 	   (if parents
 	       (htm
@@ -278,9 +280,9 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 				    (str (cfg::title parent))))))))
 	       (htm (:p "No parents"))))))
        (:tr
-	(:td
+	(:td :class "sc-prop"
 	 (:p (str "Direct sub-schemas: ")))
-	(:td
+	(:td :class "sc-prop-val"
 	 (let ((sub-schemas (cfg::direct-sub-schemas configuration-schema)))
 	   (if sub-schemas
 	       (htm (:p

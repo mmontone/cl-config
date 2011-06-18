@@ -121,3 +121,15 @@ textarea {
 .prop-table .prop-name {
     font-weight:bold;
 }
+
+.sc-props td {
+    padding:5px;
+}
+
+.sc-props .sc-prop {
+    font-weight:bold;
+}
+
+.sc-doc {
+    font-size:20px;
+}
