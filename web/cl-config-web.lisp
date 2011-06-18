@@ -304,8 +304,8 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 	do
 	  (htm
 	   (:h3 (str (cfg::title section)))
-	   (:table
-	    (:thead
+	   (:table :class "prop-table"
+	    (:thead :class "ui-widget-header"
 	     (:td (str "Name"))
 	     (:td (str "Title"))
 	     (:td (str "Type"))
@@ -317,8 +317,10 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 	     (loop for option-schema being the hash-values of (cfg::direct-options section)
 		do (htm
 		    (:tr
-		     (:td (str (cfg::name option-schema)))
-		     (:td (str (cfg::title option-schema)))
+		     (:td :class "prop-name ui-state-default"
+		      (str (cfg::name option-schema)))
+		     (:td :class "prop-title"
+			  (str (cfg::title option-schema)))
 		     (:td (str (cfg::title (cfg::option-type option-schema))))
 		     (:td (str (if (cfg::optional option-schema)
 				   "Yes" "No")))

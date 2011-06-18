@@ -110,3 +110,14 @@ textarea {
 .title, .origin, .unset {
     vertical-align:top;
 }
+
+.prop-table td {
+    padding:10px;
+}
+
+.prop-table .prop-title {
+    font-style:italic;
+}
+.prop-table .prop-name {
+    font-weight:bold;
+}
