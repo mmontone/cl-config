@@ -313,6 +313,8 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 	do
 	  (htm
 	   (:h3 (str (cfg::title section)))
+	   (when (cfg::documentation* section)
+	     (htm (:p (str (cfg::documentation* section)))))
 	   (:table :class "prop-table"
 	    (:thead :class "ui-widget-header"
 	     (:td (str "Name"))
