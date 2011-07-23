@@ -356,6 +356,8 @@
     (htm
      (:div :class "section"
 	   :id section-id
+	   (when (cfg::documentation* section)
+	     (htm (:p (str (cfg::documentation* section)))))
 	   (if (plusp (length advanced-options))
 	       (let ((button-id (gensym "TOGGLE-ADVANCED-OPTIONS-")))
 		 (htm
