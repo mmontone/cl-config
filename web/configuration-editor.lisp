@@ -416,7 +416,9 @@
 			   (if (cfg::advanced option)
 			       (list "advanced")))
 	    (:td :class "title"
-		 (str (cfg::title option)))
+		 (:a :href "#"
+		     :title (cfg::documentation* option)
+		     (str (cfg::title option))))
 	    (:td :class "editor"
 		 (render-option-editor (cfg::option-type option)
 					 option

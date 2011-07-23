@@ -119,16 +119,23 @@
 	      :href "/static/multiselect/css/common.css")
        (:link :type "text/css"
 	      :rel "stylesheet"
-	      :href "/static/multiselect/css/ui.multiselect.css"))
+	      :href "/static/multiselect/css/ui.multiselect.css")
+       (:link :type "text/css"
+	      :rel "stylesheet"
+	      :href "/static/qtip2/jquery.qtip.css")
+       (:script :type "text/javascript"
+		:src "/static/qtip2/jquery.qtip.min.js")
+       )
       (:body
        (:div :id "container" :class "container"
 	     (:h1 (str (cfg (:general-settings :title)
 			    'standard-cl-config-web-configuration)))
 	     (funcall body stream))
        (:script :language "javascript"
-	   (loop for script in *global-scripts*
-		do
-		(htm (str script)))))))))
+		(str "$('a[title]').qtip()")
+		(loop for script in *global-scripts*
+		   do
+		     (htm (str script)))))))))
 
 (defun render-configurations-editor (&optional conf)
   (with-html-output-to-string (s)
