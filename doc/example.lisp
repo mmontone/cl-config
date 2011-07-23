@@ -75,12 +75,46 @@
 				  :configuration 'hunchentoot-configuration)))
         (:host "Host" :text :default "localhost")
 	(:port "Port" :integer :default 8080)
-	(:catch-errors "Catch errors" :boolean :default t)))                    
+	(:catch-errors "Catch errors" :boolean :default t)))
 
+(define-configuration-schema view-configuration ()
+   (:title "View configuration")
+   (:documentation "View configuration")
+   (:section :view-configuration "View configuration"
+      (:documentation "Section for configuring the application view")
+      (:renderer "Renderer" (:one-of (:http "Standard HTTP rendering")
+				     (:ajax "Ajax rendering"))
+		 :default :http)
+      (:view-type "View type" (:one-of (:standard "Standard view type")
+				       (:ctx "Context view type"))
+		  :default :standard))
+   (:section :cache-configuration "Cache configuration"
+	     (:documentation "View cache configuration section. http://www.mnot.net/cache_docs")
+	     (:active-cache "Active cache" :boolean :default nil
+			    :documentation "Activates view cache")
+	     (:expires "Expires" :text :default "")
+	     (:max-age "Max age" :integer :default 0
+		       :documentation "Specifies the maximum amount of time that an representation will be considered fresh")
+	     (:s-max-age "Shared max age" :integer :default 0
+			 :documentation "Similar to max-age, except that it only applies to shared (e.g., proxy) caches)")
+	     (:public "Public" :boolean :default nil
+		      :documentation "Marks authenticated responses as cacheable; normally, if HTTP authentication is required, responses are automatically private.")
+	     (:private "Private" :boolean :default nil
+		       :documentation "Allows caches that are specific to one user (e.g., in a browser) to store the response; shared caches (e.g., in a proxy) may not.")
+	     (:no-cache "No cache" :boolean :default nil
+			:documentation "Forces caches to submit the request to the origin server for validation before releasing a cached copy, every time. This is useful to assure that authentication is respected (in combination with public), or to maintain rigid freshness, without sacrificing all of the benefits of caching.")
+	     (:no-store "No store" :boolean :default nil
+			:documentation "Instructs caches not to keep a copy of the representation under any conditions.")
+	     (:must-revalidate "Must revalidate" :boolean :default nil
+			       :documentation "Tells caches that they must obey any freshness information you give them about a representation. HTTP allows caches to serve stale representations under special conditions; by specifying this header, you are telling the cache that you want it to strictly follow your rules.")
+	     (:proxy-revalidate "Proxy revalidate" :boolean :default nil
+				:documentation "Similar to must-revalidate, except that it only applies to proxy caches.")))
+      
 (define-configuration-schema standard-configuration
     (cl-config-application-configuration
      webapp-configuration
-     database-configuration)
+     database-configuration
+     view-configuration)
       (:title "Standard configuration")
       (:documentation "Standard configuration for a Gestalt application")
       (:page-title "Page title" :text :default "Gestalt application"))
