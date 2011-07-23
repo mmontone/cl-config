@@ -167,7 +167,6 @@ copy is returned by default."
 	     :accessor optional
 	     :documentation "t when the parameter is optional")
    (default :initarg :default
-     :initform nil
      :accessor default
      :documentation "The default value if there is one")
    (advanced :initarg :advanced

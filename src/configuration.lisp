@@ -260,7 +260,7 @@
        do (loop for option-schema being the hash-values of
 	       (direct-options schema-section)
 	       do (if (not (or (optional option-schema)
-			       (default option-schema)))
+			       (slot-boundp option-schema 'default)))
 		      (let ((option-path (list (name schema-section)
 					       (name option-schema))))
 			(handler-case
@@ -372,7 +372,7 @@
 		(error "Could not find option ~A in schema section ~A"
 		 option-name
 		 section)
-		(if (default option)
+		(if (slot-boundp option 'default)
 		    (values (default option) nil section :default)
 		    (case option-not-found
 		      (:error
