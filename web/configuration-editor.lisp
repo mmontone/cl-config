@@ -25,7 +25,9 @@
 							:configuration-schema (find-configuration-schema schema)
 							:direct-sections nil
 							:documentation documentation))))
-				  (edit-configuration configuration s :save-as-new nil)))))))))
+				  (edit-configuration configuration s
+						      :save-as-new nil
+						      :delete nil)))))))))
 	     (with-html-output (stream)
 	       (htm
 		(:h2 (str "New configuration"))
@@ -147,7 +149,9 @@
 
 (defparameter *errors* nil)
 
-(defun edit-configuration (configuration stream &key (save-as-new t)
+(defun edit-configuration (configuration stream &key
+			   (delete t)
+			   (save-as-new t)
 			   (show-title t)
 			   (show-origin t)
 			   (show-unset t)
@@ -310,24 +314,25 @@
 								    ))))))
 							       
 				   (:input :type "submit" :value "Save")
-				   (with-form-field (field :writer (lambda (val)
-									(when (equalp val "true")
-									  (setf delete-configuration? t))))
-					(htm
-					 (:input :type "hidden" :name field :id field)
-					 (:input :type "button" :class "button" :value "Delete" :id "delete-configuration")
-					 (:script :language "javascript"
-						  (str
-						   (ps*
-						    `(chain ($ document)
-							    (ready (lambda ()
-								     (chain ($ ,($id "delete-configuration"))
-									    (click (lambda ()
-										     (when (confirm "Delete this configuration?")
-										       (chain ($ ,($id field))
-											      (val "true"))
-										       (chain ($ ,($id "edit-configuration-form"))
-											      (submit))))))))))))))
+				   (when delete
+				     (with-form-field (field :writer (lambda (val)
+								       (when (equalp val "true")
+									 (setf delete-configuration? t))))
+				       (htm
+					(:input :type "hidden" :name field :id field)
+					(:input :type "button" :class "button" :value "Delete" :id "delete-configuration")
+					(:script :language "javascript"
+						 (str
+						  (ps*
+						   `(chain ($ document)
+							   (ready (lambda ()
+								    (chain ($ ,($id "delete-configuration"))
+									   (click (lambda ()
+										    (when (confirm "Delete this configuration?")
+										      (chain ($ ,($id field))
+											     (val "true"))
+										      (chain ($ ,($id "edit-configuration-form"))
+											     (submit)))))))))))))))
 				   (when save-as-new
 				     (htm
 				      (:div :style "height:20px;")

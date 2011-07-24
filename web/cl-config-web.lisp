@@ -220,6 +220,7 @@ OTHER DEALINGS IN THE SOFTWARE.")))
       (with-active-tab :import/export s
       (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s
 			  :save-as-new nil
+			  :delete nil
 			  :show-title nil
 			  :show-origin nil
 			  :show-unset nil
