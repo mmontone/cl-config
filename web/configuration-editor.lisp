@@ -310,6 +310,24 @@
 								    ))))))
 							       
 				   (:input :type "submit" :value "Save")
+				   (with-form-field (field :writer (lambda (val)
+									(when (equalp val "true")
+									  (setf delete-configuration? t))))
+					(htm
+					 (:input :type "hidden" :name field :id field)
+					 (:input :type "button" :class "button" :value "Delete" :id "delete-configuration")
+					 (:script :language "javascript"
+						  (str
+						   (ps*
+						    `(chain ($ document)
+							    (ready (lambda ()
+								     (chain ($ ,($id "delete-configuration"))
+									    (click (lambda ()
+										     (when (confirm "Delete this configuration?")
+										       (chain ($ ,($id field))
+											      (val "true"))
+										       (chain ($ ,($id "edit-configuration-form"))
+											      (submit))))))))))))))
 				   (when save-as-new
 				     (htm
 				      (:div :style "height:20px;")
@@ -331,24 +349,7 @@
 							   (htm
 							    (:input :type "text" :name field)))))))
 				      (:input :type "submit" :value "Save as new")
-				      (with-form-field (field :writer (lambda (val)
-									(when (equalp val "true")
-									  (setf delete-configuration? t))))
-					(htm
-					 (:input :type "hidden" :name field :id field)
-					 (:input :type "button" :class "button" :value "Delete" :id "delete-configuration")
-					 (:script :language "javascript"
-						  (str
-						   (ps*
-						    `(chain ($ document)
-							    (ready (lambda ()
-								     (chain ($ ,($id "delete-configuration"))
-									    (click (lambda ()
-										     (when (confirm "Delete this configuration?")
-										       (chain ($ ,($id field))
-											      (val "true"))
-										       (chain ($ ,($id "edit-configuration-form"))
-											      (submit))))))))))))))))))))))))
+				      ))))))))))
       (render-editor nil stream))))
 
 (defun edit-configuration-section (configuration section stream &key (show-origin t) (show-unset t))
