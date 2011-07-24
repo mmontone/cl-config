@@ -31,86 +31,83 @@
 		(:h2 (str "New configuration"))
 		(if (zerop (hash-table-count *configuration-schemas*))
 		    (htm (:p "No configuration schemas available to create configurations from"))
-		    (with-form (action :on-submit #'on-submit)
-		      (htm
-		       (:form :action action
-			      :method "post"
-			      :id "newconf"
-			      (:table :class "attributes-table"
-			       (:tbody
-				(:tr
-				 (:td :class "title"
-				      (:p (str "Name:")))
-				 (:td :class "editor"
-				  (with-form-field (field :writer (lambda (val)
-								    (setf name val)))
-				    (htm
-				     (:input :type "text"
-					     :name field
-					     :value name))))
-				 (let ((error (find 'name errors :key (lambda (item)
-									(getf item :target)))))
-				   (if error
-				       (htm (:td (str (getf error :error-msg))))))	    )
-				(:tr
-				 (:td :class "title"
-				      (:p (str "Title:")))
-				 (:td :class "editor"
-				  (with-form-field (field :writer (lambda (val)
-								    (cfg::with-schema-validation (nil)
-								      (setf title val))))
-				    (htm
-				     (:input :type "text"
-					     :name field
-					     :value title))))
-				 (let ((error (find 'title errors :key (lambda (item)
-									 (getf item :target)))))
-				   (if error
-				       (htm (:td (str (getf error :error-msg)))))))
-				(:tr
-				 (:td :class "title"
-				      (:p (str "Schema:")))
-				 (:td :class "editor"
-				  (with-form-field (field :reader #'cfg::read-symbol
-							  :writer (lambda (val)
-								    (setf schema val)))
-				    (htm
-				     (:select :id "schema"
-					      :name field
-					      (loop for configuration-schema being the hash-values of *configuration-schemas*
-						 do (htm
-						     (:option :value (cfg::complete-symbol-name (cfg::name configuration-schema))
-							      (str (cfg::title configuration-schema))))))))))
-				(:tr
-				 (:td :class "title"
-				      (:p (str "Parents:")))
-				 (:td :class "editor"
-				  (with-form-field (field :writer (lambda (val)
-								    (setf parents val))
-							  :reader (lambda (val)
-								    (if (listp val)
-									(mapcar #'cfg::read-symbol val)
-									(list (cfg::read-symbol val)))))
-				    (htm
-				     (:select :id "parents"
-					      :name field
-					      :multiple "true"
-					      :class "multiselect"
-					      (loop for configuration being the hash-values of *configurations*
-						 do (htm
-						     (:option :value (cfg::complete-symbol-name (cfg::name configuration))
-							      (str (cfg::title configuration))))))))))
-				(:tr
-				 (:td :class "title"
-				      (:p (str "Documentation:")))
-				 (:td :class "editor"
-				  (with-form-field (field :writer (lambda (val)
-								    (setf documentation val)))
-				    (htm
-				     (:textarea :name field
-						(str documentation))))))))
-			      (:input :type "submit" :value "Create"))))))))))
-	 (render-form stream errors))))
+		    (progn
+		      (when errors
+			(htm (:ul
+			      (loop for error in errors
+				 do (htm (:li (str (cfg::error-msg error))))))))
+		      (with-form (action :on-submit #'on-submit)
+			(htm
+			 (:form :action action
+				:method "post"
+				:id "newconf"
+				(:table :class "attributes-table"
+					(:tbody
+					 (:tr
+					  (:td :class "title"
+					       (:p (str "Name:")))
+					  (:td :class "editor"
+					       (with-form-field (field :writer (lambda (val)
+										 (setf name val)))
+						 (htm
+						  (:input :type "text"
+							  :name field
+							  :value name)))))
+					 (:tr
+					  (:td :class "title"
+					       (:p (str "Title:")))
+					  (:td :class "editor"
+					       (with-form-field (field :writer (lambda (val)
+										 (cfg::with-schema-validation (nil)
+										   (setf title val))))
+						 (htm
+						  (:input :type "text"
+							  :name field
+							  :value title)))))
+					 (:tr
+					  (:td :class "title"
+					       (:p (str "Schema:")))
+					  (:td :class "editor"
+					       (with-form-field (field :reader #'cfg::read-symbol
+								       :writer (lambda (val)
+										 (setf schema val)))
+						 (htm
+						  (:select :id "schema"
+							   :name field
+							   (loop for configuration-schema being the hash-values of *configuration-schemas*
+							      do (htm
+								  (:option :value (cfg::complete-symbol-name (cfg::name configuration-schema))
+									   (str (cfg::title configuration-schema))))))))))
+					 (:tr
+					  (:td :class "title"
+					       (:p (str "Parents:")))
+					  (:td :class "editor"
+					       (with-form-field (field :writer (lambda (val)
+										 (setf parents val))
+								       :reader (lambda (val)
+										 (if (listp val)
+										     (mapcar #'cfg::read-symbol val)
+										     (list (cfg::read-symbol val)))))
+						 (htm
+						  (:select :id "parents"
+							   :name field
+							   :multiple "true"
+							   :class "multiselect"
+							   (loop for configuration being the hash-values of *configurations*
+							      do (htm
+								  (:option :value (cfg::complete-symbol-name (cfg::name configuration))
+									   (str (cfg::title configuration))))))))))
+					 (:tr
+					  (:td :class "title"
+					       (:p (str "Documentation:")))
+					  (:td :class "editor"
+					       (with-form-field (field :writer (lambda (val)
+										 (setf documentation val)))
+						 (htm
+						  (:textarea :name field
+							     (str documentation))))))))
+				(:input :type "submit" :value "Create")))))))))))
+      (render-form stream errors))))
 
 (defun configurations-editor (stream &optional selected-configuration)
   (with-html-output (stream)
