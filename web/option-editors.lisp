@@ -86,6 +86,9 @@
 			     :selected "selected"
 			     (let ((option (find opt (cfg::options (cfg::option-type option-schema))
 						 :key #'cfg::name)))
+			       (assert option nil "~A not found in ~A"
+				       opt
+				       (cfg::options (cfg::option-type option-schema)))
 			       (str (cfg::title option))))))
 		(loop for opt in (cfg::options type)
 		   when (not (some (lambda (val)
