@@ -137,7 +137,11 @@
 	    (:active-layers (:debugging))
 	    (:output-location :standard-output)
 	    (:debugging-levels (:info))
-	    (:backend :log5)))
+	    (:backend :log5))
+  (:section :cache-configuration
+	    (:active-cache t))
+  (:section :view-configuration
+	    (:renderer :ajax)))
 
 (define-configuration debug-configuration (standard-configuration)
     (:configuration-schema standard-configuration)
