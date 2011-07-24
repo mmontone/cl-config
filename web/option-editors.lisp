@@ -126,6 +126,24 @@
 		   :type "checkbox"
 		   :checked (if value "checked"))))))))
 
+;; (defmethod render-option-editor ((type cfg::pathname-configuration-schema-option-type)
+;; 				 option-schema
+;; 				 option
+;; 				 value
+;; 				 stream &key writer)
+;;   (let (input-value)
+;;     (with-form-field (field :writer (lambda (val)
+;; 				      (setf input-value val)))
+;;       (with-change-notifier (field stream
+;; 				   :on-change (lambda ()
+;; 						(funcall writer input-value)))
+;; 	(with-html-output (stream)
+;; 	  (htm
+;; 	   (:input :type "file"
+;; 		   :name field
+;; 		   :id field
+;; 		   :value (if value value))))))))
+
 (defmethod render-option-editor ((type cfg::pathname-configuration-schema-option-type)
 				 option-schema
 				 option
@@ -134,15 +152,14 @@
   (let (input-value)
     (with-form-field (field :writer (lambda (val)
 				      (setf input-value val)))
-      (with-change-notifier (field stream
-				   :on-change (lambda ()
-						(funcall writer input-value)))
+      (with-change-notifier (field stream :on-change
+				   (lambda ()
+				     (funcall writer input-value)))
 	(with-html-output (stream)
-	  (htm
-	   (:input :type "file"
-		   :name field
-		   :id field
-		   :value (if value value))))))))
+	  (:input :type "text"
+		  :id field
+		  :name field
+		  :value (if value value)))))))
 
 (defmethod render-option-editor ((type cfg::email-configuration-schema-option-type)
 				 option-schema
