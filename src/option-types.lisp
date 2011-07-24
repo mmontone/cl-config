@@ -290,7 +290,9 @@ returns non-NIL if it appears to be valid."
 
 (define-option-validator pathname-configuration-schema-option-type
     (value)
-  (pathnamep value)
+  (or
+   (pathnamep value)
+   (stringp value))
   "~A is not a pathname" value)
 
 (define-option-processor sexp-configuration-schema-option-type
