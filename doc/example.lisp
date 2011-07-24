@@ -48,7 +48,8 @@
             (:one-of (:log5 "Log5")))
 	(:debugging-levels "Debugging levels" (:list (:info "Info")
 						     (:warning "Warning")
-						     (:profile "Profile")))
+						     (:profile "Profile")
+						     (:error "Error")))
 	(:output-location "Output location"
                     (:one-of (:standard-output "Standard output"
 					       :default *standard-output*)
