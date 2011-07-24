@@ -251,11 +251,13 @@
 
 (define-option-validator list-configuration-schema-option-type
     (value option)
-  (some (lambda (v)
-	  (find v value))
-	(loop
-	   for opt in (options (option-type (schema-option option)))
-	   collect (name opt)))
+  (let ((options (options (option-type (schema-option option)))))
+    (or (null value)
+	(some (lambda (v)
+		(find v value))
+	      (loop
+		 for opt in options
+		 collect (name opt)))))
   "~A value should be one of ~A"
   value
   (loop
