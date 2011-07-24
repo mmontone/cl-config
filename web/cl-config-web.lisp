@@ -218,15 +218,34 @@ OTHER DEALINGS IN THE SOFTWARE.")))
   (with-html-output-to-string (s)
     (with-main-page (s)
       (with-active-tab :import/export s
-      (edit-configuration (find-configuration 'standard-cl-config-web-configuration) s
-			  :save-as-new nil
-			  :delete nil
-			  :show-title nil
-			  :show-origin nil
-			  :show-unset nil
-			  :show-advanced-p nil
-			  :include-section (lambda (section-name)
-					     (equalp section-name :import/export)))))))
+	(let ((conf (find-configuration 'standard-cl-config-web-configuration)))
+	  (edit-configuration conf s
+			      :save-as-new nil
+			      :delete nil
+			      :show-title nil
+			      :show-origin nil
+			      :show-unset nil
+			      :show-advanced-p nil
+			      :include-section (lambda (section-name)
+						 (equalp section-name :import/export)))
+	  (flet ((on-submit ()
+		   (let ((filepath (cfg (:import/export :import/export-filepath) conf)))
+		     (flet ((export-conf ()
+			      (with-open-file (f filepath :direction :output
+						 :element-type '(unsigned-byte 8)
+						 :if-exists :overwrite
+						 :if-does-not-exist :create)
+				(cl-store:store cfg::*configurations* f)))
+			    (import-conf ()
+			      (with-open-file (f filepath :element-type '(unsigned-byte 8))
+				(setf cfg::*configurations* (cl-store:restore f)))))
+		       (export-conf)
+		       (import/export)))))
+	    (with-html-output (s)
+	      (with-form (action :on-submit #'on-submit)
+		(htm
+		 (:form :action action :method "post" :id "import-export-form"
+			(:input :type "submit" :value "Export now" :id "export-confiurations")))))))))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
