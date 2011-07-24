@@ -81,6 +81,13 @@
 (defmethod title ((type text-configuration-schema-option-type))
   "Text")
 
+(defclass string-configuration-schema-option-type (configuration-schema-option-type)
+  ()
+  (:documentation "String type"))
+
+(defmethod title ((type string-configuration-schema-option-type))
+  "String type")
+
 (defclass integer-configuration-schema-option-type (configuration-schema-option-type)
   ()
   (:documentation "Integer type"))

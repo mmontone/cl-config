@@ -159,53 +159,55 @@
   (let ((configuration-copy (cfg::copy-configuration configuration))
 	(save-as-name "")
 	(save-as-title "")
-	(delete-configuration? nil))
+	(delete-configuration? nil)
+	(flash-msg nil))
     (labels ((render-editor (errors stream)
 	       (with-html-output (stream)
 		 (with-form (action
-			     :on-submit (lambda ()
-					  (if delete-configuration?
-					      (progn
-						(remhash (cfg::name configuration) cfg::*configurations*)
-						(with-output-to-string (s)
-						  (with-main-page (s)
-						    	(with-active-tab :configurations s
-							  (configurations-editor s)))))
-					      ;; else
-					      (if (plusp (length save-as-name))
-						  (let ((new-conf-name
-							 (ignore-errors
-							   (cfg::read-symbol save-as-name))))
-						    (if new-conf-name
-							(let ((new-conf (cfg::copy-configuration configuration)))
-							  (setf (cfg::name new-conf) new-conf-name)
-							  (setf (cfg::title new-conf) save-as-title)
-							  (setf (gethash new-conf-name cfg::*configurations*)
-								new-conf)
-							  (with-output-to-string (s)
-							    (with-main-page (s)
-							      	(with-active-tab :configurations s
-								  (configurations-editor s new-conf)))))
-							(with-output-to-string (s)
-							  (with-main-page (s)
-							    (with-active-tab :configurations s
-							      (configurations-editor s configuration))))))
-						  ;; else
-						  (progn
-						    (cfg::collecting-validation-errors (errors found-p)
-							(cfg::validate-configuration configuration-copy)
-						      (if found-p
-							  (with-output-to-string (s)
-							    (with-main-page (s)
-							      (with-active-tab :configurations s
-								(render-editor errors s))))
-							  (progn
-							    (setf (gethash (cfg::name configuration) cfg::*configurations*)
-								  configuration-copy)
-							    (with-output-to-string (s)
-							      (with-main-page (s)
-								(with-active-tab :configurations s
-								  (render-editor errors s))))))))))))
+				:on-submit (lambda ()
+					     (if delete-configuration?
+						 (progn
+						   (remhash (cfg::name configuration) cfg::*configurations*)
+						   (with-output-to-string (s)
+						     (with-main-page (s)
+						       (with-active-tab :configurations s
+							 (configurations-editor s)))))
+						 ;; else
+						 (if (plusp (length save-as-name))
+						     (let ((new-conf-name
+							    (ignore-errors
+							      (cfg::read-symbol save-as-name))))
+						       (if new-conf-name
+							   (let ((new-conf (cfg::copy-configuration configuration)))
+							     (setf (cfg::name new-conf) new-conf-name)
+							     (setf (cfg::title new-conf) save-as-title)
+							     (setf (gethash new-conf-name cfg::*configurations*)
+								   new-conf)
+							     (with-output-to-string (s)
+							       (with-main-page (s)
+								 (with-active-tab :configurations s
+								   (configurations-editor s new-conf)))))
+							   (with-output-to-string (s)
+							     (with-main-page (s)
+							       (with-active-tab :configurations s
+								 (configurations-editor s configuration))))))
+						     ;; else
+						     (progn
+						       (cfg::collecting-validation-errors (errors found-p)
+							   (cfg::validate-configuration configuration-copy)
+							 (if found-p
+							     (with-output-to-string (s)
+							       (with-main-page (s)
+								 (with-active-tab :configurations s
+								   (render-editor errors s))))
+							     (progn
+							       (setf (gethash (cfg::name configuration) cfg::*configurations*)
+								     configuration-copy)
+							       (setf flash-msg "Changes applied")
+							       (with-output-to-string (s)
+								 (with-main-page (s)
+								   (with-active-tab :configurations s
+								     (render-editor errors s))))))))))))
 		   (htm
 		    (:div :class "configuration-editor"
 			  (when errors
@@ -214,9 +216,13 @@
 				   (:ul
 				    (loop for error in errors
 				       do
-					 (htm
-					  (:li
-					   (str (cfg::error-msg error)))))))))
+				       (htm
+					(:li
+					 (str (cfg::error-msg error)))))))))
+			  (when flash-msg
+			    (htm (:div :class "flash"
+				       (str flash-msg)))
+			    (setf flash-msg nil))
 			  (when show-title
 			    (htm
 			     (:div :class "title"
@@ -229,101 +235,101 @@
 						       (loop for section being the hash-values of
 							    (cfg::sections (cfg::configuration-schema configuration-copy))
 							    when (funcall include-section (name section))
-							  collect (cons (cfg::title section)
-									(let ((section* section))
-									  (lambda (s)
-									    (declare (ignore s))
-									    (edit-configuration-section configuration-copy section* stream
-													:show-origin show-origin :show-unset show-unset)))))
+							    collect (cons (cfg::title section)
+									  (let ((section* section))
+									    (lambda (s)
+									      (declare (ignore s))
+									      (edit-configuration-section configuration-copy section* stream
+													  :show-origin show-origin :show-unset show-unset)))))
 						       (when show-advanced-p
-						       (list
-							(cons "Advanced settings"
-							     (lambda (s)
-							       (declare (ignore s))
-							       (htm
-								(:table :class "attributes-table"
-								   (:tbody
-								    (:tr
-								     (:td :class "title"
-									  (:p (fmt "Name:")))
-								     (:td :class "editor"
-									  (:p (fmt (cfg::complete-symbol-name
-										       (cfg::name configuration-copy))))))
-								    (:tr
-								     (:td :class "title"
-									  (:p "Title:"))
-								     (:td :class "editor"
-									  (with-form-field (field :writer (lambda (val)
-													    (setf (cfg::title configuration-copy) val)))
-									    (htm
-									     (:input :type "text" :name field :value (cfg::title configuration-copy))))))
-								    (:tr
-								     (:td :class "title"
-									  (:p (str "Schema:")))
-								     (:td :class "editor"
-									  (:a :class "open-in-tab" :href (format nil "/showsc?schema=~A"
-											    (cfg::complete-symbol-name
-											     (cfg::name
-											      (cfg::configuration-schema
-											       configuration-copy))))
-									      (str (cfg::title
-										    (cfg::configuration-schema configuration-copy))))))
-								    (:tr
-								     (:td :class "title"
-									  (:p "Documentation:"))
-								     (:td :class "editor"
-									  (with-form-field (field :writer (lambda (val)
-													    (setf (cfg::documentation* configuration-copy) val)))
-									    (htm
-									     (:textarea :name field
-											(str (cfg::documentation* configuration-copy)))))))
-								    (:tr
-								     (:td :class "title"
-									  (:p "Parents:"))
-								     (:td :class "editor"
-									  (with-form-field (field :writer (lambda (val)
-													    (setf (cfg::parents configuration-copy) val))
-												  :reader (lambda (val)
-													    (if (listp val)
-														(mapcar #'cfg::read-symbol val)
-														(list (cfg::read-symbol val)))))
-									    (htm
-									     (:select :id "parents"
-										      :name field
-										      :multiple "true"
-										      :class "multiselect"
-										      (loop for conf being the hash-values of *configurations*
-											 when (not (eql conf configuration))
-											 do (htm
-											     (:option :value (cfg::complete-symbol-name (cfg::name conf))
-												      :selected (if (find (cfg::name conf)
-															  (cfg::parents configuration-copy))
-														    "selected")
-												      (str (cfg::title conf)))))))))))))
+							 (list
+							  (cons "Advanced settings"
+								(lambda (s)
+								  (declare (ignore s))
+								  (htm
+								   (:table :class "attributes-table"
+									   (:tbody
+									    (:tr
+									     (:td :class "title"
+										  (:p (fmt "Name:")))
+									     (:td :class "editor"
+										  (:p (fmt (cfg::complete-symbol-name
+											    (cfg::name configuration-copy))))))
+									    (:tr
+									     (:td :class "title"
+										  (:p "Title:"))
+									     (:td :class "editor"
+										  (with-form-field (field :writer (lambda (val)
+														    (setf (cfg::title configuration-copy) val)))
+										    (htm
+										     (:input :type "text" :name field :value (cfg::title configuration-copy))))))
+									    (:tr
+									     (:td :class "title"
+										  (:p (str "Schema:")))
+									     (:td :class "editor"
+										  (:a :class "open-in-tab" :href (format nil "/showsc?schema=~A"
+															 (cfg::complete-symbol-name
+															  (cfg::name
+															   (cfg::configuration-schema
+															    configuration-copy))))
+										      (str (cfg::title
+											    (cfg::configuration-schema configuration-copy))))))
+									    (:tr
+									     (:td :class "title"
+										  (:p "Documentation:"))
+									     (:td :class "editor"
+										  (with-form-field (field :writer (lambda (val)
+														    (setf (cfg::documentation* configuration-copy) val)))
+										    (htm
+										     (:textarea :name field
+												(str (cfg::documentation* configuration-copy)))))))
+									    (:tr
+									     (:td :class "title"
+										  (:p "Parents:"))
+									     (:td :class "editor"
+										  (with-form-field (field :writer (lambda (val)
+														    (setf (cfg::parents configuration-copy) val))
+													  :reader (lambda (val)
+														    (if (listp val)
+															(mapcar #'cfg::read-symbol val)
+															(list (cfg::read-symbol val)))))
+										    (htm
+										     (:select :id "parents"
+											      :name field
+											      :multiple "true"
+											      :class "multiselect"
+											      (loop for conf being the hash-values of *configurations*
+												 when (not (eql conf configuration))
+												 do (htm
+												     (:option :value (cfg::complete-symbol-name (cfg::name conf))
+													      :selected (if (find (cfg::name conf)
+																  (cfg::parents configuration-copy))
+															    "selected")
+													      (str (cfg::title conf)))))))))))))
 
-								))))))
+								  ))))))
 							       
 				 (:input :type "submit" :value "Save")
 				 (when save-as-new
 				   (htm
 				    (:div :style "height:20px;")
-				     (:table :class "attributes-table"
-					     (:tbody
-					      (:tr
-					       (:td :class "title"
-						    (:p "Name: "))
-					       (:td :class "editor"
-						    (with-form-field (field :writer (lambda (val)
-										      (setf save-as-name val)))
-						      (htm
-						       (:input :type "text" :name field)))))
-					      (:tr (:td :class "title"
-							(:p "Title: "))
-						   (:td :class "editor"
-							(with-form-field (field :writer (lambda (val)
-											  (setf save-as-title val)))
-							  (htm
-							   (:input :type "text" :name field)))))))
+				    (:table :class "attributes-table"
+					    (:tbody
+					     (:tr
+					      (:td :class "title"
+						   (:p "Name: "))
+					      (:td :class "editor"
+						   (with-form-field (field :writer (lambda (val)
+										     (setf save-as-name val)))
+						     (htm
+						      (:input :type "text" :name field)))))
+					     (:tr (:td :class "title"
+						       (:p "Title: "))
+						  (:td :class "editor"
+						       (with-form-field (field :writer (lambda (val)
+											 (setf save-as-title val)))
+							 (htm
+							  (:input :type "text" :name field)))))))
 				    (:input :type "submit" :value "Save as new")
 				    (with-form-field (field :writer (lambda (val)
 								      (when (equalp val "true")

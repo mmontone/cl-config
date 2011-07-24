@@ -394,10 +394,10 @@
 	      (configuration-schema configuration)
 	      (list section-name option-name))))
 	(setf (gethash option-name (options section))
-	    (make-instance
-	     (option-class (option-type schema-option))
-	     :schema-option schema-option
-	     :value value))))))
+	      (make-instance
+	       (option-class (option-type schema-option))
+	       :schema-option schema-option
+	       :value value))))))
 
 (defun unset-option (option-path configuration)
   (destructuring-bind (section-name option-name)
@@ -490,7 +490,7 @@
 (defmethod copy-configuration-option ((option one-of-configuration-option))
   (let ((copy (call-next-method)))
     (when (slot-boundp option 'value2)
-      (setf (slot-value copy 'value)
+      (setf (slot-value copy 'value2)
 	    (copy-option-value (slot-value option 'value2))))
     copy))
 
