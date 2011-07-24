@@ -147,7 +147,9 @@ copy is returned by default."
   (let ((direct-options (make-hash-table :test #'equalp)))
     (loop for option in (getf initargs :direct-options)
 	  do
-	 (setf (gethash (name option) direct-options) option))
+	 (progn
+	   (setf (section option) configuration-schema-section)
+	   (setf (gethash (name option) direct-options) option)))
     (setf (direct-options configuration-schema-section) direct-options)))
 
 (defclass configuration-schema-option ()
@@ -162,6 +164,9 @@ copy is returned by default."
 	 :accessor option-type
 	 :initform (error "Provide the option type")
 	 :documentation "The option type")
+   (section :initarg :section
+	    :accessor section
+	    :documentation "The section the option schema belongs to")
    (optional :initarg :optional
 	     :initform nil
 	     :accessor optional
