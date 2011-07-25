@@ -147,6 +147,16 @@
 	   (edit-configuration selected-conf stream)))))
   (new-configuration stream))
 
+(defun save-configurations ()
+  (let ((conf (find-configuration 'standard-cl-config-web-configuration)))
+    (when (cfg (:import/export :export-on-save) conf)
+      (let ((filepath (cfg (:import/export :import/export-filepath) conf)))
+	(with-open-file (f filepath :direction :output
+			   :element-type '(unsigned-byte 8)
+			   :if-exists :overwrite
+			   :if-does-not-exist :create)
+	  (cl-store:store cfg::*configurations* f))))))
+
 (defparameter *errors* nil)
 
 (defun edit-configuration (configuration stream &key
@@ -172,6 +182,7 @@
 					       (if delete-configuration?
 						   (progn
 						     (remhash (cfg::name configuration) cfg::*configurations*)
+						     (save-configurations)
 						     (with-output-to-string (s)
 						       (with-main-page (s)
 							 (with-active-tab :configurations s
@@ -207,6 +218,7 @@
 							       (progn
 								 (setf (gethash (cfg::name configuration) cfg::*configurations*)
 								       configuration-copy)
+								 (save-configurations)
 								 (setf flash-msg "Changes applied")
 								 (with-output-to-string (s)
 								   (with-main-page (s)

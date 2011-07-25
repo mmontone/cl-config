@@ -77,7 +77,12 @@
   (setf *acceptor* (make-instance 'acceptor
 				  :address (cfg (:webapp-configuration :host) configuration)
 				  :port (cfg (:webapp-configuration :port) configuration)))
-  (start *acceptor*))
+  (start *acceptor*)
+  ;; Load configuration on start if appropiate
+  (when (cfg (:import/export :import-on-load) configuration)
+    (with-open-file (f (cfg (:import/export :import/export-filepath) configuration)
+		       :element-type '(unsigned-byte 8))
+      (setf cfg::*configurations* (cl-store:restore f)))))
 
 (defun stop-cl-config-web ()
   "Stops the web configuration editor"
@@ -228,24 +233,57 @@ OTHER DEALINGS IN THE SOFTWARE.")))
 			      :show-advanced-p nil
 			      :include-section (lambda (section-name)
 						 (equalp section-name :import/export)))
-	  (flet ((on-submit ()
-		   (let ((filepath (cfg (:import/export :import/export-filepath) conf)))
-		     (flet ((export-conf ()
-			      (with-open-file (f filepath :direction :output
-						 :element-type '(unsigned-byte 8)
-						 :if-exists :overwrite
-						 :if-does-not-exist :create)
-				(cl-store:store cfg::*configurations* f)))
-			    (import-conf ()
-			      (with-open-file (f filepath :element-type '(unsigned-byte 8))
-				(setf cfg::*configurations* (cl-store:restore f)))))
-		       (export-conf)
-		       (import/export)))))
-	    (with-html-output (s)
-	      (with-form (action :on-submit #'on-submit)
-		(htm
-		 (:form :action action :method "post" :id "import-export-form"
-			(:input :type "submit" :value "Export now" :id "export-confiurations")))))))))))
+	  (let ((export? nil)
+		(import? nil))
+	    
+	    (flet ((on-submit ()
+		     (let ((filepath (cfg (:import/export :import/export-filepath) conf)))
+		       (flet ((export-conf ()
+				(with-open-file (f filepath :direction :output
+						   :element-type '(unsigned-byte 8)
+						   :if-exists :overwrite
+						   :if-does-not-exist :create)
+				  (cl-store:store cfg::*configurations* f)))
+			      (import-conf ()
+				(with-open-file (f filepath :element-type '(unsigned-byte 8))
+				  (setf cfg::*configurations* (cl-store:restore f)))))
+			 (cond
+			   (export? (export-conf))
+			   (import? (import-conf))
+			   (t (error "We shouldn't be here")))
+			 (import/export)))))
+	      (with-html-output (s)
+		(with-form (action :on-submit #'on-submit)
+		  (with-form-field (export :writer (lambda (val)
+						     (when (equalp val "true")
+						       (setf export? t))))
+		    (with-form-field (import :writer (lambda (val)
+						       (when (equalp val "true")
+							 (setf import? t))))
+		      (htm
+		       (:form :action action :method "post" :id "import-export-form"
+			      (:input :type "hidden" :name export :id export)
+			      (:input :type "hidden" :name import :id import)
+			      (:input :type "button" :class "button" :value "Export now" :id "export-configurations")
+			      (:input :type "button" :class "button" :value "Import now" :id "import-configurations"))
+		       (:script :language "javascript"
+				(str
+				 (ps*
+				  `(chain ($ document)
+					  (ready (lambda ()
+						   (chain ($ ,($id "export-configurations"))
+							  (click (lambda ()
+								   (chain ($ ,($id export))
+									  (val "true"))
+								   (chain ($ ,($id "import-export-form"))
+									  (submit)))))
+						   (chain ($ ,($id "import-configurations"))
+							  (click (lambda ()
+								   (chain ($ ,($id import))
+									  (val "true"))
+								   (chain ($ ,($id "import-export-form"))
+									  (submit)))))
+						   ))))))))))))))))))
 
 (defun schema-symbol (string)
   (cfg::read-symbol string))
