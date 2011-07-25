@@ -5,8 +5,8 @@
   (:documentation "CL-CONFIG Web application configuration schema")
   (:section :import/export "Import export settings"
 	    (:import/export-filepath "Import/export filepath" :pathname :optional t)
-	    (:import-on-load "Import on load" :boolean :default t)
-	    (:export-on-save "Export on save" :boolean :default t)
+	    (:import-on-load "Import on load" :boolean :default nil)
+	    (:export-on-save "Export on save" :boolean :default nil)
 	    (:backend "Backend" (:one-of (:sexp "SEXP backend")
 					 (:xml "XML backend")
 					 (:binary "Binary backend"))
@@ -27,7 +27,7 @@
   (:documentation "Standard CL-CONFIG Web application configuration")
   (:section :general-settings
    (:about #.(with-open-file (s (asdf::system-relative-pathname :cl-config
-							      "README"))
+							      "README.md"))
 	       (let* ((len (file-length s))
 		      (data (make-string len)))
 		 (values data (read-sequence data s)))))))

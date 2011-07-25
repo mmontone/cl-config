@@ -70,19 +70,21 @@
    Default arguments are in standard-cl-config-web-configuration
 
    Evaluate (cfg.web:start-cl-config-web) and point your browser to http://localhost:4242"
+  ;; Load configuration on start if appropiate
+  (when (cfg (:import/export :import-on-load) configuration)
+    (with-open-file (f (cfg (:import/export :import/export-filepath) configuration)
+		       :element-type '(unsigned-byte 8))
+      (setf cfg::*configurations* (cl-store:restore f))))
+  
   ;; Static dispatcher
   (push 'static-dispatcher *dispatch-table*)
+  
   ;; Forms dispatcher
   (push 'continuation-dispatcher *dispatch-table*)
   (setf *acceptor* (make-instance 'acceptor
 				  :address (cfg (:webapp-configuration :host) configuration)
 				  :port (cfg (:webapp-configuration :port) configuration)))
-  (start *acceptor*)
-  ;; Load configuration on start if appropiate
-  (when (cfg (:import/export :import-on-load) configuration)
-    (with-open-file (f (cfg (:import/export :import/export-filepath) configuration)
-		       :element-type '(unsigned-byte 8))
-      (setf cfg::*configurations* (cl-store:restore f)))))
+  (start *acceptor*))
 
 (defun stop-cl-config-web ()
   "Stops the web configuration editor"
