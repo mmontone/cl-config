@@ -1,5 +1,28 @@
 * Installer
-* cl-store serializer
 * tests
 * dialog, gtkdialog, ncurses installer?
 * documentation
+* web configuration-schema creator/editor
+* Better composite options:
+
+Example, in configurations:
+
+(:section :database-configuration "Database configuration"
+     (:engine "Engine" (:one-of (:my-sql  ;; my-sql configuration section define elsewhere
+                                   (:configuration :my-sql))
+                                (:postgres  ;; Inline section
+				        (:section :postgres-configuration "Postgres configuration"
+					          ...))
+				(:file  ;; inline configuration, without requiring a new section
+				   (:group
+				         (:file "File" :pathname))))))
+
+List of composite types (specifying and web editing):
+
+(:section :webapp-configuration "Web application configuration"
+        (:entry-points "Entry points"
+	         (:many-of
+		      (:group
+		         (:entry-name :string)
+			 (:entry-function :string)
+			 (:entry-regex :string)))))
