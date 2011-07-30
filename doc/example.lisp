@@ -64,6 +64,24 @@
 			 (:control-flow "Control flow")
 			 (:system "System")))))
 
+(define-configuration-schema mail-configuration ()
+    (:title "Mail configuration")
+    (:documentation "Mail configuration")
+    (:section :mail-configuration "Mail configuration"
+        (:documentation "Mail configuration")
+        (:smtp-host "SMTP host" :text :default "localhost")
+	(:smtp-port "SMTP port" :integer :default 25)
+	(:smtp-username "SMTP username" :text :optional t)
+	(:smtp-password "SMTP password" :text :optional t)))
+
+(define-configuration-schema i18n-configuration ()
+    (:title "Internationalization configuration")
+    (:documentation "Internationalization configuration")
+    (:section :i18n-configuration "Internationalization configuration"
+        (:documentation "Internationalization configuration")
+        (:default-locale "Default locale" (:one-of (:en "English") (:es "Spanish"))
+	  :default :en)))
+
 (define-configuration-schema webapp-configuration (logging-configuration)
     (:title "Web application configuration")
     (:documentation "Web application configuration")
@@ -115,7 +133,9 @@
     (cl-config-application-configuration
      webapp-configuration
      database-configuration
-     view-configuration)
+     view-configuration
+     mail-configuration
+     i18n-configuration)
       (:title "Standard configuration")
       (:documentation "Standard configuration for a Gestalt application")
       (:page-title "Page title" :text :default "Gestalt application"))
