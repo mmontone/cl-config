@@ -96,14 +96,28 @@
 	(:port "Port" :integer :default 8080)
 	(:catch-errors "Catch errors" :boolean :default t)))
 
+(define-configuration-schema controller-configuration ()
+  (:title "Controller configuration")
+  (:documentation "Controller configuration")
+  (:section :control-flow-configuration "Control flow configuration"
+	    (:documentation "Control flow configuration")
+	    (:renderer "Renderer" (:one-of (:http "Standard HTTP rendering")
+					   (:ajax "Ajax rendering"))
+		 :default :http)
+	    (:backend "Backend" (:one-of (:simple-callback "Simple callback")
+					 (:interpreted-continuation "Interpreted continuation")
+					 (:compiled-continuation "Compiled continuation")
+					 (:serialized-continuation "Serialized continuation"))
+		      :default :simple-callback))
+  (:section :session-configuration "Session configuration"
+	    (:documentation "Session configuration")
+	    (:timeout "Timeout" :integer :default #.(* 60 60 15))))
+
 (define-configuration-schema view-configuration ()
    (:title "View configuration")
    (:documentation "View configuration")
    (:section :view-configuration "View configuration"
       (:documentation "Section for configuring the application view")
-      (:renderer "Renderer" (:one-of (:http "Standard HTTP rendering")
-				     (:ajax "Ajax rendering"))
-		 :default :http)
       (:view-type "View type" (:one-of (:standard "Standard view type")
 				       (:ctx "Context view type"))
 		  :default :standard))
@@ -133,6 +147,7 @@
     (cl-config-application-configuration
      webapp-configuration
      database-configuration
+     controller-configuration
      view-configuration
      mail-configuration
      i18n-configuration)
@@ -160,9 +175,7 @@
 	    (:debugging-levels (:info))
 	    (:backend :log5))
   (:section :cache-configuration
-	    (:active-cache t))
-  (:section :view-configuration
-	    (:renderer :ajax)))
+	    (:active-cache t)))
 
 (define-configuration debug-configuration (standard-configuration)
     (:configuration-schema standard-configuration)
