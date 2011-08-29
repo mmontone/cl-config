@@ -94,7 +94,14 @@
 				  :configuration 'hunchentoot-configuration)))
         (:host "Host" :text :default "localhost")
 	(:port "Port" :integer :default 8080)
-	(:catch-errors "Catch errors" :boolean :default t)))
+	(:catch-errors "Catch errors" :boolean :default t))
+    (:section :libraries "Libraries"
+	      (:documentation "Global web libraries configuration")
+	      (:libraries "Libraries"
+			  (:list (:jquery "JQuery")
+				 (:jquery-ui "JQueryUI")
+				 (:spinner.js "Spinner.js"))
+			  :default nil)))
 
 (define-configuration-schema controller-configuration ()
   (:title "Controller configuration")
