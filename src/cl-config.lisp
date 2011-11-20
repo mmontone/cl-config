@@ -130,3 +130,7 @@
 (defun read-symbol (string)
   (with-input-from-string (s string)
     (read s)))
+
+(defun load-examples ()
+  (let ((examples-file (asdf:system-relative-pathname :cl-config "doc/example.lisp")))
+    (load examples-file)))

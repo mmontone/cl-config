@@ -59,4 +59,5 @@
 	   #:install-warning
 	   #:install-error
 	   #:install-errors
-	   #:repl-installer))
+	   #:repl-installer
+	   #:load-examples))
