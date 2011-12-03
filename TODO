@@ -3,6 +3,7 @@
 * dialog, gtkdialog, ncurses installer?
 * documentation
 * web configuration-schema creator/editor
+* Edit configurations from emacs (ala M-x customize)
 * Better composite options:
 
 Example, in configurations:
