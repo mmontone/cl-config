@@ -9,34 +9,52 @@
    (flet ((label (string)
             (make-pane 'label-pane :label string)))
      (with-slots (configuration-schema) *application-frame*
-       (labelling (:label (title configuration-schema))
-         (make-pane 'vrack-pane :contents
-                    (append
-                     (list
-                      (labelling (:label "Overview")
-                        (label (cfg::documentation* configuration-schema))))
-                     (loop for section being the hash-values of
-                          (cfg::sections configuration-schema)
-                          collect
-                          (labelling (:label (title section))
-                            (make-pane 'table-pane
-                                       :contents
-                                       (loop for option-schema being the hash-values of (cfg::direct-options section)
-                                          collect
-                                          (mapcar #'label
-                                                  (list
-                                                   (prin1-to-string (cfg::name option-schema))
-                                                   (title option-schema)
-                                                   (if (cfg::optional option-schema)
-                                                       "Yes" "No")
-                                                   (if (slot-boundp option-schema 'cfg::default)
-                                                       (prin1-to-string (cfg::default option-schema))
-                                                       "--")
-                                                   (if (cfg::advanced option-schema)
-                                                       "Yes" "No")
-                                                   (or (cfg::documentation* option-schema) ""))))))))))))))
-                 
-              
+       (scrolling (:width 1500 :height 800)
+         (labelling (:label (title configuration-schema))
+           (vertically ()
+             (labelling (:label "Overview")
+             (make-pane 'application-pane
+                        :height 100
+                        :display-function
+                        (lambda (frame pane)
+                          (declare (ignore frame))
+                          
+                            (format pane "~A" (cfg::documentation* configuration-schema))
+                            (let ((parents (slot-value configuration-schema 'cfg::parents)))
+                              (if parents
+                                  (progn
+                                    (terpri pane) (terpri pane)
+                                    (format pane "~A" "Parents: ")
+                                    (let ((parent (cfg::find-configuration-schema (first parents))))
+                                      (with-output-as-presentation (pane parent 'configuration-schema)
+                                        (format pane "~A" (cfg::title parent)))
+                                      (loop for parent-name in (cdr parents)
+                                         do
+                                           (let ((parent (cfg::find-configuration-schema parent-name)))
+                                             (with-output-as-presentation (pane parent 'configuration-schema)
+                                               (format pane ", ~A" (cfg::title parent)))))))
+                                  (format pane "~A" "No parents"))))))
+             (make-pane 'vrack-pane :contents
+                        (loop for section being the hash-values of
+                             (cfg::sections configuration-schema)
+                             collect
+                             (labelling (:label (title section))
+                               (make-pane 'table-pane
+                                          :contents
+                                          (loop for option-schema being the hash-values of (cfg::direct-options section)
+                                             collect
+                                             (mapcar #'label
+                                                     (list
+                                                      (prin1-to-string (cfg::name option-schema))
+                                                      (title option-schema)
+                                                      (if (cfg::optional option-schema)
+                                                          "Yes" "No")
+                                                      (if (slot-boundp option-schema 'cfg::default)
+                                                          (prin1-to-string (cfg::default option-schema))
+                                                          "--")
+                                                      (if (cfg::advanced option-schema)
+                                                          "Yes" "No")
+                                                      (or (cfg::documentation* option-schema) "")))))))))))))))
 
 (define-application-frame configuration-editor ()
   ((configuration :initarg :configuration
@@ -150,6 +168,23 @@
                                            option
                                            value))
 
+(define-presentation-type configuration-schema ())
+
+(define-presentation-to-command-translator configuration-schema-to-view-command
+    (configuration-schema
+     com-view-configuration-schema
+     configuration-schema-viewer
+     :gesture :select
+     :documentation "View this configuration schema")
+    (object)
+  (list object))
+
+(define-configuration-schema-viewer-command (com-view-configuration-schema :name "View configuration schema")
+    ((configuration-schema 'configuration-schema))
+  (sb-thread:make-thread (lambda ()
+                           (run-frame-top-level
+                            (make-application-frame 'configuration-schema-viewer :configuration-schema configuration-schema)))))
+  
 (defun run-configuration-editor ()
   (run-frame-top-level
    (make-application-frame 'configuration-editor)))
