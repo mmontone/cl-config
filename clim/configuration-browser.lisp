@@ -36,40 +36,51 @@
   app pane
   (let ((*standard-output* pane))
     (format-graph-from-roots (configuration-schemas *application-frame*)
-     #'(lambda (node *standard-output*)
-         (let ((*print-case* :downcase))
-           (surrounding-output-with-border
-            (*standard-output* :shape :drop-shadow)
-            (with-text-style (t (make-text-style :sans-serif nil nil))
-              (with-output-as-presentation (t node 'node)
-                (with-text-style (t (make-text-style :sans-serif :bold :large))
-                  (princ (cfg::title node))))
-              (terpri)
-              (with-drawing-options (*standard-output* :ink +red4+)
-                (princ (clean-docu-string (cfg::documentation* node))))
-              (terpri)
-              ;; (formatting-table ()
-              ;;   (dolist (sd (cfg:direct-options node))
-              ;;     (formatting-row ()
-              ;;       (formatting-cell (t :align-y :top)
-              ;;         (princ (pcl:slot-definition-name sd))
-              ;;         (princ " "))
-              ;;       (formatting-cell (t :align-y :top)
-              ;;         (with-drawing-options (*standard-output* :ink +red4+)
-              ;;           (princ (clean-docu-string (slot-documentation sd))))))))
-              
-              (terpri)) )))
-     #'(lambda (node)
-         (if (member node *expanded*)
-             ;;(pcl:class-direct-subclasses node)
-             (mapcar #'find-configuration-schema (cfg::parents node))
-             nil))
-     :cutoff-depth nil
-     :graph-type :tree
-     :merge-duplicates t
-     :arc-drawer #'climi::arrow-arc-drawer
-     :arc-drawing-options (list :ink +gray66+ :line-thickness 1)
-     :generation-separation 30)
+                             #'(lambda (node *standard-output*)
+                                 (let ((*print-case* :downcase))
+                                   (surrounding-output-with-border
+                                       (*standard-output* :shape :drop-shadow)
+                                     (with-text-style (t (make-text-style :sans-serif nil nil))
+                                       (with-output-as-presentation (t node 'node)
+                                         (with-text-style (t (make-text-style :sans-serif :bold :large))
+                                           (princ (cfg::title node))))
+                                       (terpri)
+                                       (with-drawing-options (*standard-output* :ink +red4+)
+                                         (princ (clean-docu-string (or (cfg::documentation* node) ""))))
+                                       (terpri)
+                                       (terpri)
+                                       (loop for section being the hash-values of (cfg::sections node)
+                                          do
+                                          (progn
+                                            (with-text-style (t (make-text-style :sans-serif :bold :normal))
+                                              (princ (cfg::title section)))
+                                            (terpri)
+                                            (formatting-table ()
+                                              (loop for option-schema being the hash-values of (cfg::direct-options section)
+                                                 do
+                                                 (formatting-row ()
+                                                   (formatting-cell (t :align-y :top)
+                                                     (princ (cfg::title option-schema))
+                                                     (princ " ")
+                                                     (with-text-style (t (make-text-style :sans-serif :italic :small))
+                                                       (format t "(~A)" (cfg::title (cfg::option-type option-schema)))))
+                                                   ;; (formatting-cell (t :align-y :top)
+                                                   ;;   (with-drawing-options (*standard-output* :ink +red4+)
+                                                   ;;     (princ (clean-docu-string (or (cfg::documentation* option-schema) "")))))
+                                                   )))
+                                            (terpri)))
+                                       (terpri)))))
+                             #'(lambda (node)
+                                 (if (member node *expanded*)
+                                     ;;(pcl:class-direct-subclasses node)
+                                     (mapcar #'find-configuration-schema (cfg::parents node))
+                                     nil))
+                             :cutoff-depth nil
+                             :graph-type :tree
+                             :merge-duplicates t
+                             :arc-drawer #'climi::arrow-arc-drawer
+                             :arc-drawing-options (list :ink +gray66+ :line-thickness 1)
+                             :generation-separation 30)
     (terpri)))
 
 (defun clean-docu-string (string)
