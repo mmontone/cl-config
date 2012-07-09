@@ -101,7 +101,7 @@
 
 (defgeneric make-configuration-option-editor-valued (type option-schema option value))
 
-(defmethod make-configuration-option-editor-valued ((type (eql 'cfg::text-configuration-schema-option-type))
+(defmethod make-configuration-option-editor-valued (cfg::text-configuration-schema-option-type
                                                     option-schema
                                                     option
                                                     value)
@@ -185,9 +185,19 @@
                            (run-frame-top-level
                             (make-application-frame 'configuration-schema-viewer :configuration-schema configuration-schema)))))
   
-(defun run-configuration-editor ()
+(defun run-configuration-editor (configuration)
   (run-frame-top-level
-   (make-application-frame 'configuration-editor)))
+   (make-application-frame 'configuration-editor :configuration configuration)))
+
+(defun run-configuration-schema-viewer (configuration-schema)
+  (run-frame-top-level
+   (make-application-frame 'cfg.clim::configuration-schema-viewer
+                           :configuration-schema configuration-schema)))
+
+(defun run-configuration-schema-viewer-example ()
+  (cl-config::load-examples)
+  (run-configuration-schema-viewer
+   (cl-config::find-configuration-schema 'cfg::standard-configuration)))
 
 
 
