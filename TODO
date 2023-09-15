@@ -28,7 +28,7 @@ List of composite types (specifying and web editing):
 			 (:entry-function :string)
 			 (:entry-regex :string)))))
 
-* A command line interface backend.
+* A command line interface frontend.
 
   Both interactive, and with command line processing. Completion.
 
