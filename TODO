@@ -4,6 +4,7 @@
 * documentation
 * web configuration-schema creator/editor
 * Edit configurations from emacs (ala M-x customize)
+* ncurses frontend
 * Better composite options:
 
 Example, in configurations:
