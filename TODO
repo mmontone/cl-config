@@ -53,3 +53,5 @@ List of composite types (specifying and web editing):
   - Create a configuration from a schema, from command line.
   - Parse configuration options as command line arguments, like: --web.host=...
   - Command line completion based on schema.
+
+* Maybe JSON and YAML backends.
