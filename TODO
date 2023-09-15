@@ -30,7 +30,16 @@ List of composite types (specifying and web editing):
 
 * A command line interface frontend.
 
-  Both interactive, and with command line processing. Completion.
+  - Both interactive, and with command line processing. Completion.
+  - Run a "config" binary in some directory, that opens an interactive configuration manager:
+      Possible commands:
+        - load(config)
+        - save(config)
+        - set(option, value)
+        - get(option)
+        - help(config)
+        - setconfig(config) - Set the current config
+        - ...
 
 * Deliver core as a shared library.
 
