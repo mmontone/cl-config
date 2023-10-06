@@ -1,0 +1,128 @@
+This message announces the availability of Scheme release scm-5f3.
+
+SCM conforms to Revised^5 Report on the Algorithmic Language Scheme
+and the IEEE P1178 specification.  SCM is written in C and runs under
+Amiga, Atari-ST, MacOS, MS-DOS, OS/2, NOS/VE, Unicos, VMS, Windows,
+Unix, and similar systems.
+
+SCM is free software and part of the GNU project.  It is released
+under the GNU Lesser General Public License (LGPL).
+
+Documentation and distributions in several formats are linked from
+SCM's home page:
+
+	       <http://people.csail.mit.edu/jaffer/SCM>
+
+Links to distributions of SCM and related softwares are at the end of
+this message.
+
+				-=-=-
+scm-5f3 news:
+
+scm-5f3 is a bugfix release.  Details at
+<http://cvs.savannah.gnu.org/viewvc/*checkout*/scm/scm/ChangeLog>
+
+	* scl.c (pmantexp2dbl): Scale mantissa length for unnormalized FP.
+	* scl.c (pmantexp2dbl): Do multiplication or division in FP when
+	it fits (uses precomputed dpows5[23]).
+	* scl.c (pdbl2str): Moved power-of-two test earlier to avoid
+	bignum recycling.
+	* scl.c: For powers-of-2 try incrementing quotient before adding
+	decimal digit.
+	* Makefile: rm -f for info files.
+	* keysymdef.scm, x11.scm: X11 codes changed.
+	* scl.c: Restricted second conversion to fractional powers of two
+	of mant.
+	* scl.c (pdbl2str): Corrected for powers of two.
+	* r4rstest.scm (test-inexact-printing): Added float-powers-of-2-test.
+	* Transcen.scm (real-log): Permit second argument to be 0.
+	* Transcen.scm (real-log): Was missing.
+	* sys.c (HUGE_LENGTH): Return unsigned long.
+	* scm.h: (must_realloc, must_realloc_cell): Made olen and len
+	arguments unsigned long.
+	* repl.c, scm.h, sys.c(mallocated, lmallocated): Made unsigned long.
+	* sys.c (igc_for_alloc): Made olen and size unsigned long.
+ from Steve VanDevender
+	* scl.c (pmantexp2dbl): Fixed declaration following
+	non-declaration statement.
+	* scmhob.h (PRE_TRANSC_FUN): big2dbl() --> int2dbl().
+	* scl.c (pmantexp2dbl, int2dbl):
+	Fixed: (exact->inexact (+ most-positive-fixnum 1)) => 0.
+ from Radey Shouman <shouman@comcast.net>
+	* subr.c (scm_ash): Make (ash -1 shift) return -1 for
+	large values of shift.
+ from Karl Zhang
+	* build.scm (inexact): feature requires bignum for float I/O.
+ from Imre Patyi
+	* scl.c: Changed 0.0 to 0. on output.
+ from Jakub Bogusz
+	* scl.c (scm_ash, scm_round_quotient, product): I noticed that scm
+	5f2 built with "make all" fails make check with "Wrong type in
+	arg1" (0.0) in round_quotient.
+	It appeared to be caused by bigrecy() calls introduced in scm 5f2: in
+	some cases some bignum values are used after their bigrecy(), because
+	some routines reuse arguments as results:
+ from Martin Michlmayr
+	* scmfig.h: Added support for ARM64 (aarch64).
+
+				-=-=-
+
+SCM source is available from:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/scm-5f3.zip>
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/scm-5f3-1.src.rpm>
+Also available as binary RPM:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/scm-5f3-1.x86_64.rpm>
+Also available as MS-Windows installer (older version):
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/scm-5f2-1.exe>
+
+SLIB is a portable Scheme library which SCM uses:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/slib-3b6.zip>
+Also available as RPM:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/slib-3b6-1.noarch.rpm>
+Also available as MS-Windows installer:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/slib-3b6-1.exe>
+
+JACAL is a symbolic math system written in Scheme:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-1c6.zip>
+Also available as RPM:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-1c6-1.noarch.rpm>
+Also available as MS-Windows installer:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/jacal-1c6-1.exe>
+
+WB is a disk based, sorted associative array (B-tree) library for SCM.
+Using WB, large databases can be created and managed from SCM.
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/wb-2b4.zip>
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/wb-2b4-1.src.rpm>
+Also available as binary RPM:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/wb-2b4-1.x86_64.rpm>
+
+FreeSnell is a program to compute optical properties of multilayer
+thin-film coatings:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/FreeSnell-1c3.zip>
+Also available as MS-Windows installer:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/FreeSnell-1c3-1.exe>
+
+SIMSYNCH is a digital logic simulation system written in SCM.
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/synch-1c5.zip>
+
+XSCM is a X windows interface package which works with SCM:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/xscm-2.01.tar.gz>
+
+TURTLSCM is a turtle graphics package which works with SCM on MS-DOS
+or X11 machines:
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/turtlegr.tar.gz>
+
+#! implements "#!" (POSIX) shell-scripts for MS-DOS batch files.
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/sharpbang.zip>
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/#!.zip>
+
+SLIB-PSD is a portable debugger for Scheme (requires emacs editor):
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/slib-psd1-3.tar.gz>
+
+MacSCM is a Macintosh applications building package which works with
+SCM (similar to XSCM).
+ <http://groups.csail.mit.edu/mac/ftpdir/scm/macscm.tar.Z>
+
+Programs for printing and viewing TexInfo documentation (which SCM
+has) come with GNU Emacs or can be obtained via ftp from:
+ <ftp://ftp.gnu.org/pub/gnu/texinfo>

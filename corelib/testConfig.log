@@ -1,0 +1,9 @@
+%%%% Starting test testConfig
+Group begin: testConfig
+Test begin:
+Test end:
+  result-kind: pass
+  actual-value: "testConfig"
+  expected-value: "testConfig"
+Group end: testConfig
+# of expected passes      1

@@ -1,0 +1,246 @@
+SCM(1)                                                                  SCM(1)
+
+
+
+NAME
+       scm - a Scheme Language Interpreter
+
+SYNOPSIS
+       scm [-a kbytes ] [-muvqib] [--version] [--help]
+       [[-]-no-init-file] [--no-symbol-case-fold]
+       [-p int ] [-r feature ] [-h feature ]
+       [-d filename ] [-f filename ] [-l filename ]
+       [-c expression ] [-e expression ] [-o dumpname ]
+       [-- | - | -s] [ filename ] [ arguments ...  ]
+
+DESCRIPTION
+       Scm is a Scheme interpreter.
+
+       Upon  startup  scm loads the file specified by by the environment vari‐
+       able SCM_INIT_PATH or by the parameter IMPLINIT  in  the  makefile  (or
+       scmfig.h)  if  SCM_INIT_PATH  is not defined.  The makefiles attempt to
+       set IMPLINIT to "Init.scm" in the source directory.
+
+       Unless the option -no-init-file or --no-init-file occurs in the command
+       line  or  if scm is being invoked as a script, "Init.scm" checks to see
+       if there is file "ScmInit.scm" in the path specified by the environment
+       variable  HOME  (or in the current directory if HOME is undefined).  If
+       it finds such a file, then it is loaded.
+
+       "Init.scm" then looks for command input from one of three sources: From
+       an  option  on the command line, from a file named on the command line,
+       or from standard input.
+
+
+OPTIONS
+       The options are processed in the order specified on the command line.
+
+       -akbytes
+            specifies that scm should allocate an initial heapsize of  kbytes.
+            This option, if present, must be the first on the command line.
+
+       --no-init-file
+            Inhibits the loading of "ScmInit.scm" as described above.
+
+       --no-symbol-case-fold
+            Symbol (and identifier) names are case-sensitive.
+
+       -eexpression
+
+       -cexpression
+            specifies  that  the  scheme expression expression is to be evalu‐
+            ated.  These options are inspired by perl and sh respectively.  On
+            Amiga  systems  the entire option and argument need to be enclosed
+            in quotes.  For instance "-e(newline)".
+
+       -rfeature
+            requires feature.  This will load a file from SLIB if that feature
+            is  not  already  supported.  If feature is 2, 3, 4, or 5 scm will
+            require the features necessary to support  R2RS,  R3RS,  R4RS,  or
+            R5RS, respectively.
+
+       -hfeature
+            provides feature.
+
+       -lfilename
+
+       -ffilename
+            loads  filename.   Scm will load the first (unoptioned) file named
+            on the command line if no -c, -e, -f, -l, or  -s  option  precedes
+            it.
+
+       -dfilename
+            opens  (read-only)  the extended relational database filename.  If
+            filename contains initialization code, it will  be  run  when  the
+            database is opened.
+
+       -odumpname
+            saves  the current SCM session as the executable program dumpname.
+            This option works only in SCM builds supporting dump.
+
+            If options appear on the command line after -o dumpname, then  the
+            saved  session will continue with processing those options when it
+            is invoked.  Otherwise the (new)  command  line  is  processed  as
+            usual when the saved image is invoked.
+
+       -plevel
+            sets  the  prolixity  (verboseness) to level.  This is the same as
+            the scm command (verbose level ).
+
+       -v   (verbose mode) specifies that scm will print  prompts,  evaluation
+            times, notice of loading files, and garbage collection statistics.
+            This is the same as -p3.
+
+       -q   (quiet mode) specifies that scm will print no  extra  information.
+            This is the same as -p0.
+
+       -m   specifies  that  subsequent  loads, evaluations, and user interac‐
+            tions will be with R4RS macro capability.  To use a specific  R4RS
+            macro  implementation from SLIB (instead of SLIB's default) put -r
+            macropackage before -m on the command line.
+
+       -u   specifies that subsequent loads, evaluations,  and  user  interac‐
+            tions  will be without R4RS macro capability.  R4RS macro capabil‐
+            ity can be restored by a subsequent -m on the command line or from
+            Scheme code.
+
+       -i   specifies  that scm should run interactively.  That means that scm
+            will not terminate until the (quit) or (exit)  command  is  given,
+            even  if  there are errors.  It also sets the prolixity level to 2
+            if it is less than 2.  This will print prompts, evaluation  times,
+            and  notice  of  loading files.  The prolixity level can be set by
+            subsequent options.  If scm is started from a tty, it will  assume
+            that it should be interactive unless given a subsequent -b option.
+
+       -b   specifies  that scm should run non-interactively.  That means that
+            scm will terminate after processing the command line or  if  there
+            are errors.
+
+       -s   specifies,  by  analogy  with  sh,  that further options are to be
+            treated as program arguments.
+
+       -    -- specifies that there are no more options on the command line.
+
+ENVIRONMENT VARIABLES
+       SCM_INIT_PATH
+            is the pathname where scm will look for its  initialization  code.
+            The default is the file "Init.scm" in the source directory.
+
+       SCHEME_LIBRARY_PATH
+            is the SLIB Scheme library directory.
+
+       HOME is  the directory where "Init.scm" will look for the user initial‐
+            ization file "ScmInit.scm".
+
+SCHEME VARIABLES
+       *argv*
+            contains the list of arguments to the program.  *argv* can  change
+            during  argument  processing.  This list is suitable for use as an
+            argument to SLIB getopt.
+
+       *R4RS-macro*
+            controls whether loading  and  interaction  support  R4RS  macros.
+            Define  this  in  "ScmInit.scm"  or files specified on the command
+            line.  This can be overridden by subsequent -m and -u options.
+
+       *interactive*
+            controls interactivity as explained for the  -i  and  -b  options.
+            Define  this  in  "ScmInit.scm"  or files specified on the command
+            line.  This can be overridden by subsequent -i and -b options.
+
+EXAMPLES
+       % scm foo.scm arg1 arg2 arg3
+            Load and execute the contents of foo.scm.   Parameters  arg1  arg2
+            and arg3 are stored in the global list *argv*.
+
+       % scm -f foo.scm arg1 arg2 arg3
+            The same.
+
+       % scm -s foo.scm arg1 arg2
+            Set *argv* to ("foo.scm" "arg1" "arg2") and enter interactive ses‐
+            sion.
+
+       % scm -e '(display (list-ref *argv* *optind*))' bar
+            Print ``bar''
+
+       % scm -rpretty-print -r format -i
+            Load pretty-print and format and enter interactive mode.
+
+       % scm -r5
+            Load dynamic-wind, values, and R4RS macros and  enter  interactive
+            (with macros) mode.
+
+       % scm -r5 -r4
+            Like above but rev4-optional-procedures are also loaded.
+
+FEATURES
+       Runs  under  Amiga, Atari-ST, MacOS, MS-DOS, OS/2, NOS/VE, Unicos, VMS,
+       Unix and similar systems.  Support for ASCII and EBCDIC character sets.
+
+       Conforms to Revised^5 Report on the Algorithmic Language Scheme and the
+       IEEE P1178 specification.
+
+       Support for SICP, R2RS, R3RS, and R4RS scheme code.
+
+       Many  Common  Lisp  functions: logand, logor, logxor, lognot, ash, log‐
+       count, integer-length,  bit-extract,  defmacro,  macroexpand,  macroex‐
+       pand1,  gentemp, defvar, force-output, software-type, get-decoded-time,
+       get-internal-run-time,  get-internal-real-time,  delete-file,   rename-
+       file, copy-tree, acons, and eval.
+
+       Char-code-limit, most-positive-fixnum, most-negative-fixnum, and inter‐
+       nal-time-units-per-second constants.   *Features*  and  *load-pathname*
+       variables.
+
+       Arrays  and  bit-vectors.   String  ports and software emulation ports.
+       I/O extensions providing most of ANSI C and POSIX.1 facilities.
+
+       User definable responses to interrupts and errors, Process-synchroniza‐
+       tion  primitives,  String  regular  expression matching, and the CURSES
+       screen management package.
+
+       Available add-on packages including an interactive debugger,  database,
+       X-window graphics, BGI graphics, Motif, and Open-Windows packages.
+
+       A  compiler  (HOBBIT, available separately) and dynamic linking of com‐
+       piled modules.
+
+       Setable levels of monitoring and timing  information  printed  interac‐
+       tively (the `verbose' function).  Restart, quit, and exec.
+
+FILES
+       scm.texi
+              Texinfo  documentation of scm enhancements, internal representa‐
+              tions, and how to extend or include scm in other programs.
+
+AUTHORS
+       Aubrey Jaffer (agj@alum.mit.edu)
+       Radey Shouman
+
+BUGS
+SEE ALSO
+       The SCM home-page:
+       http://people.csail.mit.edu/jaffer/SCM.html
+
+       The  Scheme  specifications  for   details   on   specific   procedures
+       (http://groups.csail.mit.edu/mac/ftpdir/scheme-reports) or
+
+       IEEE Std 1178-1990,
+       IEEE Standard for the Scheme Programming Language,
+       Institute of Electrical and Electronic Engineers, Inc.,
+       New York, NY, 1991
+
+       Brian Harvey and Matthew Wright
+       Simply Scheme: Introducing Computer Science_
+       MIT Press, 1994 ISBN 0-262-08226-8
+
+       R. Kent Dybvig, The Scheme Programming Language,
+       Prentice-Hall Inc, Englewood Cliffs, New Jersey 07632, USA
+
+       H. Abelson, G. J. Sussman, and J. Sussman,
+       Structure and Interpretation of Computer Programs,
+       The MIT Press, Cambridge, Massachusetts, USA
+
+
+
+4th Berkeley Distribution        February 2008                          SCM(1)

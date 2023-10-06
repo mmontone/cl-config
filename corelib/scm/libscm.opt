@@ -1,0 +1,3 @@
+-F cautious bignums arrays inexact
+-F engineering-notation
+-F dynamic-linking

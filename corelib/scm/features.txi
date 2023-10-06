@@ -1,0 +1,215 @@
+@item array
+@cindex array
+Alias for ARRAYS
+
+@item array-for-each
+@cindex array-for-each
+array-map! and array-for-each (arrays must also be featured).
+
+@item arrays
+@cindex arrays
+Use if you want arrays, uniform-arrays and uniform-vectors.
+
+@item bignums
+@cindex bignums
+Large precision integers.
+
+@item byte
+@cindex byte
+Treating strings as byte-vectors.
+
+@item byte-number
+@cindex byte-number
+Byte/number conversions
+
+@item careful-interrupt-masking
+@cindex careful-interrupt-masking
+Define this for extra checking of interrupt masking and some simple
+checks for proper use of malloc and free.  This is for debugging C
+code in @file{sys.c}, @file{eval.c}, @file{repl.c} and makes the
+interpreter several times slower than usual.
+
+@item cautious
+@cindex cautious
+Normally, the number of arguments arguments to interpreted closures
+(from LAMBDA) are checked if the function part of a form is not a
+symbol or only the first time the form is executed if the function
+part is a symbol.  defining @samp{reckless} disables any checking.
+If you want to have SCM always check the number of arguments to
+interpreted closures define feature @samp{cautious}.
+
+@item cheap-continuations
+@cindex cheap-continuations
+If you only need straight stack continuations, executables compile with
+this feature will run faster and use less storage than not having it.
+Machines with unusual stacks @emph{need} this.  Also, if you incorporate
+new C code into scm which uses VMS system services or library routines
+(which need to unwind the stack in an ordrly manner) you may need to
+use this feature.
+
+@item compiled-closure
+@cindex compiled-closure
+Use if you want to use compiled closures.
+
+@item curses
+@cindex curses
+For the @dfn{curses} screen management package.
+
+@item debug
+@cindex debug
+Turns on the features @samp{cautious} and
+@samp{careful-interrupt-masking}; uses
+@code{-g} flags for debugging SCM source code.
+
+@item differ
+@cindex differ
+Sequence comparison
+
+@item dont-memoize-locals
+@cindex dont-memoize-locals
+SCM normally converts references to local variables to ILOCs, which
+make programs run faster.  If SCM is badly broken, try using this
+option to disable the MEMOIZE_LOCALS feature.
+
+@item dump
+@cindex dump
+Convert a running scheme program into an executable file.
+
+@item dynamic-linking
+@cindex dynamic-linking
+Be able to load compiled files while running.
+
+@item edit-line
+@cindex edit-line
+interface to the editline or GNU readline library.
+
+@item engineering-notation
+@cindex engineering-notation
+Use if you want floats to display in engineering notation (exponents
+always multiples of 3) instead of scientific notation.
+
+@item generalized-c-arguments
+@cindex generalized-c-arguments
+@code{make_gsubr} for arbitrary (< 11) arguments to C functions.
+
+@item i/o-extensions
+@cindex i/o-extensions
+Commonly available I/O extensions: @dfn{exec}, line I/O, file
+positioning, file delete and rename, and directory functions.
+
+@item inexact
+@cindex inexact
+Use if you want floating point numbers.
+
+@item lit
+@cindex lit
+Lightweight -- no features
+
+@item macro
+@cindex macro
+C level support for hygienic and referentially transparent macros
+(syntax-rules macros).
+
+@item mysql
+@cindex mysql
+Client connections to the mysql databases.
+
+@item no-heap-shrink
+@cindex no-heap-shrink
+Use if you want segments of unused heap to not be freed up after
+garbage collection.  This may increase time in GC for *very* large
+working sets.
+
+@item none
+@cindex none
+No features
+
+@item posix
+@cindex posix
+Posix functions available on all @dfn{Unix-like} systems.  fork and
+process functions, user and group IDs, file permissions, and
+@dfn{link}.
+
+@item reckless
+@cindex reckless
+If your scheme code runs without any errors you can disable almost
+all error checking by compiling all files with @samp{reckless}.
+
+@item record
+@cindex record
+The Record package provides a facility for user to define their own
+record data types.  See SLIB for documentation.
+
+@item regex
+@cindex regex
+String regular expression matching.
+
+@item rev2-procedures
+@cindex rev2-procedures
+These procedures were specified in the @cite{Revised^2 Report on Scheme}
+but not in @cite{R4RS}.
+
+@item sicp
+@cindex sicp
+Use if you want to run code from:
+
+@cindex SICP
+Harold Abelson and Gerald Jay Sussman with Julie Sussman.
+@cite{Structure and Interpretation of Computer Programs.}
+The MIT Press, Cambridge, Massachusetts, USA, 1985.
+
+Differences from R5RS are:
+@itemize @bullet
+@item
+(eq? '() '#f)
+@item
+(define a 25) returns the symbol a.
+@item
+(set! a 36) returns 36.
+@end itemize
+
+@item single-precision-only
+@cindex single-precision-only
+Use if you want all inexact real numbers to be single precision.  This
+only has an effect if SINGLES is also defined (which is the default).
+This does not affect complex numbers.
+
+@item socket
+@cindex socket
+BSD @dfn{socket} interface.  Socket addr functions require
+inexacts or bignums for 32-bit precision.
+
+@item tick-interrupts
+@cindex tick-interrupts
+Use if you want the ticks and ticks-interrupt functions.
+
+@item turtlegr
+@cindex turtlegr
+@dfn{Turtle} graphics calls for both Borland-C and X11 from
+sjm@@ee.tut.fi.
+
+@item unix
+@cindex unix
+Those unix features which have not made it into the Posix specs:
+nice, acct, lstat, readlink, symlink, mknod and sync.
+
+@item wb
+@cindex wb
+WB database with relational wrapper.
+
+@item wb-no-threads
+@cindex wb-no-threads
+no-comment
+
+@item windows
+@cindex windows
+Microsoft Windows executable.
+
+@item x
+@cindex x
+Alias for Xlib feature.
+
+@item xlib
+@cindex xlib
+Interface to Xlib graphics routines.
+

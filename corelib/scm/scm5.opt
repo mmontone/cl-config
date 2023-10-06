@@ -1,0 +1,5 @@
+-F cautious bignums arrays inexact
+-F engineering-notation dynamic-linking
+-F macro
+-F debug
+-F record

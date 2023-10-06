@@ -1,0 +1,1081 @@
+This directory contains the distribution of scm5f3.  SCM conforms to
+Revised^5 Report on the Algorithmic Language Scheme and the IEEE P1178
+specification.  SCM runs under Amiga, Atari-ST, MacOS, MS-DOS, OS/2,
+NOS/VE, Unicos, VMS, Unix and similar systems.  SCM supports the SLIB
+Scheme library; both SCM and SLIB are GNU packages.
+
+               <http://people.csail.mit.edu/jaffer/SCM>
+
+1 Manifest
+==========
+
+'.gdbinit'       provides commands for debugging SCM with GDB
+'COPYING'        GNU GENERAL PUBLIC LICENSE
+'COPYING.LESSER' GNU LESSER GENERAL PUBLIC LICENSE
+'ChangeLog'      changes to SCM.
+'Idiffer.scm'    Linear-space O(PN) sequence comparison.
+'Iedline.scm'    Gnu readline input editing.
+'Init.scm'       Scheme initialization.
+'Link.scm'       Dynamic link/loading.
+'Macro.scm'      Supports Syntax-Rules Macros.
+'Makefile'       builds SCMLIT using the 'make' program.
+'QUICKREF'       Quick Reference card for R4RS and IEEE Scheme.
+'README'         contains a MANIFEST, INSTALLATION INSTRUCTIONS, hints
+                 for EDITING SCHEME CODE, and a TROUBLE SHOOTING GUIDE.
+'Transcen.scm'   inexact builtin procedures.
+'bench.scm'      computes and records performance statistics of pi.scm.
+'build.bat'      invokes build.scm for MS-DOS
+'build.scm'      database for compiling and linking new SCM programs.
+'byte.c'         strings as bytes.
+'bytenumb.c'     Byte-number conversions.
+'compile.scm'    Hobbit compilation to C.
+'continue-ia64.S'replaces make_root_continuation(),
+                 make_continuation(), and dynthrow() in continue.c
+'continue.c'     continuations.
+'continue.h'     continuations.
+'crs.c'          interactive terminal control.
+'debug.c'        debugging, printing code.
+'differ.c'       Linear-space O(PN) sequence comparison.
+'dynl.c'         dynamically load object files.
+'ecrt0.c'        discover the start of initialized data space
+                 dynamically at runtime.
+'edline.c'       Gnu readline input editing (get
+                 ftp.sys.toronto.edu:/pub/rc/editline.shar).
+'eval.c'         evaluator, apply, map, and foreach.
+'example.scm'    example from R4RS which uses inexact numbers.
+'fdl.texi'       GNU Free Documentation License.
+'findexec.c'     find the executable file function.
+'get-contoffset-ia64.c'makes contoffset-ia64.S for inclusion by
+                 continue-ia64.S
+'gmalloc.c'      Gnu malloc(); used for unexec.
+'gsubr.c'        make_gsubr for arbitrary (< 11) arguments to C
+                 functions.
+'ioext.c'        system calls in common between PC compilers and unix.
+'lastfile.c'     find the point in data space between data and
+                 libraries.
+'macosx-config.h'Included by unexmacosx.c and lastfile.c.
+'mkimpcat.scm'   build SCM-specific catalog for SLIB.
+'patchlvl.h'     patchlevel of this release.
+'pi.c'           computes digits of pi [cc -o pi pi.c;time pi 100 5].
+'pi.scm'         computes digits of pi [type (pi 100 5)].  Test
+                 performance against pi.c.
+'posix.c'        posix library interface.
+'pre-crt0.c'     loaded before crt0.o on machines which do not remap
+                 part of the data space into text space in unexec.
+'r4rstest.scm'   tests conformance with Scheme specifications.
+'ramap.c'        array mapping
+'record.c'       proposed 'Record' user definable datatypes.
+'repl.c'         error, read-eval-print loop, read, write and load.
+'rgx.c'          string regular expression match.
+'rope.c'         C interface functions.
+'sc2.c'          procedures from R2RS and R3RS not in R4RS.
+'scl.c'          inexact arithmetic
+'scm.1'          unix style man page.
+'scm.c'          initialization, interrupts, and non-IEEE utility
+                 functions.
+'scm.doc'        man page generated from scm.1.
+'scm.h'          data type and external definitions of SCM.
+'scm.texi'       SCM installation and use.
+'scmfig.h'       contains system dependent definitions.
+'scmmain.c'      initialization, interrupts, and non-IEEE utility
+                 functions.
+'script.c'       utilities for running as '#!'  script.
+'setjump.h'      continuations, stacks, and memory allocation.
+'setjump.mar'    provides setjump and longjump which do not use $unwind
+                 utility on VMS.
+'setjump.s'      provides setjump and longjump for the Cray YMP.
+'socket.c'       BSD socket interface.
+'split.scm'      example use of crs.c.  Input, output, and diagnostic
+                 output directed to separate windows.
+'subr.c'         the rest of IEEE functions.
+'sys.c'          call-with-current-continuation, opening and closing
+                 files, storage allocation and garbage collection.
+'time.c'         functions dealing with time.
+'ugsetjump.s'    provides setjump and longjump which work on Ultrix
+                 VAX.
+'unexalpha.c'    Convert a running program into an Alpha executable
+                 file.
+'unexec.c'       Convert a running program into an executable file.
+'unexelf.c'      Convert a running ELF program into an executable file.
+'unexhp9k800.c'  Convert a running HP-UX program into an executable
+                 file.
+'unexmacosx.c'   Convert a running program into an executable file
+                 under MacOS X.
+'unexsgi.c'      Convert a running program into an IRIX executable
+                 file.
+'unexsunos4.c'   Convert a running program into an executable file.
+'unif.c'         uniform vectors.
+'unix.c'         non-posix system calls on unix systems.
+
+
+File: scm-5f3.info,  Node: Distributions,  Next: GNU configure and make,  Prev: Installing SCM,  Up: Installing SCM
+
+2.1 Distributions
+=================
+
+The SCM homepage contains links to precompiled binaries and source
+distributions.
+
+Downloads and instructions for installing the precompiled binaries are
+at <http://people.csail.mit.edu/jaffer/SCM#QuickStart>.
+
+If there is no precompiled binary for your platform, you may be able to
+build from the source distribution.  The rest of these instructions deal
+with building and installing SCM and SLIB from sources.
+
+Download (both SCM and SLIB of) either the last release or current
+development snapshot from
+<http://people.csail.mit.edu/jaffer/SCM#BuildFromSource>.
+
+Unzip both the SCM and SLIB zips.  For example, if you are working in
+'/usr/local/src/', this will create directories '/usr/local/src/scm/'
+and '/usr/local/src/slib/'.
+
+
+
+File: scm-5f3.info,  Node: GNU configure and make,  Next: Building SCM,  Prev: Distributions,  Up: Installing SCM
+
+2.2 GNU configure and make
+==========================
+
+'scm/configure' and 'slib/configure' are Shell scripts which create the
+files 'scm/config.status' and 'slib/config.status' on Unix and MinGW
+systems.
+
+The 'config.status' files are used (included) by the Makefile to control
+where the packages will be installed by 'make install'.  With GNU shell
+(bash) and utilities, the following commands should build and install
+SCM and SLIB:
+
+     bash$ (cd slib; ./configure --prefix=/usr/local/)
+     bash$ (cd scm
+     > ./configure --prefix=/usr/local/
+     > make scmlit
+     > sudo make all
+     > sudo make install)
+     bash$ (cd slib; sudo make install)
+
+If the install commands worked, skip to *note Testing::.
+
+If 'configure' doesn't work on your system, make 'scm/config.status' and
+'slib/config.status' be empty files.
+
+For additional help on using the 'configure' script, run
+'./configure --help'.
+
+'make all' will attempt to create a dumped executable (*note Saving
+Executable Images::), which has very small startup latency.  If that
+fails, it will try to compile an ordinary 'scm' executable.
+
+Note that the compilation output may contain error messages; be
+concerned only if the 'make install' transcripts contain errors.
+
+'sudo' runs the command after it as user "root".  On recent GNU/Linux
+systems, dumping requires that 'make all' be run as user root; hence the
+use of 'sudo'.
+
+'make install' requires root privileges if you are installing to
+standard Unix locations as specified to (or defaulted by) './configure'.
+Note that this is independent of whether you did 'sudo make all' or
+'make all'.
+
+* Menu:
+
+* Making scmlit::
+* Makefile targets::
+
+
+
+File: scm-5f3.info,  Node: Making scmlit,  Next: Makefile targets,  Prev: GNU configure and make,  Up: GNU configure and make
+
+2.2.1 Making scmlit
+-------------------
+
+The SCM distribution 'Makefile' contains rules for making "scmlit", a
+"bare-bones" version of SCM sufficient for running 'build'.  'build' is
+a Scheme program used to compile (or create scripts to compile) full
+featured versions of SCM (*note Building SCM::).  To create scmlit, run
+'make scmlit' in the 'scm/' directory.
+
+Makefiles are not portable to the majority of platforms.  If you need to
+compile SCM without 'scmlit', there are several ways to proceed:
+
+   * Use the build (http://people.csail.mit.edu/jaffer/buildscm.html)
+     web page to create custom batch scripts for compiling SCM.
+
+   * Use SCM on a different platform to run 'build' to create a script
+     to build SCM;
+
+   * Use another implementation of Scheme to run 'build' to create a
+     script to build SCM;
+
+   * Create your own script or 'Makefile'.
+
+Finding SLIB
+------------
+
+If you didn't create scmlit using 'make scmlit', then you must create a
+file named 'scm/require.scm'.  For most installations, 'scm/require.scm'
+can just be copied from 'scm/requires.scm', which is part of the SCM
+distribution.
+
+If, when executing 'scmlit' or 'scm', you get a message like:
+
+     ERROR: "LOAD couldn't find file " "/usr/local/src/scm/require"
+
+then create a file 'require.scm' in the SCM "implementation-vicinity"
+(this is the same directory as where the file 'Init5f2.scm' is).
+'require.scm' should have the contents:
+
+     (define (library-vicinity) "/usr/local/lib/slib/")
+
+where the pathname string '/usr/local/lib/slib/' is to be replaced by
+the pathname into which you unzipped (or installed) SLIB.
+
+Alternatively, you can set the (shell) environment variable
+'SCHEME_LIBRARY_PATH' to the pathname of the SLIB directory (*note
+SCHEME_LIBRARY_PATH: SCM Variables.).  If set, this environment variable
+overrides 'scm/require.scm'.
+
+Absolute pathnames are recommended here; if you use a relative pathname,
+SLIB can get confused when the working directory is changed (*note
+chmod: I/O-Extensions.).  The way to specify a relative pathname is to
+append it to the implementation-vicinity, which is absolute:
+
+     (define library-vicinity
+       (let ((lv (string-append (implementation-vicinity) "../slib/")))
+         (lambda () lv)))
+
+
+
+File: scm-5f3.info,  Node: Makefile targets,  Prev: Making scmlit,  Up: GNU configure and make
+
+2.2.2 Makefile targets
+----------------------
+
+Each of the following four 'make' targets creates an executable named
+'scm'.  Each target takes its build options from a file with an '.opt'
+suffix.  If that options file doesn't exist, making that target will
+create the file with the '-F' features: cautious, bignums, arrays,
+inexact, engineering-notation, and dynamic-linking.  Once that '.opt'
+file exists, you can edit it to your taste and it will be preserved.
+
+'make scm4'
+     Produces a R4RS executable named 'scm' lacking hygienic macros (but
+     with defmacro).  The build options are taken from 'scm4.opt'.  If
+     build or the executable fails, try removing 'dynamic-linking' from
+     'scm4.opt'.
+
+'make scm5'
+     R5RS; like 'make scm4' but with '-F macro'.  The build options are
+     taken from 'scm5.opt'.  If build or the executable fails, try
+     removing 'dynamic-linking' from 'scm5.opt'.
+
+'make dscm4'
+     Produces a R4RS executable named 'udscm4', which it starts and
+     dumps to a low startup latency executable named 'scm'.  The build
+     options are taken from 'udscm4.opt'.
+
+     If the build fails, then 'build scm4' instead.  If the dumped
+     executable fails to run, then send me a bug report (and use
+     'build scm4' until the problem with dump is corrected).
+
+'make dscm5'
+     Like 'make dscm4' but with '-F macro'.  The build options are taken
+     from 'udscm5.opt'.
+
+     If the build fails, then 'build scm5' instead.  If the dumped
+     executable fails to run, then send me a bug report (and use
+     'build scm5' until the problem with dump is corrected).
+
+If the above builds fail because of '-F dynamic-linking', then (because
+they can't be dynamically linked) you will likely want to add some other
+features to the build's '.opt' file.  See the '-F' build option in *note
+Build Options::.
+
+If dynamic-linking is working, then you will likely want to compile most
+of the modules as "DLL"s.  The build options for compiling DLLs are in
+'dlls.opt'.
+
+'make x.so'
+     The 'Xlib' module; *note SCM Language X Interface: (Xlibscm)Top.
+
+'make myturtle'
+     Creates a DLL named 'turtlegr.so' which is a simple graphics API.
+
+'make wbscm.so'
+     The 'wb' module; *note B-tree database implementation: (wb)Top.
+     Compiling this requires that wb source be in a peer directory to
+     scm.
+
+'make dlls'
+     Compiles all the distributed library modules, but not 'wbscm.so'.
+     Many of the module compiles are recursively invoked in such a way
+     that failure of one (which could be due to a system library not
+     being installed) doesn't cause the top-level 'make dlls' to fail.
+     If 'make dlls' fails as a whole, it is time to submit a bug report
+     (*note Reporting Problems::).
+
+
+
+File: scm-5f3.info,  Node: Building SCM,  Next: Saving Executable Images,  Prev: GNU configure and make,  Up: Installing SCM
+
+2.3 Building SCM
+================
+
+The file "build" loads the file "build.scm", which constructs a
+relational database of how to compile and link SCM executables.
+'build.scm' has information for the platforms which SCM has been ported
+to (of which I have been notified).  Some of this information is old,
+incorrect, or incomplete.  Send corrections and additions to
+agj@alum.mit.edu.
+
+* Menu:
+
+* Invoking Build::
+* Build Options::               build -help
+* Compiling and Linking Custom Files::
+
+
+
+File: scm-5f3.info,  Node: Invoking Build,  Next: Build Options,  Prev: Building SCM,  Up: Building SCM
+
+2.3.1 Invoking Build
+--------------------
+
+This section teaches how to use 'build', a Scheme program for creating
+compilation scripts to produce SCM executables and library modules.  The
+options accepted by 'build' are documented in *note Build Options::.
+
+Use the _any_ method if you encounter problems with the other two
+methods (MS-DOS, Unix).
+
+MS-DOS
+     From the SCM source directory, type 'build' followed by up to 9
+     command line arguments.
+
+Unix
+     From the SCM source directory, type './build' followed by command
+     line arguments.
+
+_any_
+     From the SCM source directory, start 'scm' or 'scmlit' and type
+     '(load "build")'.  Alternatively, start 'scm' or 'scmlit' with the
+     command line argument '-ilbuild'.  This method will also work for
+     MS-DOS and Unix.
+
+     After loading various SLIB modules, the program will print:
+
+          type (b "build <command-line>") to build
+          type (b*) to enter build command loop
+
+     The 'b*' procedure enters into a "build shell" where you can enter
+     commands (with or without the 'build').  Blank lines are ignored.
+     To create a build script with all defaults type 'build'.
+
+     If the build-shell encouters an error, you can reenter the
+     build-shell by typing '(b*)'.  To exit scm type '(quit)'.
+
+Here is a transcript of an interactive (b*) build-shell.
+
+     bash$ scmlit
+     SCM version 5e7, Copyright (C) 1990-2006 Free Software Foundation.
+     SCM comes with ABSOLUTELY NO WARRANTY; for details type `(terms)'.
+     This is free software, and you are welcome to redistribute it
+     under certain conditions; type `(terms)' for details.
+     > (load "build")
+     ;loading build
+     ;  loading /home/jaffer/slib/getparam
+     ;    loading /home/jaffer/slib/coerce
+     ...
+     ;  done loading build.scm
+     type (b "build <command-line>") to build
+     type (b*) to enter build command loop
+     ;done loading build
+     #<unspecified>
+     > (b*)
+     ;loading /home/jaffer/slib/comparse
+     ;done loading /home/jaffer/slib/comparse.scm
+     build> -t exe
+     #! /bin/sh
+     # unix (linux) script created by SLIB/batch Wed Oct 26 17:14:23 2011
+     # [-p linux]
+     # ================ Write file with C defines
+     rm -f scmflags.h
+     echo '#define IMPLINIT "Init5e7.scm"'>>scmflags.h
+     echo '#define BIGNUMS'>>scmflags.h
+     echo '#define FLOATS'>>scmflags.h
+     echo '#define ARRAYS'>>scmflags.h
+     # ================ Compile C source files
+     gcc -c continue.c scm.c scmmain.c findexec.c script.c time.c repl.c scl.c eval.c sys.c subr.c debug.c unif.c rope.c
+     # ================ Link C object files
+     gcc -rdynamic -o scm continue.o scm.o scmmain.o findexec.o script.o time.o repl.o scl.o eval.o sys.o subr.o debug.o unif.o rope.o -lm -lc
+     "scm"
+     build> -t exe -w myscript.sh
+     "scm"
+     build> (quit)
+
+No compilation was done.  The '-t exe' command shows the compile script.
+The '-t exe -w myscript.sh' line creates a file 'myscript.sh' containing
+the compile script.  To actually compile and link it, type
+'./myscript.sh'.
+
+Invoking build without the '-F' option will build or create a shell
+script with the 'arrays', 'inexact', and 'bignums' options as defaults.
+Invoking 'build' with '-F lit -o scmlit' will make a script for
+compiling 'scmlit'.
+
+     bash$ ./build
+     -|
+     #! /bin/sh
+     # unix (linux) script created by SLIB/batch
+     # ================ Write file with C defines
+     rm -f scmflags.h
+     echo '#define IMPLINIT "Init5f2.scm"'>>scmflags.h
+     echo '#define BIGNUMS'>>scmflags.h
+     echo '#define FLOATS'>>scmflags.h
+     echo '#define ARRAYS'>>scmflags.h
+     # ================ Compile C source files
+     gcc -O2 -c continue.c scm.c scmmain.c findexec.c script.c time.c repl.c scl.c eval.c sys.c subr.c debug.c unif.c rope.c
+     # ================ Link C object files
+     gcc -rdynamic -o scm continue.o scm.o scmmain.o findexec.o script.o time.o repl.o scl.o eval.o sys.o subr.o debug.o unif.o rope.o -lm -lc
+
+To cross compile for another platform, invoke build with the '-p' or
+'--platform=' option.  This will create a script for the platform named
+in the '-p' or '--platform=' option.
+
+     bash$ ./build -o scmlit -p darwin -F lit
+     -|
+     #! /bin/sh
+     # unix (darwin) script created by SLIB/batch
+     # ================ Write file with C defines
+     rm -f scmflags.h
+     echo '#define IMPLINIT "Init5f2.scm"'>>scmflags.h
+     # ================ Compile C source files
+     cc -O3 -c continue.c scm.c scmmain.c findexec.c script.c time.c repl.c scl.c eval.c sys.c subr.c debug.c unif.c rope.c
+     # ================ Link C object files
+     mv -f scmlit scmlit~
+     cc -o scmlit continue.o scm.o scmmain.o findexec.o script.o time.o repl.o scl.o eval.o sys.o subr.o debug.o unif.o rope.o
+
+
+
+File: scm-5f3.info,  Node: Build Options,  Next: Compiling and Linking Custom Files,  Prev: Invoking Build,  Up: Building SCM
+
+2.3.2 Build Options
+-------------------
+
+The options to "build" specify what, where, and how to build a SCM
+program or dynamically linked module.  These options are unrelated to
+the SCM command line options.
+
+ -- Build Option: -p PLATFORM-NAME
+ -- Build Option: ---platform=PLATFORM-NAME
+     specifies that the compilation should be for a
+     computer/operating-system combination called PLATFORM-NAME.  _Note_
+     The case of PLATFORM-NAME is distinguised.  The current
+     PLATFORM-NAMEs are all lower-case.
+
+     The platforms defined by table "platform" in 'build.scm' are:
+     Table: platform
+     name              processor         operating-system  compiler
+     #f                processor-family  operating-system  #f
+     symbol            processor-family  operating-system  symbol
+     symbol            symbol            symbol            symbol
+     ================= ================= ================= =================
+     *unknown*         *unknown*         unix              cc
+     acorn-unixlib     acorn             *unknown*         cc
+     aix               powerpc           aix               cc
+     alpha-elf         alpha             unix              cc
+     alpha-linux       alpha             linux             gcc
+     amiga-aztec       m68000            amiga             cc
+     amiga-dice-c      m68000            amiga             dcc
+     amiga-gcc         m68000            amiga             gcc
+     amiga-sas         m68000            amiga             lc
+     atari-st-gcc      m68000            atari-st          gcc
+     atari-st-turbo-c  m68000            atari-st          tcc
+     borland-c         i8086             ms-dos            bcc
+     darwin            powerpc           unix              cc
+     djgpp             i386              ms-dos            gcc
+     freebsd           *unknown*         unix              cc
+     gcc               *unknown*         unix              gcc
+     gnu-win32         i386              unix              gcc
+     highc             i386              ms-dos            hc386
+     hp-ux             hp-risc           hp-ux             cc
+     irix              mips              irix              gcc
+     linux             *unknown*         linux             gcc
+     linux-aout        i386              linux             gcc
+     linux-ia64        ia64              linux             gcc
+     microsoft-c       i8086             ms-dos            cl
+     microsoft-c-nt    i386              ms-dos            cl
+     microsoft-quick-c i8086             ms-dos            qcl
+     ms-dos            i8086             ms-dos            cc
+     netbsd            *unknown*         unix              gcc
+     openbsd           *unknown*         unix              gcc
+     os/2-cset         i386              os/2              icc
+     os/2-emx          i386              os/2              gcc
+     osf1              alpha             unix              cc
+     plan9-8           i386              plan9             8c
+     sunos             sparc             sunos             cc
+     svr4              *unknown*         unix              cc
+     svr4-gcc-sun-ld   sparc             sunos             gcc
+     turbo-c           i8086             ms-dos            tcc
+     unicos            cray              unicos            cc
+     unix              *unknown*         unix              cc
+     vms               vax               vms               cc
+     vms-gcc           vax               vms               gcc
+     watcom-9.0        i386              ms-dos            wcc386p
+
+ -- Build Option: -f PATHNAME
+     specifies that the build options contained in PATHNAME be spliced
+     into the argument list at this point.  The use of option files can
+     separate functional features from platform-specific ones.
+
+     The 'Makefile' calls out builds with the options in '.opt' files:
+
+     'dlls.opt'
+          Options for Makefile targets dlls, myturtle, and x.so.
+     'gdb.opt'
+          Options for udgdbscm and gdbscm.
+     'libscm.opt'
+          Options for libscm.a.
+     'pg.opt'
+          Options for pgscm, which instruments C functions.
+     'udscm4.opt'
+          Options for targets udscm4 and dscm4 (scm).
+     'udscm5.opt'
+          Options for targets udscm5 and dscm5 (scm).
+
+     The Makefile creates options files it depends on only if they do
+     not already exist.
+
+ -- Build Option: -o FILENAME
+ -- Build Option: ---outname=FILENAME
+     specifies that the compilation should produce an executable or
+     object name of FILENAME.  The default is 'scm'.  Executable
+     suffixes will be added if neccessary, e.g.  'scm' => 'scm.exe'.
+
+ -- Build Option: -l LIBNAME ...
+ -- Build Option: ---libraries=LIBNAME
+     specifies that the LIBNAME should be linked with the executable
+     produced.  If compile flags or include directories ('-I') are
+     needed, they are automatically supplied for compilations.  The 'c'
+     library is always included.  SCM "features" specify any libraries
+     they need; so you shouldn't need this option often.
+
+ -- Build Option: -D DEFINITION ...
+ -- Build Option: ---defines=DEFINITION
+     specifies that the DEFINITION should be made in any C source
+     compilations.  If compile flags or include directories ('-I') are
+     needed, they are automatically supplied for compilations.  SCM
+     "features" specify any flags they need; so you shouldn't need this
+     option often.
+
+ -- Build Option: ---compiler-options=FLAG
+     specifies that that FLAG will be put on compiler command-lines.
+
+ -- Build Option: ---linker-options=FLAG
+     specifies that that FLAG will be put on linker command-lines.
+
+ -- Build Option: -s PATHNAME
+ -- Build Option: ---scheme-initial=PATHNAME
+     specifies that PATHNAME should be the default location of the SCM
+     initialization file 'Init5f2.scm'.  SCM tries several likely
+     locations before resorting to PATHNAME (*note File-System
+     Habitat::).  If not specified, the current directory (where build
+     is building) is used.
+
+ -- Build Option: -c PATHNAME ...
+ -- Build Option: ---c-source-files=PATHNAME
+     specifies that the C source files PATHNAME ... are to be compiled.
+
+ -- Build Option: -j PATHNAME ...
+ -- Build Option: ---object-files=PATHNAME
+     specifies that the object files PATHNAME ... are to be linked.
+
+ -- Build Option: -i CALL ...
+ -- Build Option: ---initialization=CALL
+     specifies that the C functions CALL ... are to be invoked during
+     initialization.
+
+ -- Build Option: -t BUILD-WHAT
+ -- Build Option: ---type=BUILD-WHAT
+     specifies in general terms what sort of thing to build.  The
+     choices are:
+     'exe'
+          executable program.
+     'lib'
+          library module.
+     'dlls'
+          archived dynamically linked library object files.
+     'dll'
+          dynamically linked library object file.
+
+     The default is to build an executable.
+
+ -- Build Option: -h BATCH-SYNTAX
+ -- Build Option: --batch-dialect=BATCH-SYNTAX
+     specifies how to build.  The default is to create a batch file for
+     the host system.  The SLIB file 'batch.scm' knows how to create
+     batch files for:
+        * unix
+        * dos
+        * vms
+        * amigaos (was amigados)
+        * system
+
+          This option executes the compilation and linking commands
+          through the use of the 'system' procedure.
+        * *unknown*
+
+          This option outputs Scheme code.
+
+ -- Build Option: -w BATCH-FILENAME
+ -- Build Option: --script-name=BATCH-FILENAME
+     specifies where to write the build script.  The default is to
+     display it on '(current-output-port)'.
+
+ -- Build Option: -F FEATURE ...
+ -- Build Option: ---features=FEATURE
+     specifies to build the given features into the executable.  The
+     defined features are:
+
+     "array"
+          Alias for ARRAYS
+
+     "array-for-each"
+          array-map!  and array-for-each (arrays must also be featured).
+
+     "arrays"
+          Use if you want arrays, uniform-arrays and uniform-vectors.
+
+     "bignums"
+          Large precision integers.
+
+     "byte"
+          Treating strings as byte-vectors.
+
+     "byte-number"
+          Byte/number conversions
+
+     "careful-interrupt-masking"
+          Define this for extra checking of interrupt masking and some
+          simple checks for proper use of malloc and free.  This is for
+          debugging C code in 'sys.c', 'eval.c', 'repl.c' and makes the
+          interpreter several times slower than usual.
+
+     "cautious"
+          Normally, the number of arguments arguments to interpreted
+          closures (from LAMBDA) are checked if the function part of a
+          form is not a symbol or only the first time the form is
+          executed if the function part is a symbol.  defining
+          'reckless' disables any checking.  If you want to have SCM
+          always check the number of arguments to interpreted closures
+          define feature 'cautious'.
+
+     "cheap-continuations"
+          If you only need straight stack continuations, executables
+          compile with this feature will run faster and use less storage
+          than not having it.  Machines with unusual stacks _need_ this.
+          Also, if you incorporate new C code into scm which uses VMS
+          system services or library routines (which need to unwind the
+          stack in an ordrly manner) you may need to use this feature.
+
+     "compiled-closure"
+          Use if you want to use compiled closures.
+
+     "curses"
+          For the "curses" screen management package.
+
+     "debug"
+          Turns on the features 'cautious' and
+          'careful-interrupt-masking'; uses '-g' flags for debugging SCM
+          source code.
+
+     "differ"
+          Sequence comparison
+
+     "dont-memoize-locals"
+          SCM normally converts references to local variables to ILOCs,
+          which make programs run faster.  If SCM is badly broken, try
+          using this option to disable the MEMOIZE_LOCALS feature.
+
+     "dump"
+          Convert a running scheme program into an executable file.
+
+     "dynamic-linking"
+          Be able to load compiled files while running.
+
+     "edit-line"
+          interface to the editline or GNU readline library.
+
+     "engineering-notation"
+          Use if you want floats to display in engineering notation
+          (exponents always multiples of 3) instead of scientific
+          notation.
+
+     "generalized-c-arguments"
+          'make_gsubr' for arbitrary (< 11) arguments to C functions.
+
+     "i/o-extensions"
+          Commonly available I/O extensions: "exec", line I/O, file
+          positioning, file delete and rename, and directory functions.
+
+     "inexact"
+          Use if you want floating point numbers.
+
+     "lit"
+          Lightweight - no features
+
+     "macro"
+          C level support for hygienic and referentially transparent
+          macros (syntax-rules macros).
+
+     "mysql"
+          Client connections to the mysql databases.
+
+     "no-heap-shrink"
+          Use if you want segments of unused heap to not be freed up
+          after garbage collection.  This may increase time in GC for
+          *very* large working sets.
+
+     "none"
+          No features
+
+     "posix"
+          Posix functions available on all "Unix-like" systems.  fork
+          and process functions, user and group IDs, file permissions,
+          and "link".
+
+     "reckless"
+          If your scheme code runs without any errors you can disable
+          almost all error checking by compiling all files with
+          'reckless'.
+
+     "record"
+          The Record package provides a facility for user to define
+          their own record data types.  See SLIB for documentation.
+
+     "regex"
+          String regular expression matching.
+
+     "rev2-procedures"
+          These procedures were specified in the 'Revised^2 Report on
+          Scheme' but not in 'R4RS'.
+
+     "sicp"
+          Use if you want to run code from:
+
+          Harold Abelson and Gerald Jay Sussman with Julie Sussman.
+          'Structure and Interpretation of Computer Programs.' The MIT
+          Press, Cambridge, Massachusetts, USA, 1985.
+
+          Differences from R5RS are:
+             * (eq?  '() '#f)
+             * (define a 25) returns the symbol a.
+             * (set!  a 36) returns 36.
+
+     "single-precision-only"
+          Use if you want all inexact real numbers to be single
+          precision.  This only has an effect if SINGLES is also defined
+          (which is the default).  This does not affect complex numbers.
+
+     "socket"
+          BSD "socket" interface.  Socket addr functions require
+          inexacts or bignums for 32-bit precision.
+
+     "tick-interrupts"
+          Use if you want the ticks and ticks-interrupt functions.
+
+     "turtlegr"
+          "Turtle" graphics calls for both Borland-C and X11 from
+          sjm@ee.tut.fi.
+
+     "unix"
+          Those unix features which have not made it into the Posix
+          specs: nice, acct, lstat, readlink, symlink, mknod and sync.
+
+     "wb"
+          WB database with relational wrapper.
+
+     "wb-no-threads"
+          no-comment
+
+     "windows"
+          Microsoft Windows executable.
+
+     "x"
+          Alias for Xlib feature.
+
+     "xlib"
+          Interface to Xlib graphics routines.
+
+
+
+File: scm-5f3.info,  Node: Saving Executable Images,  Next: Installation,  Prev: Building SCM,  Up: Installing SCM
+
+2.4 Saving Executable Images
+============================
+
+In SCM, the ability to save running program images is called "dump"
+(*note Dump::).  In order to make 'dump' available to SCM, build with
+feature 'dump'.  'dump'ed executables are compatible with dynamic
+linking.
+
+Most of the code for "dump" is taken from 'emacs-19.34/src/unex*.c'.  No
+modifications to the emacs source code were required to use 'unexelf.c'.
+Dump has not been ported to all platforms.  If 'unexec.c' or 'unexelf.c'
+don't work for you, try using the appropriate 'unex*.c' file from emacs.
+
+The 'dscm4' and 'dscm5' targets in the SCM 'Makefile' save images from
+'udscm4' and 'udscm5' executables respectively.
+
+"Address space layout randomization" interferes with 'dump'.  Here are
+the fixes for various operating-systems:
+
+Fedora-Core-1
+     Remove the '#' from the line '#SETARCH = setarch i386' in the
+     'Makefile'.
+
+Fedora-Core-3
+     <http://jamesthornton.com/writing/emacs-compile.html> [For FC3]
+     combreloc has become the default for recent GNU ld, which breaks
+     the unexec/undump on all versions of both Emacs and XEmacs...
+
+     Override by adding the following to 'udscm5.opt':
+     '--linker-options="-z nocombreloc"'
+
+Linux Kernels later than 2.6.11
+<http://www.opensubscriber.com/message/emacs-devel@gnu.org/1007118.html>
+     mentions the "exec-shield" feature.  Kernels later than 2.6.11 must
+     do (as root):
+
+          echo 0 > /proc/sys/kernel/randomize_va_space
+
+     before dumping.  'Makefile' has this 'randomize_va_space' stuffing
+     scripted for targets 'dscm4' and 'dscm5'.  You must either set
+     'randomize_va_space' to 0 or run as root to dump.
+
+OS-X 10.6
+
+<http://developer.apple.com/library/mac/#documentation/Darwin/Reference/Manpages/man1/dyld.1.html>
+     The dynamic linker uses the following environment variables.  They
+     affect any program that uses the dynamic linker.
+
+     DYLD_NO_PIE
+
+     Causes dyld to not randomize the load addresses of images in a
+     process where the main executable was built position independent.
+     This can be helpful when trying to reproduce and debug a problem in
+     a PIE.
+
+
+
+File: scm-5f3.info,  Node: Installation,  Next: Troubleshooting and Testing,  Prev: Saving Executable Images,  Up: Installing SCM
+
+2.5 Installation
+================
+
+Once 'scmlit', 'scm', and 'dlls' have been built, these commands will
+install them to the locations specified when you ran './configure':
+
+     bash$ (cd scm; make install)
+     bash$ (cd slib; make install)
+
+Note that installation to system directories (like '/usr/bin/') will
+require that those commands be run as root:
+
+     bash$ (cd scm; sudo make install)
+     bash$ (cd slib; sudo make install)
+
+
+
+File: scm-5f3.info,  Node: Problems Compiling,  Next: Problems Linking,  Prev: Troubleshooting and Testing,  Up: Troubleshooting and Testing
+
+2.6.1 Problems Compiling
+------------------------
+
+FILE    PROBLEM / MESSAGE                HOW TO FIX
+*.c     include file not found.          Correct the status of
+                                         STDC_HEADERS in scmfig.h.
+                                         fix #include statement or add
+                                         #define for system type to
+                                         scmfig.h.
+*.c     Function should return a         Ignore.
+        value.
+        Parameter is never used.
+        Condition is always false.
+        Unreachable code in function.
+scm.c   assignment between               Change SIGRETTYPE in scm.c.
+        incompatible types.
+time.c  CLK_TCK redefined.               incompatablility between
+                                         <stdlib.h> and <sys/types.h>.
+                                         Remove STDC_HEADERS in
+                                         scmfig.h.
+                                         Edit <sys/types.h> to remove
+                                         incompatability.
+subr.c  Possibly incorrect assignment    Ignore.
+        in function lgcd.
+sys.c   statement not reached.           Ignore.
+        constant in conditional
+        expression.
+sys.c   undeclared, outside of           #undef STDC_HEADERS in
+        functions.                       scmfig.h.
+scl.c   syntax error.                    #define SYSTNAME to your
+                                         system type in scl.c
+                                         (softtype).
+
+
+
+File: scm-5f3.info,  Node: Problems Linking,  Next: Testing,  Prev: Problems Compiling,  Up: Troubleshooting and Testing
+
+2.6.2 Problems Linking
+----------------------
+
+PROBLEM                              HOW TO FIX
+_sin etc.  missing.                  Uncomment LIBS in makefile.
+
+
+
+File: scm-5f3.info,  Node: Problems Starting,  Next: Problems Running,  Prev: Testing,  Up: Troubleshooting and Testing
+
+2.6.4 Problems Starting
+-----------------------
+
+PROBLEM                              HOW TO FIX
+/bin/bash: scm: program not found    Is 'scm' in a '$PATH' directory?
+/bin/bash: /usr/local/bin/scm:       'chmod +x /usr/local/bin/scm'
+Permission denied
+Opening message and then machine     Change memory model option to C
+crashes.                             compiler (or makefile).
+                                     Make sure sizet definition is
+                                     correct in scmfig.h.
+                                     Reduce the size of HEAP_SEG_SIZE
+                                     in setjump.h.
+Input hangs.                         #define NOSETBUF
+ERROR: heap: need larger initial.    Increase initial heap allocation
+                                     using -a<kb> or INIT_HEAP_SIZE.
+ERROR: Could not allocate.           Check sizet definition.
+                                     Use 32 bit compiler mode.
+                                     Don't try to run as subproccess.
+remove <FLAG> in scmfig.h and        Do so and recompile files.
+recompile scm.
+add <FLAG> in scmfig.h and
+recompile scm.
+ERROR: Init5f2.scm not found.        Assign correct IMPLINIT in
+                                     makefile or scmfig.h.
+                                     Define environment variable
+                                     SCM_INIT_PATH to be the full
+                                     pathname of Init5f2.scm.
+WARNING: require.scm not found.      Define environment variable
+                                     SCHEME_LIBRARY_PATH to be the full
+                                     pathname of the scheme library
+                                     [SLIB].
+                                     Change library-vicinity in
+                                     Init5f2.scm to point to library or
+                                     remove.
+                                     Make sure the value of
+                                     (library-vicinity) has a trailing
+                                     file separator (like / or \).
+
+
+
+File: scm-5f3.info,  Node: Problems Running,  Next: Reporting Problems,  Prev: Problems Starting,  Up: Troubleshooting and Testing
+
+2.6.5 Problems Running
+----------------------
+
+PROBLEM                              HOW TO FIX
+Runs some and then machine           See above under machine crashes.
+crashes.
+Runs some and then ERROR: ...        Remove optimization option to C
+(after a GC has happened).           compiler and recompile.
+                                     #define SHORT_ALIGN in 'scmfig.h'.
+Some symbol names print              Change memory model option to C
+incorrectly.                         compiler (or makefile).
+                                     Check that HEAP_SEG_SIZE fits
+                                     within sizet.
+                                     Increase size of HEAP_SEG_SIZE (or
+                                     INIT_HEAP_SIZE if it is smaller
+                                     than HEAP_SEG_SIZE).
+ERROR: Rogue pointer in Heap.        See above under machine crashes.
+Newlines don't appear correctly in   Check file mode (define OPEN_...
+output files.                        in 'Init5f2.scm').
+Spaces or control characters         Check character defines in
+appear in symbol names.              'scmfig.h'.
+Negative numbers turn positive.      Check SRS in 'scmfig.h'.
+;ERROR: bignum: numerical overflow   Increase NUMDIGS_MAX in 'scmfig.h'
+                                     and recompile.
+VMS: Couldn't unwind stack.          #define CHEAP_CONTINUATIONS in
+                                     'scmfig.h'.
+VAX: botched longjmp.
+
+
+
+File: scm-5f3.info,  Node: Reporting Problems,  Prev: Problems Running,  Up: Troubleshooting and Testing
+
+2.6.6 Reporting Problems
+------------------------
+
+Reported problems and solutions are grouped under Compiling, Linking,
+Running, and Testing.  If you don't find your problem listed there, you
+can send a bug report to 'agj@alum.mit.edu' or 'scm-discuss@gnu.org'.
+The bug report should include:
+
+  1. The version of SCM (printed when SCM is invoked with no arguments).
+  2. The type of computer you are using.
+  3. The name and version of your computer's operating system.
+  4. The values of the environment variables 'SCM_INIT_PATH' and
+     'SCHEME_LIBRARY_PATH'.
+  5. The name and version of your C compiler.
+  6. If you are using an executable from a distribution, the name,
+     vendor, and date of that distribution.  In this case, corresponding
+     with the vendor is recommended.
+
+
+
+File: scm-5f3.info,  Node: Editing Scheme Code,  Next: Debugging Scheme Code,  Prev: SCM Session,  Up: Operational Features
+
+3.7 Editing Scheme Code
+=======================
+
+ -- Function: ed arg1 ...
+     The value of the environment variable 'EDITOR' (or just 'ed' if it
+     isn't defined) is invoked as a command with arguments ARG1 ....
+ -- Function: ed filename
+     If SCM is compiled under VMS 'ed' will invoke the editor with a
+     single the single argument FILENAME.
+
+Gnu Emacs:
+     Editing of Scheme code is supported by emacs.  Buffers holding
+     files ending in .scm are automatically put into scheme-mode.
+
+     If your Emacs can run a process in a buffer you can use the Emacs
+     command 'M-x run-scheme' with SCM. Otherwise, use the emacs command
+     'M-x suspend-emacs'; or see "other systems" below.
+
+Epsilon (MS-DOS):
+     There is lisp (and scheme) mode available by use of the package
+     'LISP.E'.  It offers several different indentation formats.  With
+     this package, buffers holding files ending in '.L', '.LSP', '.S',
+     and '.SCM' (my modification) are automatically put into lisp-mode.
+
+     It is possible to run a process in a buffer under Epsilon.  With
+     Epsilon 5.0 the command line options '-e512 -m0' are neccessary to
+     manage RAM properly.  It has been reported that when compiling SCM
+     with Turbo C, you need to '#define NOSETBUF' for proper operation
+     in a process buffer with Epsilon 5.0.
+
+     One can also call out to an editor from SCM if RAM is at a premium;
+     See "under other systems" below.
+
+other systems:
+     Define the environment variable 'EDITOR' to be the name of the
+     editing program you use.  The SCM procedure '(ed arg1 ...)' will
+     invoke your editor and return to SCM when you exit the editor.  The
+     following definition is convenient:
+
+          (define (e) (ed "work.scm") (load "work.scm"))
+
+     Typing '(e)' will invoke the editor with the file of interest.
+     After editing, the modified file will be loaded.
+

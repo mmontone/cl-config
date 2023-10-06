@@ -1,0 +1,167 @@
+#! /bin/sh
+:;exec ./scmlit -no-init-file -f $0 -e"(bi)" build "$@"
+;;;; "build" Script for compiling SCM.
+;; Copyright (C) 1994-2006 Free Software Foundation, Inc.
+;;
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation, either version 3 of the
+;; License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public
+;; License along with this program.  If not, see
+;; <http://www.gnu.org/licenses/>.
+
+(require 'getopt)
+(require 'getopt-parameters)
+(require-if 'compiling 'posix)
+(require-if 'compiling 'fluid-let)
+(require-if 'compiling 'read-command)
+(require-if 'compiling 'common-list-functions)
+
+(load (in-vicinity (program-vicinity) "build.scm"))
+;@
+(define (make-features-txi)
+  (call-with-output-file "features.txi"
+    (lambda (port)
+      (((open-table build 'features) 'for-each-row-in-order)
+       (lambda (row)
+	 (apply (lambda (name spec documentation)
+		  (display "@item " port) (display name port) (newline port)
+		  (display "@cindex " port) (display name port) (newline port)
+		  (display documentation port) (newline port) (newline port))
+		row))))))
+;@
+(define (print-manifest port)
+  (display "@multitable @columnfractions .22 .78" port) (newline port)
+  (((open-table build 'manifest) 'for-each-row-in-order)
+   (lambda (row)
+     (apply (lambda (file format category documentation)
+	      (display (string-append "@item @code{" file) port)
+	      (display "}" port) (newline port)
+	      (display (string-append "@tab " documentation) port)
+	      (newline port))
+	    row)))
+  (display "@end multitable" port) (newline port))
+
+(define (append-info-node path node afile)
+  (let ((cat (open-file afile "a")))
+    (do ((n (+ -1 2) (+ -1 n)))
+	((negative? n) (close-port cat))
+      (newline cat)))
+  (system (string-append "info -f " path " -n '" node "' -o - >> " afile)))
+;@
+(define (make-readme)
+  (require 'posix)
+  (let ((pipe (open-output-pipe "makeinfo --no-headers -o README"))
+	(scm-info (read-version
+		   (in-vicinity (implementation-vicinity) "patchlvl.h"))))
+    (if (not pipe) (slib:error 'make-readme 'couldn't 'open 'pipe))
+    (display "\
+This directory contains the distribution of scm" pipe)
+    (display scm-info pipe)
+    (display ".  SCM conforms to
+Revised^5 Report on the Algorithmic Language Scheme and the IEEE P1178
+specification.  SCM runs under Amiga, Atari-ST, MacOS, MS-DOS, OS/2,
+NOS/VE, Unicos, VMS, Unix and similar systems.  SCM supports the SLIB
+Scheme library; both SCM and SLIB are GNU packages.
+
+@center @url{http://people.csail.mit.edu/jaffer/SCM}
+
+@section Manifest
+"
+	     pipe)
+    (print-manifest pipe)
+    (close-port pipe)
+    (set! scm-info (string-append "scm-" scm-info ".info"))
+    (append-info-node scm-info "Distributions" "README")
+    (append-info-node scm-info "GNU configure and make" "README")
+    (append-info-node scm-info "Making scmlit" "README")
+    (append-info-node scm-info "Makefile targets" "README")
+    (append-info-node scm-info "Building SCM" "README")
+    (append-info-node scm-info "Invoking Build" "README")
+    (append-info-node scm-info "Build Options" "README")
+    (append-info-node scm-info "Saving Executable Images" "README")
+    (append-info-node scm-info "Installation" "README")
+    (append-info-node scm-info "Problems Compiling" "README")
+    (append-info-node scm-info "Problems Linking" "README")
+    (append-info-node scm-info "Problems Starting" "README")
+    (append-info-node scm-info "Problems Running" "README")
+    (append-info-node scm-info "Reporting Problems" "README")
+    (append-info-node scm-info "Editing Scheme Code" "README")))
+
+(define build:csv (make-command-server build '*commands*))
+(define (build-from-argv)
+  (define command (string->symbol (list-ref *argv* *optind*)))
+  (define getopt- getopt--)
+  (require 'fluid-let)
+  (fluid-let ((getopt--
+	       (lambda (optstring)
+		 (let* ((opt (getopt- (string-append optstring "f:-:"))))
+		   (cond ((eqv? #\f opt)
+			  (let ()
+			    (require 'read-command)
+			    (require 'common-list-functions)
+			    (set! *argv* (append (butnthcdr *optind* *argv*)
+						 (read-options-file *optarg*)
+						 (nthcdr *optind* *argv*))))))
+		   opt))))
+    (cond
+     ((pair? *argv*)
+      (set! *optind* (+ 1 *optind*))
+      (build:csv
+       command
+       (lambda (comname comval options positions arities types
+			defaulters checks aliases)
+	 (let* ((params (getopt->parameter-list options arities types aliases))
+		(fparams (and params (fill-empty-parameters defaulters params))))
+	   (cond ((not (list? params))
+		  ;;(slib:warn 'build-from-argv 'not-parameters? fparams)
+		  #f)
+		 ((not (check-parameters checks fparams))
+		  (slib:warn 'build-from-argv 'check-parameters 'failed)
+		  #f)
+		 ((not (check-arities (map arity->arity-spec arities) fparams))
+		  (slib:error 'build-from-argv 'bad 'arity fparams) #f)
+		 (else (comval fparams))))))))))
+;@
+(define (build-from-whole-argv argv)
+  (if (string? argv)
+      (let ()
+	(require 'read-command)
+	(set! argv (call-with-input-string argv read-command))))
+  (set! *optind* 0)
+  (set! *optarg* #f)
+  (set! *argv* argv)
+  (build-from-argv))
+
+;;;@ Used when invoked as script
+(define (bi) (exit (and (build-from-argv) #t)))
+;@
+(define b build-from-whole-argv)
+;@
+(define (b*)
+  (require 'read-command)
+  (do ((e (read-command) (read-command)))
+      ((eof-object? e))
+    (cond ((null? e))
+	  (else
+	   (cond ((not (string-ci=? (car e) "build"))
+		  (set! e (cons "build" e))))
+	   (write (build-from-whole-argv e))
+	   (newline)))
+    (display "build> ")
+    (force-output)))
+
+(cond (*interactive*
+       (display "type (b \"build <command-line>\") to build") (newline)
+       (display "type (b*) to enter build command loop") (newline)))
+
+;;; Local Variables:
+;;; mode:scheme
+;;; End:

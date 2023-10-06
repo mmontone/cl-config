@@ -1,0 +1,2268 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename hobbit.info
+@settitle hobbit
+@include version.txi
+@setchapternewpage on
+@c Choices for setchapternewpage are {on,off,odd}.
+@paragraphindent 0
+@c %**end of header
+
+@copying
+@noindent
+This manual is for the Hobbit compiler for SCM (version
+@value{SCMVERSION}, @value{SCMDATE}),
+
+@noindent
+Copyright @copyright{} 2002 Free Software Foundation
+
+@quotation
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the author.
+@end quotation
+@end copying
+
+@dircategory The Algorithmic Language Scheme
+@direntry
+* hobbit: (hobbit).   SCM Compiler.
+@end direntry
+
+@iftex
+@finalout
+@c DL: lose the egregious vertical whitespace, esp. around examples
+@c but paras in @defun-like things don't have parindent
+@parskip 4pt plus 1pt
+@end iftex
+
+@titlepage
+@title Hobbit
+@subtitle SCM Compiler
+@subtitle Version @value{SCMVERSION}
+@author Tanel Tammet
+@author Department of Computing Science
+@author Chalmers University of Technology
+@author University of Go"teborg
+@author S-41296 Go"teborg Sweden
+@page
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top, Introduction, (dir), (dir)
+@top Hobbit
+
+@insertcopying
+
+@menu
+* Introduction::                
+* Compiling with Hobbit::       
+* The Language Compiled::       
+* Performance of Compiled Code::  
+* Principles of Compilation::   
+* About Hobbit::                
+* Index::                       
+@end menu
+@end ifnottex
+
+@node Introduction, Compiling with Hobbit, Top, Top
+@chapter Introduction
+
+Hobbit is a small optimizing scheme-to-C compiler written in Report 4
+scheme and intended for use together with the SCM scheme interpreter of
+A. Jaffer.  Hobbit compiles full Report 4 scheme, except that:
+
+@itemize @bullet
+@item
+It does not fully conform to the requirement of being properly
+tail-recursive: non-mutual tailrecursion is detected, but mutual
+tailrecursion is not.
+@item
+Macros from the Report 4 appendix are not supported (yet):
+only the common-lisp-like defmacro is supported.
+@end itemize
+
+Hobbit treats SCM files as a C library and provides integration of
+compiled procedures and variables with the SCM interpreter as new
+primitives.
+
+Hobbit compiles scheme files to C files and does not provide anything
+else by itself (eg. calling the C compiler, dynamic loading).  Such
+niceties are described in the next chapter @ref{Compiling And Linking}.
+
+Hobbit (derived from hobbit5x) is now part of the SCM Scheme
+implementation.  The most recent information about SCM can be found on
+SCM's @dfn{WWW} home page:
+
+@center @url{http://people.csail.mit.edu/jaffer/SCM}
+
+Hobbit4d has also been ported to the Guile Scheme implementation:
+
+@center @url{http://www.gnu.org/software/guile/anon-cvs.html}
+
+
+@node Compiling with Hobbit, The Language Compiled, Introduction, Top
+@chapter Compiling with Hobbit
+
+@menu
+* Compiling And Linking::       
+* Error Detection::             
+* Hobbit Options::              
+* CC Optimizations::            
+@end menu
+
+@node Compiling And Linking, Error Detection, Compiling with Hobbit, Compiling with Hobbit
+@section Compiling And Linking
+
+@code{(require 'compile)}
+
+@defun hobbit name1.scm name2.scm @dots{}
+Invokes the HOBBIT compiler to translate Scheme files
+@file{@var{name1}.scm}, @file{@var{name2}.scm}, @dots{} to C files
+@file{@var{name1}.c} and @file{@var{name1}.h}.
+@end defun
+
+@defun compile-file name1.scm name2.scm @dots{}
+Compiles the HOBBIT translation of @var{name1}.scm, @var{name2}.scm,
+@dots{} to a dynamically linkable object file
+@var{name1}<object-suffix>, where <object-suffix> is the object file
+suffix for your computer (for instance, @file{.so}).  @var{name1}.scm
+must be in the current directory; @var{name2}.scm, @dots{} may be in
+other directories.
+
+If a file named @file{@var{name1}.opt} exists, then its options are
+passed to the @code{build} invocation which compiles the @code{c}
+files.
+@end defun
+
+@example
+cd ~/scm/
+scm -rcompile -e"(compile-file \"example.scm\")"
+
+Starting to read example.scm
+
+Generic (slow) arithmetic assumed: 1.0e-3 found.
+
+** Pass 1 completed **
+** Pass 2 completed **
+** Pass 3 completed **
+** Pass 4 completed **
+** Pass 5 completed **
+** Pass 6 completed **
+
+C source file example.c is built.
+C header file example.h is built.
+
+These top level higher order procedures are not clonable (slow):
+(nonkeyword_make-promise map-streams generate-vector runge-kutta-4)
+These top level procedures create non-liftable closures (slow):
+(nonkeyword_make-promise damped-oscillator map-streams scale-vector elementwise runge-kutta-4 integrate-system)
+
+; Scheme (linux) script created by SLIB/batch Sun Apr  7 22:49:49 2002
+; ================ Write file with C defines
+(delete-file "scmflags.h")
+(call-with-output-file
+  "scmflags.h"
+  (lambda (fp)
+    (for-each
+      (lambda (string) (write-line string fp))
+      '("#define IMPLINIT \"Init@value{SCMVERSION}.scm\""
+        "#define BIGNUMS"
+        "#define FLOATS"
+        "#define ARRAYS"
+        "#define DLL"))))
+; ================ Compile C source files
+(system "gcc -O2 -fpic -c -I/usr/local/lib/scm/ example.c")
+(system "gcc -shared -o example.so example.o -lm -lc")
+(delete-file "example.o")
+; ================ Link C object files
+(delete-file "slibcat")
+
+Compilation finished at Sun Apr  7 22:49:50
+@end example
+
+@defun compile->executable exename name1.scm name2.scm @dots{}
+Compiles and links the HOBBIT translation of @var{name1}.scm,
+@var{name2}.scm, @dots{} to a SCM executable named @var{exename}.
+@var{name1}.scm must be in the current directory; @var{name2}.scm,
+@dots{} may be in other directories.
+
+If a file named @file{@var{exename}.opt} exists, then its options are
+passed to the @code{build} invocation which compiles the @code{c}
+files.
+@end defun
+
+@example
+cd ~/scm/
+scm -rcompile -e"(compile->executable \"exscm\" \"example.scm\")"
+
+Starting to read example.scm
+
+Generic (slow) arithmetic assumed: 1.0e-3 found.
+
+** Pass 1 completed **
+** Pass 2 completed **
+** Pass 3 completed **
+** Pass 4 completed **
+** Pass 5 completed **
+** Pass 6 completed **
+
+C source file example.c is built.
+C header file example.h is built.
+
+These top level higher order procedures are not clonable (slow):
+(nonkeyword_make-promise map-streams generate-vector runge-kutta-4)
+These top level procedures create non-liftable closures (slow):
+(nonkeyword_make-promise damped-oscillator map-streams scale-vector elementwise runge-kutta-4 integrate-system)
+
+; Scheme (linux) script created by SLIB/batch Sun Apr  7 22:46:31 2002
+; ================ Write file with C defines
+(delete-file "scmflags.h")
+(call-with-output-file
+  "scmflags.h"
+  (lambda (fp)
+    (for-each
+      (lambda (string) (write-line string fp))
+      '("#define IMPLINIT \"Init@value{SCMVERSION}.scm\""
+        "#define COMPILED_INITS init_example();"
+        "#define CCLO"
+        "#define FLOATS"))))
+; ================ Compile C source files
+(system "gcc -O2 -c continue.c scmmain.c findexec.c script.c time.c repl.c scl.c eval.c sys.c subr.c debug.c unif.c rope.c example.c scm.c")
+; ================ Link C object files
+(system "gcc -rdynamic -o exscm continue.o scmmain.o findexec.o script.o time.o repl.o scl.o eval.o sys.o subr.o debug.o unif.o rope.o example.o scm.o -L/usr/local/lib/scm/ -lm -lc")
+
+Compilation finished at Sun Apr  7 22:46:44
+@end example
+
+@emph{Note Bene:} @samp{#define CCLO} must be present in @file{scmfig.h}.
+
+In order to see calls to the C compiler and linker, do
+
+@example
+(verbose 3)
+@end example
+
+before calling these functions.
+
+
+@node Error Detection, Hobbit Options, Compiling And Linking, Compiling with Hobbit
+@section Error Detection
+
+Error detection during compilation is minimal.  In case your scheme code
+is syntactically incorrect, hobbit may crash with no sensible error
+messages or it may produce incorrect C code.
+
+Hobbit does not insert any type-checking code into the C output it
+produces.  Eg, if a hobbit-compiled program applies @samp{car} to a
+number, the program will probably crash with no sensible error messages.
+
+Thus it is strongly suggested to compile only throughly debugged
+scheme code.
+
+Alternatively, it is possible to compile all the primitives into
+calls to the SCM procedures doing type-checking.  Hobbit will do
+this if you tell it to assume that all the primitives may be
+redefined.  Put
+
+@example
+(define compile-all-proc-redefined #t)
+@end example
+
+anywhere in top level of your scheme code to achieve this.
+
+@emph{Note Bene:} The compiled code using
+
+@example
+(define compile-all-proc-redefined #t)
+@end example
+
+will typically be much slower than one produced without using
+
+@example
+(define compile-all-proc-redefined #t).
+@end example
+
+All errors caught by hobbit will generate an error message
+
+@example
+@group
+COMPILATION ERROR:
+@r{<description of the error>}
+@end group
+@end example
+
+and hobbit will immediately halt compilation.
+
+
+@node Hobbit Options, CC Optimizations, Error Detection, Compiling with Hobbit
+@section Hobbit Options
+
+@enumerate
+@item
+Selecting the type of arithmetics.
+
+By default hobbit assumes that only immediate (ie small, up to 30 bits)
+integers are used.  It will automatically assume general arithmetics in
+case it finds any non-immediate numbers like 1.2 or 10000000000000 or
+real-only procedures like @t{real-sin} anywhere in the source.
+
+Another way to make Hobbit assume that generic arithmetic supported
+by SCM (ie exact and/or inexact reals, bignums) is also used, is to
+put the following line somewhere in your scheme source file:
+
+@example
+(define compile-allnumbers @var{t})
+@end example
+
+where @var{t} is arbitrary.
+
+In that case all the arithmetic primitives in all the given source
+files will be assumed to be generic.  This will make operations
+with immediate integers much slower.  You can use the special
+immediate-integer-only forms of arithmetic procedures to recover:
+
+@example
+@group
+%negative?  %number?    %>      %>=     %=      %<=     %<
+%positive?  %zero?      %eqv?   %+      %-      %*      %/
+@end group
+@end example
+
+See @ref{The Language Compiled}.
+
+@item
+Redefinition of procedures.
+
+By default hobbit assumes that neither primitives nor compiled
+procedures are redefined, neither before the compiled program is
+initialized, during its work or later via the interpreter.
+
+Hobbit checks the compiled source and whenever some variable bar is
+defined as a procedure, but is later redefined, or @t{set!} is applied
+to bar, then hobbit assumes thas this particular variable bar is
+redefinable.  bar may be a primitive (eg @samp{car}) or a name of a
+compiled procedure.
+
+
+@emph{Note Bene:}
+According to the Report 4 it is @b{NOT} allowed to use scheme
+keywords as variables (you may redefine these as macros defined by
+defmacro, though):
+
+@example
+@group
+=> and begin case cond define delay do else if lambda
+let let letrec or quasiquote quote set! unquote unquote-splicing
+@end group
+@end example
+
+If you want to be able to redefine some procedures, eg. @samp{+} and
+@samp{baz}, then put both
+
+@example
+@group
+(set! + +)
+(set! baz baz)
+@end group
+@end example
+
+somewhere into your file.
+
+As a consequence hobbit will generate code for @samp{+} and @samp{baz}
+using the run-time values of these variables.  This is generally much
+slower than using non-redefined @samp{+} and @samp{baz} (especially for
+@samp{+}).
+
+If you want to be able to redefine all the procedures, both primitives
+(eg @samp{car}) and the compiled procedures, then put the following into
+the compiled file:
+
+@example
+(define compile-all-proc-redefined @var{t})
+@end example
+
+where @var{t} is arbitrary.
+
+If you want to be able to redefine all the compiled procedures, but not
+the scheme primitives, then put the following into the compiled file:
+
+@example
+(define compile-new-proc-redefined @var{t})
+@end example
+
+where @var{t} is arbitrary.
+
+Again, remember that redefinable procedures will be typically much
+slower than  non-redefinable procedures.
+
+
+@item
+Inlined variables and procedures.
+
+You may inline top-level-defined variables and procedures.
+Notice that inlining is DIFFERENT for variables and procedures!
+
+NEVER inline variables or procedures which are @t{set!} or redefined
+anywhere in you program: this will produce wrong code.
+
+@itemize @bullet
+@item
+You may declare certain top-level defined variables to be inlined.
+For example, if the following variable foo is declared to be inlined
+@end itemize
+
+@example
+(define foo 100)
+@end example
+
+then @samp{foo} will be everywhere replaced by @samp{100}.
+
+To declare some variables foo and bar to be inlined, put a following
+definition anywhere into your file:
+
+@example
+(define compile-inline-vars '(foo bar))
+@end example
+
+Usually it makes sense to inline only these variables whose value
+is either a small integer, character or a boolean.
+
+
+@emph{Note Bene:}
+Do not use this kind of inlining for inlining procedures!
+Use the following for procedures:
+
+@itemize @bullet
+@item
+You may declare certain procedures to be inlined.  For example, if
+the following foo is declared to be inlined
+@end itemize
+
+@example
+(define (foo x) (+ x 2))
+@end example
+
+then any call
+
+@example
+(foo @var{something})
+@end example
+
+will be replaced by
+
+@example
+(+ @var{something} 2)
+@end example
+
+Inlining is @b{NOT} safe for variable clashes -- in other words, it is
+not "hygienic".
+
+Inlining is @b{NOT} safe for recursive procedures -- if the set of
+inlined procedures contains either immediate or mutual (foo calling
+bar, bar calling foo) recursion, the compiler will not terminate.
+To turn off full inlining (harmful for recursive funs), change
+the definition of the *full-inlining-flag* in the section
+"compiler options" to the value #f instead of #t.
+
+To declare some procedures foo and bar to be inlined, put a following
+definition anywhere into your file:
+
+@example
+(define compile-inline '(foo bar))
+@end example
+
+@item
+Speeding up vectors:
+
+Put
+
+@example
+(define compile-stable-vectors '(baz foo))
+@end example
+
+into your file to declare that baz and foo are vector names defined once
+on the top level, and @t{set!} is never applied to them (@t{vector-set!}
+is, of course, allowed).  This speeds up vector reference to those
+vectors by precomputing their location.
+
+@item
+Speeding up and hiding certain global variables:
+
+Put
+
+@example
+(define compile-uninterned-variables '(bazvar foovar))
+@end example
+
+into your file to declare that bazvar and foovar are defined on the top
+level and they do always have an immediate value, ie a boolean,
+immediate (30-bit) integer or a character.  Then bazvar and foovar will
+@b{NOT} be accessible from the interpreter.  They'll be compiled directly
+into static C vars and used without an extra C *-operation prefixed to
+other global scheme variables.
+
+@item
+Intermediate files
+
+To see the output of compiler passes, change the following
+definition in @file{hobbit.scm}.
+
+@example
+(define *build-intermediate-files* #f)
+@end example
+
+to:
+
+@example
+(define *build-intermediate-files* #t)
+@end example
+
+@item
+Name clashes
+
+It may happen that several originally different scheme variable
+names are represented by one and the same C variable.  This will
+happen, for example, if you have separate variables a-1 and a_1.
+
+If such (or any other) name clashes occur you may
+need to change some control variables in the first sections
+of @file{hobbit.scm} (up to the section "global variable defs") or just
+rename some variables in your scheme program.
+
+@item
+Other options
+
+See various control variables in the first sections of @file{hobbit.scm}
+(up to section "global variable defs").
+@end enumerate
+
+
+
+@node CC Optimizations,  , Hobbit Options, Compiling with Hobbit
+@section CC Optimizations
+
+When using the C compiler to compile the C code output by hobbit, always
+use strong optimizations (eg. @samp{cc -xO3} for cc on Sun, @samp{gcc
+-O2} or @samp{gcc -O3} for gcc).  Hobbit does not attempt to do
+optimizations of the kind we anticipate from the C compiler, therefore
+it often makes a serious difference whether the C compiler is run with a
+strong optimization flag or not.
+
+For the final and fast version of your program you may want to first
+recompile the whole scm (scmlit for the version scm4e2) using the
+@samp{-DRECKLESS} flag suppressing error checking: the hobbit-compiled
+code uses some SCM primitives in the compiled files with the suffix .o,
+and a number of these primitives become faster when error checking is
+disabled by @samp{-DRECKLESS}.  Notice that hobbit never inserts error
+checking into the code it produces.
+
+
+
+@node The Language Compiled, Performance of Compiled Code, Compiling with Hobbit, Top
+@chapter The Language Compiled
+
+Calls to @code{load} or @code{require} occurring at the top level of a
+file being compiled are ignored.  Calls to @code{load} or @code{require}
+within a procedure are compiled to call (interpreted) @code{load} or
+@code{require} as appropriate.
+
+Several SCM and SLIB extensions to the Scheme report are recognized by
+hobbit as Scheme primitives.
+
+@menu
+* Macros::                      
+* SCM Primitive Procedures::    
+* SLIB Logical Procedures::     
+* Fast Integer Calculations::   
+* Force and Delay::             
+* Suggestions for writing fast code::  
+@end menu
+
+
+@node Macros, SCM Primitive Procedures, The Language Compiled, The Language Compiled
+@section Macros
+@c @heading The SCM macro-facility and the SCM extra syntactic form
+
+The Common-lisp style defmacro implemented in SCM is recognized and
+procedures defined by defmacro are expanded during compilation.
+
+@emph{Note Bene:} any macro used in a compiled file must be also defined
+in one of the compiled files.
+
+@samp{#.@var{<expression>}} is read as the object resulting from the
+evaluation of @var{<expression>}.  The calculation is performed during
+compile time.  Thus @var{<expression>} must not contain variables
+defined or @t{set!} in the compiled file.
+
+
+@node SCM Primitive Procedures, SLIB Logical Procedures, Macros, The Language Compiled
+@section SCM Primitive Procedures
+@c @heading The SCM extra primitives
+
+Real-only versions of transcedental procedures (warning: these
+procedures are not compiled directly into the corresponding C library
+procedures, but a combination of internal SCM procedures, guaranteeing exact
+correspondence with the SCM interpreter while hindering the speed):
+
+@example
+@group
+real-sqrt real-exp real-ln real-expt real-sin real-cos real-tan
+real-asin real-acos real-atan real-sinh real-cosh real-tanh real-asinh
+real-acosh real-atanh
+@end group
+@end example
+
+@emph{Note Bene:} These procedures are compiled to faster code than the
+corresponding generic versions @t{sqrt}, @t{abs}, @dots{} @t{expt}.
+
+A selection of other extra primitives in SCM is also recognized as
+primitives. eg. @t{get-internal-run-time}, @t{quit}, @t{abort},
+@t{restart}, @t{chdir}, @t{delete-file}, @t{rename-file}.
+
+
+@node SLIB Logical Procedures, Fast Integer Calculations, SCM Primitive Procedures, The Language Compiled
+@section SLIB Logical Procedures
+@c @heading Bitwise logical procedures from the scheme library
+
+The following bitwise procedures in the scheme library file
+@file{logical.scm} are compiled directly to fast C operations on
+immediate integers (small 30-bit integers) (Scheme library funs in the
+upper row, C ops below):
+
+@example
+@group
+   logand logior logxor lognot logsleft logsright
+      &      |     ^      ~       <<        >>
+@end group
+@end example
+
+The following alternative names @t{logical:logand},
+@t{logical:logior}, @t{logical:logxor}, @t{logical:lognot}, and
+@t{ash} are compiled for the generic case, not immediate-integers-only
+and are thus much slower.
+
+Notice that the procedures @t{logsleft}, @t{logsright} are @b{NOT} in
+the the library file @file{logical.scm:} the universal procedure
+@t{ash} is instead.  Procedures @t{ash}, @t{logcount},
+@t{integer-length}, @t{integer-expt}, @t{bit-extract},
+@t{ipow-by-squaring}, in @file{logical.scm} are not primtives and they
+are all compiled into calls to interpreted code.
+
+@t{logsleft} and @t{logsright} are defined for non-compiled use in the
+file @file{scmhob.scm} included in the SCM distribution.
+
+
+@node Fast Integer Calculations, Force and Delay, SLIB Logical Procedures, The Language Compiled
+@section Fast Integer Calculations
+@c @heading Immediate (fast) arithmetics
+
+The following primitives are for immediate (30-bit) integer-only
+arithmetics.  The are compiled directly into the corresponding C
+operations plus some bitshifts if necessary.  They are good for speed in
+case the compiled program uses BOTH generic arithmetics (reals, bignums)
+and immediate (30-bit) integer arithmetics.  These procedures are much
+faster than corresponding generic procedures taking also reals and
+bignums.  There is no point in using these unless the program as a whole
+is compiled using generic arithmetics, since otherwise all the
+arithmetics procedures are compiled directly into corresponding C
+operations anyway.
+
+@emph{Note Bene:} These primitives are @b{NOT} defined in SCM or its
+libraries.  For non-compiled use they are defined in the file
+@file{scmhob.scm} included in the SCM distribution.
+
+@example
+@group
+%negative?  %number?    %>      %>=     %=      %<=     %<
+%positive?  %zero?      %eqv?   %+      %-      %*      %/
+@end group
+@end example
+
+@node Force and Delay, Suggestions for writing fast code, Fast Integer Calculations, The Language Compiled
+@section Force and Delay
+
+The nonessential procedure @code{force} and syntax @code{delay} are
+implemented exactly as suggested in the report 4.  This implementation
+deviates internally from the implementation of @code{force} and
+@code{delay} in the SCM interpeter, thus it is incorrect to pass a
+promise created by @code{delay} in the compiled code to the @code{force}
+used by interpreter, and vice-versa for the promises created by the
+interpreter.
+
+
+
+@node Suggestions for writing fast code,  , Force and Delay, The Language Compiled
+@section Suggestions for writing fast code
+
+The following suggestions may help you to write well-optimizable and
+fast code for the hobbit-scm combination.  Roughly speaking, the main
+points are:
+
+@itemize
+@item
+minimizing consing and creation of new vectors and strings
+in speed-critical parts,
+
+@item
+minimizing the use of generic (non-integer) arithmetics
+in speed-critical parts,
+
+@item
+minimizing the usage of procedures as first-class
+objects (very roughly speaking, explicit lambda-terms
+and call/cc) in speed-critical parts,
+
+@item
+using special options and fast-compiled primitives of the compiler.
+@end itemize
+
+Here come the details.
+
+@enumerate
+@item
+Immediate arithmetics (ie using small, up to 30 bits integers) is much
+faster than generic (reals and bignums) arithmetics.  If you have to use
+generic arithmetic in your program, then try to use special immediate
+arithmetics operations @code{%=}, @code{%<=}, @code{%+}, @code{%*},
+@dots{} for speed-critical parts of the program whenever possible.
+
+Also, if you use bitwise logical operations, try to use the
+immediate-integer-only versions
+
+@example
+logand logior logxor lognot logsleft logsright
+@end example
+
+and not @code{logical:logand} or @code{ash}, for example.
+
+@item
+Due to its inner stack-based architecture, the generic (not escape-only)
+continuations are very slow in SCM.  Thus they are also slow in
+compiled code.  Try to avoid continuations  (calls to the procedure
+call-with-current-continuation and calls to the  continuations it
+produces) in speed-critical parts.
+
+@item
+In speed-critical parts of your program try to avoid using procedures
+which are redefined or defined by @t{set!}:
+
+@example
+@group
+(set! bar +)
+(set! f (lambda (x) (if (zero? x) 1 (* x (f (- x 1))))))
+@end group
+@end example
+
+anywhere in the compiled program.  Avoid using compiler flags
+(@pxref{Hobbit Options}):
+
+@example
+@group
+(define compile-all-proc-redefined @var{t})
+(define compile-new-proc-redefined @var{t})
+@end group
+@end example
+
+@item
+Do not use complicated higher-order procedures in speed-critical
+parts.  By @dfn{complicated} we mean @dfn{not clonable}, where clonability
+is defined in the following way (@emph{Note Bene:} the primitives
+@samp{map} and @samp{for-each} are considered clonable and do not
+inflict a speed penalty).
+
+A higher-order procedure (HOP for short) is defined as a procedure
+with some of its formal arguments occuring in the procedure body in
+a function position, that is, as a first element of a list.  Such
+an argument is called a @dfn{higher-order argument}.
+
+A HOP @samp{bar} is clonable iff it satisfies the following four
+conditions:
+
+@enumerate
+@item
+@samp{bar} is defined as
+
+@example
+(define bar (lambda @dots{}))
+@end example
+
+or
+
+@example
+(define (bar @dots{}) @dots{})
+@end example
+
+on top level and bar is not redefined anywhere.
+
+@item
+the name @samp{bar} occurs inside the body of bar only in a function position
+and not inside an internal lambda-term.
+
+@item
+Let f be a higher-order argument of bar.
+Any occurrence of f in bar has one of the following two forms:
+
+@itemize @bullet
+@item
+f occurs in a function position,
+@item
+f is passed as an argument to bar and in the call it occurs in the same
+position as in the argument list.
+@end itemize
+
+@item
+Let f be a higher-order argument of bar.  f does not occur inside a
+lambda-term occurring in bar.
+
+Examples:
+
+If @samp{member-if} is defined on top level and is not redefined
+anywhere, then @samp{member-if} is a clonable HOP:
+
+@example
+@group
+(define (member-if fn lst)
+   (if (fn (car lst))
+       lst
+       (member-if fn (cdr lst)) ))
+@end group
+@end example
+
+member-if-not is not a clonable HOP (fn occurs in a lambdaterm):
+
+@example
+@group
+(define (member-if-not fn lst)
+  (member (lambda (x) (not (fn x))) lst) )
+@end group
+@end example
+
+show-f is not a clonable HOP (fn occurs in a non-function position
+in (display fn)):
+
+@example
+@group
+(define (show-f fn x)
+    (set! x (fn x))
+    (display fn)
+    x)
+@end group
+@end example
+
+@item
+In speed-critical parts avoid using procedures which return procedures.
+
+Eg, a procedure
+
+@example
+@group
+(define plus
+  (lambda (x)
+     (lambda (y) (+ y x)) ))
+@end group
+@end example
+
+returns a procedure.
+
+@item
+A generalisation of the previous case 5:
+
+In speed-critical parts avoid using lambda-terms except in non-@t{set!}
+function definitions like
+
+@example
+@group
+(define foo (lambda @dots{})),
+(let ((x 1) (f (lambda @dots{}))) @dots{})
+(let* ((x 1) (f (lambda @dots{}))) @dots{})
+(let name ((x 1) (f (lambda @dots{}))) @dots{})
+(letrec ((f (lambda @dots{})) (g (lambda @dots{}))) @dots{})
+@end group
+@end example
+
+or as arguments to clonable HOP-s or primitives @t{map} and
+@t{for-each}, like
+
+@example
+@group
+(let ((x 0)) (map (lambda (y) (set! x (+ 1 x)) (cons x y)) @var{list}))
+(member-if (lambda (x) (< x 0)) @var{list})
+@end group
+@end example
+
+where member-if is a clonable HOP.
+
+Also, avoid using variables with a procedural value anywhere
+except in a function position (first element of a list) or
+as an argument to a clonable HOP, @t{map} or @t{for-each}.
+
+Lambda-terms conforming to the current point are said to be liftable.
+
+Examples:
+
+@example
+(define (bar x) (let ((f car)) (f (f x))))
+@end example
+
+has @samp{car} in a non-function and non-HOP-argument position in
+@code{(f car)}, thus it is slower than
+
+@example
+(define (bar x) (let ((f 1)) (car (car x))))
+@end example
+
+Similarly,
+
+@example
+@group
+(define (bar y z w)
+  (let ((f (lambda (x) (+ x y))))
+     (set! w f)
+     (cons (f (car z))
+           (map f z) )))
+@end group
+@end example
+
+has @samp{f} occurring in a non-function position in @code{(set! w f)},
+thus the lambda-term @code{(lambda (x) (+ x y))} is not liftable and the
+upper @samp{bar} is thus slower than the following equivalent @samp{bar}
+with a liftable inner lambda-term:
+
+@example
+@group
+(define (bar y z w)
+  (let ((f (lambda (x) (+ x y))))
+     (set! w 0)
+     (cons (f (car z))
+           (map f z) )))
+@end group
+@end example
+
+Using a procedure bar defined as
+
+@example
+(define bar (let ((x 1)) (lambda (y) (set! x y) (+ x y))))
+@end example
+
+is slower than using a procedure bar defined as
+
+@example
+@group
+(define *bar-x* 1)
+(define bar (lambda (y) (set! *bar-x* y) (+ *bar-x* y)))
+@end group
+@end example
+
+since the former definition contains a non-liftable lambda-term.
+
+@item
+Try to minimize the amount of consing in the speed-critical program
+fragments, that is, a number of applications of cons, list, @t{map},
+quasiquote (`) and vector->list during the time program is running.
+@samp{cons} (called also by @samp{list}, @samp{map} and
+@samp{quasiquote}) is translated into a C call to an internal cons
+procedure of the SCM interpreter.  Excessive consing also means that the
+garbage collection happens more often.  Do @code{(verbose 3)} to see the
+amount of time used by garbage collection while your program is running.
+
+Try to minimize the amount of creating new vectors, strings and symbols
+in the speed-critical program frgaments, that is, a number of
+applications of @t{make-vector}, @t{vector}, @t{list->vector},
+@t{make-string}, @t{string-append}, *@t{->string}, @t{string->symbol}.
+Creating such objects takes typically much more time than consing.
+
+@item
+The Scheme iteration construction @samp{do} is compiled directly into
+the C iteration construction @samp{for}.  We can expect that the C compiler
+has some knowledge about @samp{for} in the optimization stage, thus it is
+probably faster to use @samp{do} for iteration than non-mutual tailrecursion
+(which is recognized by hobbit as such and is compiled into a jump to a
+beginning of a procedure) and certainly much faster than
+non-tail-recursion or mutual tailrecursion (the latter is not recognized
+by hobbit as such).
+
+@item
+Declare small nonrecursive programs which do not contain
+let-s or lambdaterms as being inlinable.
+
+Declare globally defined variables which are never @t{set!} or redefined
+and whose value is a small integer, character or a boolean,
+as being inlinable.  @xref{Hobbit Options}.
+
+@item
+If possible, declare vectors as being stable.
+@xref{Hobbit Options, Speeding up vectors}.
+This gives a minor improvement in speed.
+
+@item
+If possible, declare critical global vars as being uninterned.
+@xref{Hobbit Options, Speeding up and hiding certain global variables}.
+This gives a minor improvement in speed.  Declare the global variables
+which are never @t{set!} and have an (unchanged) numeric or boolean
+value as being inlined.  @xref{Hobbit Options}.
+@end enumerate
+
+In addition, take the following into account:
+
+@itemize @bullet
+@item
+When using the C compiler to compile the C code output by hobbit, always
+use strong optimizations (eg. @samp{cc -xO3} for cc on Sun, @samp{gcc
+-O2} or @samp{gcc -O3} for gcc).  Hobbit does not attempt to do
+optimizations of the kind we anticipate from the C compiler, therefore
+it often makes a big difference if the C compiler is run with a strong
+optimization flag or not.
+
+@item
+hobbit does not give proper tailrecursion behaviour for mutual
+tailrecursion (foo calling bar, bar calling foo tailrecursively).
+
+Hobbit guarantees proper tailrecursive behaviour for non-mutual
+tailrecursion (foo calling foo tailrecursively), provided that
+foo is not redefined anywhere and that foo is not a local function which
+occurs also in a non-function and non-clonable-HOP-argument position
+(i.e. cases 3 and 6 above).
+@end itemize
+@end enumerate
+
+
+
+@node Performance of Compiled Code, Principles of Compilation, The Language Compiled, Top
+@chapter Performance of Compiled Code
+
+
+@menu
+* Gain in Speed::               
+* Benchmarks::                  
+* Benchmark Sources::           
+@end menu
+
+@node Gain in Speed, Benchmarks, Performance of Compiled Code, Performance of Compiled Code
+@section Gain in Speed
+
+The author has so far compiled and tested a number of large programs
+(theorem provers for various logics and hobbit itself).
+
+The speedup for the provers was between 25 and 40 times for various
+provable formulas.  Comparison was made between the provers being
+interpreted and compiled with @samp{gcc -O2 -DRECKLESS} on Sparcstation
+ELC in both cases.
+
+The provers were written with care to make the compiled version run fast.
+They do not perform excessive consing and they perform very little
+arithmetic.
+
+According to experiments made by A. Jaffer, the compiled form of the
+example program @file{pi.scm} was approximately 11 times faster than the
+interpreted form.
+
+As a comparison, his hand-coded C program for the same algorithm of
+computing pi was about 12 times faster than the interpreted form.
+@file{pi.scm} spends most of of its time in immediate arithmetics,
+@t{vector-ref} and @t{vector-set!}.
+
+P. Kelloma"ki has reported a 20-fold speedup for his generic scheme
+debugger.  T. Moore has reported a 16-fold speedup for a large gate-level
+IC optimizer.
+
+Self-compilation speeds Hobbit up only ca 10 times.
+
+However, there are examples where the code compiled by hobbit
+runs actually slower than the same code running under interpreter:
+this may happen in case the speed of the code relies on non-liftable
+closures and proper mutual tailrecursion.  See for example the
+closure-intensive benchmark CPSTAK in the following table.
+
+@page
+@node Benchmarks, Benchmark Sources, Gain in Speed, Performance of Compiled Code
+@section Benchmarks
+
+We will present a table with the performance of three scheme systems on
+a number of benchmarks: interpreted SCM, byte-compiled VSCM and
+hobbit-compiled code.  The upper 13 benchmarks of the table are the
+famous Gabriel benchmarks (originally written for lisp) modified for
+scheme by Will Clinger.  The lower five benchmarks of the table are
+proposed by other people.  @dfn{Selfcompile} is the self-compile time
+of Hobbit.
+
+
+Hobbit performs well on most of the benchmarks except
+CPSTAK and CTAK: CPSTAK is a closure-intensive tailrecursive
+benchmark and CTAK is a continuations-intensive benchmark.
+Hobbit performs extremely well on these benchmarks which essentially
+satisfy the criterias for well-optimizable code outlined in the
+section 6 above.
+
+FFT is real-arithmetic-intensive.
+
+All times are in seconds.
+
+SCM 4c0(U) and 1.1.5*(U) (the latter is the newest version of VSCM)
+are compiled and run by Matthias Blume on a DecStation 5000 (Ultrix).
+VSCM is a bytecode-compiler using continuation-passing style, and is well
+optimized for continuations and closures.
+
+SCM 4e2(S) and Hobbit4b(S) compiled (with @samp{cc -xO3}) and run by
+Tanel Tammet on a Sun SS10 (lips.cs.chalmers.se).  Hobbit is a
+Scheme-to-C compiler for SCM, the code it produces does not do any
+checking.  SCM and hobbit are not optimized for continuations.  Hobbit
+is not optimized for closures and proper mutual tailrecursion.
+
+SCM and Hobbit benchmarks were run giving ca 8 MB of free heap space
+before each test.
+
+@example
+@group
+Benchmark       |SCM 4c0(U) 1.1.5*(U)| SCM 4e2(S)  Hobbit4b(S)
+----------------|------------------------------------------------
+Deriv           | 3.40      3.86     |  2.9            0.18
+Div-iter        | 3.45      2.12     |  2.6            0.083
+Div-rec         | 3.45      2.55     |  3.5            0.42
+TAK             | 1.81      1.71     |  1.4            0.018
+TAKL            |14.50     11.32     | 13.8(1.8 in gc) 0.13
+TAKR            | 2.20      1.64     |  1.7 1.5        0.018
+Destruct        | ?          ?       |  7.4(1.8 in gc) 0.18
+Boyer           | ?          ?       | 27.(3.8 in gc)  1.9
+CPSTAK          | 2.72      2.64     |  2.0 1.92       3.46(2.83 in gc)
+CTAK            |31.0       4.11     | memory          memory
+CTAK(7 6 1)     | ?          ?       |  0.83           0.74
+FFT             |12.45     15.7      | 11.4 10.8       1.0
+Puzzle          | 0.28      0.41     |  0.46(0.22 gc)  0.03
+----------------------------------------------------------------
+(recfib 25)     | ?          ?       |  4.1            0.079
+(recfib 30)     | ?          ?       | 55. (10.in gc)  0.87
+(pi 300 3)      | ?          ?       |  7.4            0.46
+(hanoi 15)      | ?          ?       |  0.68           0.007
+(hanoi 20)      | ?          ?       | 31. (9. in gc)  0.2
+----------------------------------------------------------------
+@end group
+@end example
+
+@page
+@node Benchmark Sources,  , Benchmarks, Performance of Compiled Code
+@section Benchmark Sources
+@subheading A selection of (smaller) benchmark sources
+
+@menu
+* Destruct::                    
+* Recfib::                      
+* div-iter and div-rec::        
+* Hanoi::                       
+* Tak::                         
+* Ctak::                        
+* Takl::                        
+* Cpstak::                      
+* Pi::                          
+@end menu
+
+@node Destruct, Recfib, Benchmark Sources, Benchmark Sources
+@subsection Destruct
+
+@example
+@group
+;;;; Destructive operation benchmark
+(define (destructive n m)
+  (let ((l (do ((i 10 (- i 1))
+                (a '() (cons '() a)))
+               ((= i 0) a))))
+    (do ((i n (- i 1)))
+        ((= i 0))
+      (if (null? (car l))
+          (do ((l l (cdr l)))
+              ((null? l))
+            (or (car l) (set-car! l (cons '() '())))
+            (append! (car l) (do ((j m (- j 1))
+                                  (a '() (cons '() a)))
+                                 ((= j 0) a))))
+          (do ((l1 l (cdr l1))
+               (l2 (cdr l) (cdr l2)))
+              ((null? l2))
+            (set-cdr! (do ((j (quotient (length (car l2)) 2) (- j 1))
+                           (a (car l2) (cdr a)))
+                          ((zero? j) a)
+                        (set-car! a i))
+                      (let ((n (quotient (length (car l1)) 2)))
+                        (cond ((= n 0) (set-car! l1 '()) (car l1))
+                              (else (do ((j n (- j 1))
+                                         (a (car l1) (cdr a)))
+                                        ((= j 1)
+                                         (let ((x (cdr a)))
+                                           (set-cdr! a '()) x))
+                                      (set-car! a i)))))))))))
+;; call:  (destructive 600 50)
+@end group
+@end example
+
+@need 1500
+@node Recfib, div-iter and div-rec, Destruct, Benchmark Sources
+@subsection Recfib
+
+@example
+@group
+(define (recfib x)
+  (if (< x 2)
+      x
+      (+ (recfib (- x 1))
+         (recfib (- x 2)))))
+@end group
+@end example
+
+@need 4000
+@node div-iter and div-rec, Hanoi, Recfib, Benchmark Sources
+@subsection div-iter and div-rec
+
+@example
+@group
+;;;; Recursive and iterative benchmark divides by 2 using lists of ()'s.
+(define (create-n n)
+  (do ((n n (- n 1))
+       (a '() (cons '() a)))
+      ((= n 0) a)))
+(define *ll* (create-n 200))
+(define (iterative-div2 l)
+  (do ((l l (cddr l))
+       (a '() (cons (car l) a)))
+      ((null? l) a)))
+(define (recursive-div2 l)
+  (cond ((null? l) '())
+        (else (cons (car l) (recursive-div2 (cddr l))))))
+(define (test-1 l)
+  (do ((i 300 (- i 1))) ((= i 0))
+    (iterative-div2 l)
+    (iterative-div2 l)
+    (iterative-div2 l)
+    (iterative-div2 l)))
+(define (test-2 l)
+  (do ((i 300 (- i 1))) ((= i 0))
+    (recursive-div2 l)
+    (recursive-div2 l)
+    (recursive-div2 l)
+    (recursive-div2 l)))
+;; for the iterative test call: (test-1 *ll*)
+;; for the recursive test call: (test-2 *ll*)
+@end group
+@end example
+
+@need 1000
+@node Hanoi, Tak, div-iter and div-rec, Benchmark Sources
+@subsection Hanoi
+
+@example
+@group
+;;; C optimiser should be able to remove the first recursive call to
+;;; move-them.  But Solaris 2.4 cc, gcc 2.5.8, and hobbit don't.
+(define (hanoi n)
+  (letrec ((move-them
+            (lambda (n from to helper)
+              (if (> n 1)
+                  (begin
+                    (move-them (- n 1) from helper to)
+                    (move-them (- n 1) helper to from))))))
+    (move-them n 0 1 2)))
+@end group
+@end example
+
+@page
+@node Tak, Ctak, Hanoi, Benchmark Sources
+@subsection Tak
+
+@example
+@group
+;;;; A vanilla version of the TAKeuchi function
+(define (tak x y z)
+  (if (not (< y x))
+      z
+      (tak (tak (- x 1) y z)
+           (tak (- y 1) z x)
+           (tak (- z 1) x y))))
+;; call: (tak 18 12 6)
+@end group
+@end example
+
+@need 2000
+@node Ctak, Takl, Tak, Benchmark Sources
+@subsection Ctak
+
+@example
+@group
+;;;; A version of the TAK function that uses continuations
+(define (ctak x y z)
+  (call-with-current-continuation
+   (lambda (k)
+     (ctak-aux k x y z))))
+
+(define (ctak-aux k x y z)
+  (cond ((not (< y x)) (k z))
+        (else (call-with-current-continuation
+               (ctak-aux
+                k
+                (call-with-current-continuation
+                 (lambda (k) (ctak-aux k (- x 1) y z)))
+                (call-with-current-continuation
+                 (lambda (k) (ctak-aux k (- y 1) z x)))
+                (call-with-current-continuation
+                 (lambda (k) (ctak-aux k (- z 1) x y))))))))
+
+(define (id x) x)
+
+(define (mb-test r x y z)
+  (if (zero? r)
+      (ctak x y z)
+      (id (mb-test (- r 1) x y z))))
+;;; call: (ctak 18 12 6)
+@end group
+@end example
+
+@need 2000
+@node Takl, Cpstak, Ctak, Benchmark Sources
+@subsection Takl
+
+@example
+@group
+;;;; The TAKeuchi function using lists as counters.
+(define (listn n)
+  (if (not (= 0 n))
+      (cons n (listn (- n 1)))
+      '()))
+
+(define l18 (listn 18))
+(define l12 (listn 12))
+(define l6 (listn 6))
+
+(define (mas x y z)
+  (if (not (shorterp y x))
+      z
+      (mas (mas (cdr x) y z)
+           (mas (cdr y) z x)
+           (mas (cdr z) x y))))
+
+(define (shorterp x y)
+  (and (pair? y) (or (null? x) (shorterp (cdr x) (cdr y)))))
+;; call: (mas l18 l12 l6)
+@end group
+@end example
+
+@need 2000
+@node Cpstak, Pi, Takl, Benchmark Sources
+@subsection Cpstak
+
+@example
+@group
+;;;; A continuation-passing version of the TAK benchmark.
+(define (cpstak x y z)
+  (define (tak x y z k)
+    (if (not (< y x))
+        (k z)
+        (tak (- x 1)
+             y
+             z
+             (lambda (v1)
+               (tak (- y 1)
+                    z
+                    x
+                    (lambda (v2)
+                      (tak (- z 1)
+                           x
+                           y
+                           (lambda (v3)
+                             (tak v1 v2 v3 k)))))))))
+  (tak x y z (lambda (a) a)))
+;;; call: (cpstak 18 12 6)
+@end group
+@end example
+
+@need 4000
+@node Pi,  , Cpstak, Benchmark Sources
+@subsection Pi
+
+@example
+@group
+(define (pi n  . args)
+      (let* ((d (car args))
+             (r (do ((s 1 (* 10 s))
+                     (i 0 (+ 1 i)))
+                    ((>= i d) s)))
+             (n (+ (quotient n d) 1))
+             (m (quotient (* n d 3322) 1000))
+             (a (make-vector (+ 1 m) 2)))
+        (vector-set! a m 4)
+        (do ((j 1 (+ 1 j))
+             (q 0 0)
+             (b 2 (remainder q r)))
+            ((> j n))
+          (do ((k m (- k 1)))
+              ((zero? k))
+            (set! q (+ q (* (vector-ref a k) r)))
+            (let ((t (+ 1 (* 2 k))))
+              (vector-set! a k (remainder q t))
+              (set! q (* k (quotient q t)))))
+          (let ((s (number->string (+ b (quotient q r)))))
+            (do ((l (string-length s) (+ 1 l)))
+                ((>= l d) (display s))
+              (display #\0)))
+          (if (zero? (modulo j 10)) (newline) (display #\space)))
+        (newline)))
+@end group
+@end example
+
+
+@node Principles of Compilation, About Hobbit, Performance of Compiled Code, Top
+@chapter Principles of Compilation
+
+@menu
+* Macro-Expansion and Analysis::  Pass 1
+* Building Closures::           Pass 2
+* Lambda-lifting::              Pass 3
+* Statement-lifting::           Pass 4
+* Higher-order Arglists::       Pass 5
+* Typing and Constants::        Pass 6
+@end menu
+
+@node Macro-Expansion and Analysis, Building Closures, Principles of Compilation, Principles of Compilation
+@section Expansion and Analysis
+
+
+@enumerate
+@item
+Macros defined by defmacro and all the quasiquotes
+are expanded and compiled into equivalent form without macros
+and quasiquotes.
+
+For example, `(a , x) will be converted to (cons 'a (cons x '())).
+
+@item
+Define-s with the nonessential syntax like
+
+@example
+(define (foo x) @dots{})
+@end example
+
+are converted to @t{define}s with the essential syntax
+
+@example
+(define foo (lambda (x) @dots{}))
+@end example
+
+Non-top-level @t{define}s are converted into equivalent
+@t{letrec}-s.
+
+@item
+Variables are renamed to avoid name clashes, so that any local
+variable may have a whole procedure as its scope.  This renaming
+also converts let-s to let*-s.  Variables which do not introduce
+potential name clashes are not renamed.  For example,
+
+@example
+@group
+(define (foo x y)
+   (let ((x y)
+         (z x))
+     (let* ((x (+ z x)))
+       x)))
+@end group
+@end example
+
+is converted to
+
+@example
+@group
+(define foo
+  (lambda (x y)
+    (let* ((x__1 y)
+           (z x)
+           (x__2 (+ z x__1)))
+       x__2)))
+@end group
+@end example
+
+@item
+In case the set of procedures defined in one @t{letrec} is actually not
+wholly mutually recursive (eg, f1 calls f2, but f2 does not call f1, or
+there are three procedures, f1, f2, f3 so that f1 and f2 are mutually
+recursive but f3 is not called from f1 or f2 and it does not call them,
+etc), it is possible to minimize the number of additional variables
+passed to procedures.
+
+Thus @t{letrec}-s are split into ordered chunks using dependency
+analysis and topological sorting, to reduce the number of mutually
+passed variables.  Wherever possible, @t{letrec}-s are replaced by
+@t{let*}-s inside these chunks.
+
+
+@item
+Normalization is performed.  This converts a majority of scheme
+control procedures like @code{cond}, @code{case}, @code{or},
+@code{and} into equivalent terms using a small set of primitives.  New
+variables may be introduced in this phase.
+
+In case a procedure like @code{or} or @code{and} occurs in the place
+where its value is treated as a boolean (eg. first argument of
+@code{if}), it is converted into an analogous boolean-returning
+procedure, which will finally be represented by an analogous C
+procedure (eg. || or &&).
+
+Associative procedures are converted into structures of corresponding
+nonassociative procedures.  List is converted to a structure of cons-s.
+
+Map and @t{for-each} with more than two arguments are converted into an
+equivalent do-cycle.  @t{map}-s and @t{for-each}-s with two arguments are
+treated as if they were defined in the compiled file -- the definitions
+@t{map1} and @t{for-each1} are automatically included, if needed.
+
+There is an option in @file{hobbit.scm} to make all @t{map}-s and
+@t{for-each}-s be converted into equivalent do-loops, avoiding the use
+of @t{map1} and/or @t{for-each1} altogether.
+
+
+@item
+Code is analysed for determining which primitive names and
+compiled procedure names are assumed to be redefinable.
+
+@item
+Analysing HOP clonability: hobbit will find a list of clonable
+HOP-s with information about higher-order arguments.
+
+Criterias for HOP clonability are given in the section 6.4.
+
+
+@item
+Analysis of liftability: hobbit will determine which lambda-terms
+have to be built as real closures (implemented as a vector where the
+first element is a pointer to a function and the rest contain values
+of environment variables or environment blocks of surrounding code)
+and which lambda-terms are liftable.
+
+Liftability analysis follows the criterias given in section 6.5 and
+6.6.
+@end enumerate
+
+
+@node Building Closures, Lambda-lifting, Macro-Expansion and Analysis, Principles of Compilation
+@section Building Closures
+
+
+Here Hobbit produces code for creating real closures for all the
+lambda-terms which are not marked as being liftable by the previous
+liftability analysis.
+
+Global variables (eg x-glob) are translated as pointers (locations) to
+SCM objects and used via a fetch: *x_glob (or a fetch
+macro GLOBAL(x-glob) which translates to *x_glob).
+
+While producing closures hobbit tries to minimize the indirection
+levels necessary.  Generally a local variable x may have to be translated
+to an element of a vector of local variables built in the procedure
+creating x.  If x occurs in a non-liftable closure, the whole vector
+of local variables is passed to a closure.
+
+Such a translation using a local vector will only take place if either x
+is @t{set!} inside a non-liftable lambda-term or x is a name of a
+recursively defined non-liftable function, and the definition of x is
+irregular.  The definition of x is irregular if x is given the
+non-liftable recursive value @var{t} by extra computation, eg as
+
+@example
+(set! x (let ((u 1)) (lambda (y) (display u) (x (+ u 1)))))
+@end example
+
+and not as a simple lambdaterm:
+
+@example
+(set! x (lambda (y) (display x) (x (+ y 1))))
+@end example
+
+In all the other cases a local scheme variable x is translated
+directly to a local C variable x having the type SCM (a 32-bit
+integer).  If such an x occurs in a non-liftable closure, then
+only its value is passed to a closure via the closure-vector.
+In case the directly-translated variable x is passed to a liftable
+lambda-term where it is @t{set!}, then x is passed indirectly by
+using its address &x.  In the lifted lambda-term it is then accessed via *.
+
+If all the variables x1, @dots{}, xn created in a procedure can be
+translated directly as C variables, then the procedure does not create a
+special vector for (a subset of) local variables.
+
+An application (foo @dots{}) is generally translated to C by an internal
+apply of the SCM interpreter:
+apply(GLOBAL(foo), @dots{}).  Using an internal apply is much slower than
+using direct a C function call, since:
+
+@itemize @bullet
+@item
+there is an extra fetch by GLOBAL(foo),
+@item
+internal apply performs some computations,
+@item
+the arguments of foo are passed as a list constructed during
+    application: that is, there is a lot of expensive consing every
+    time foo is applied via an internal apply.
+@end itemize
+
+However, in case foo is either a name of a non-redefined primitive or a
+name of a non-redefined liftable procedure, the application is
+translated to C directly without the extra layer of calling apply:
+foo(@dots{}).
+
+Sometimes lambda-lifting generates the case that some variable
+x is accessed not directly, but by *x.  See the next section.
+
+Undefined procedures are assumed to be defined via interpreter
+and are called using an internal apply.
+
+@node Lambda-lifting, Statement-lifting, Building Closures, Principles of Compilation
+@section Lambda-lifting
+
+
+When this pass starts, all the real (nonliftable) closures have been
+translated to closure-creating code.  The remaining lambda-terms
+are all liftable.
+
+Lambda-lifting is performed.  That is, all procedures defined inside
+some other procedure (eg. in @t{letrec}) and unnamed lambda-terms are
+made top-level procedure definitions.  Any N variables not bound in such
+procedures which were bound in the surrounding procedure are given as
+extra N first parameters of the procedure, and whenever the procedure is
+called, the values of these variables are given as extra N first
+arguments.
+
+For example:
+
+@example
+@group
+(define foo
+  (lambda (x y)
+     (letrec ((bar (lambda (u) (+ u x))))
+        (bar y) )))
+@end group
+@end example
+
+is converted to
+
+@example
+@group
+(define foo
+  (lambda (x y)
+    (foo-fn1 x y) ))
+
+(define foo-fn1
+  (lambda (x u)
+    (+ u x) ))
+@end group
+@end example
+
+The case of mutually recursive definitions in @t{letrec} needs special
+treatment -- all free variables in mutually recursive funs have, in
+general, to be passed to each of those funs.  For example, in
+
+@example
+@group
+(define (foo x y z i)
+  (letrec ((f1 (lambda (u) (if x (+ (f2 u) 1))))
+           (f2 (lambda (v) (if (zero? v) 1 (f1 z)))) )
+    (f2 i) ))
+@end group
+@end example
+
+the procedure f1 contains a free variable x and the procedure f2
+contains a free variable z.  Lambda-lifted f1 and f2 must
+each get both of these variables:
+
+@example
+@group
+(define (foo x y z i)
+   (foo-fn2 x z i) )
+
+(define foo-fn1
+  (lambda (x z u) (if x (+ (foo-fn2 x z u) 1))) )
+
+(define foo-fn2
+  (lambda (x z v) (if (zero? v) 1 (foo-fn1 x z z))) )
+@end group
+@end example
+
+Recall that hobbit has already done dependency analysis and has
+split the original @t{letrec} into smaller chunks according to this
+analysis: see pass 1.
+
+Whenever the value of some free variable is modified by @t{set!} in
+the procedure, this variable is passed by reference instead.
+This is not directly possible in scheme, but it is possible in C.
+
+@example
+@group
+(define foo
+  (lambda (x y z)
+     (letrec ((bar (lambda (u) (set! z (+ u x z)))))
+        (bar y)
+        z)))
+@end group
+@end example
+
+is converted to incorrect scheme:
+
+@example
+@group
+(define foo
+  (lambda (x y z)
+    (foo-fn1 x (**c-adr** z) y)
+    z))
+
+(define foo-fn1
+  (lambda (x (**c-adr** z) u)
+    (set! (**c-fetch** z) (+ u x (**c-fetch** z))) ))
+@end group
+@end example
+
+The last two will finally be compiled into correct C as:
+
+@example
+@group
+SCM foo(x, y, z)
+SCM x, y, z;
+@{
+  foo_fn1(x, &z, y);
+  return z;
+@}
+
+SCM foo_fn1(x, z, u)
+SCM x, u;
+SCM *z;
+@{
+  return (*z =  (u + x) + *z);
+@}
+@end group
+@end example
+
+
+
+@node Statement-lifting, Higher-order Arglists, Lambda-lifting, Principles of Compilation
+@section Statement-lifting
+
+As the scheme do-construction is compiled into C for, but for cannot
+occur in all places in C (it is a statement), then if the do in a
+scheme procedure occurs in a place which will not be a statement
+in C, the whole do-term is lifted out into a new top-level
+procedure analogously to lambda-lifting.  Any statement-lifted
+parts of some procedure foo are called foo_aux@var{n}, where @var{n}
+is a number.
+
+The special C-ish procedure **return** is pushed into a scheme term as far
+as possible to extend the scope of statements in the resulting
+C program.  For example,
+
+@example
+@group
+(define foo
+  (lambda (x y)
+      (if x (+ 1 y) (+ 2 y)) ))
+@end group
+@end example
+
+is converted to
+
+@example
+@group
+(define foo
+   (lambda (x y)
+     (if x (**return** (+ 1 y)) (**return** (+ 2 y))) ))
+@end group
+@end example
+
+Immediate tailrecursion (foo calling foo tailrecursively) is
+recognized and converted into an assignment of new values to args and
+a jump to the beginning of the procedure body.
+
+
+@node Higher-order Arglists, Typing and Constants, Statement-lifting, Principles of Compilation
+@section Higher-order Arglists
+
+All procedures taking a list argument are converted into ordinary
+non-list taking procedures and they are called with the list-making
+calls inserted.  For example,
+
+@example
+@group
+(define foo
+  (lambda (x . y)
+    (cons x (reverse y)) ))
+@end group
+@end example
+
+is converted to
+
+@example
+@group
+(define foo
+  (lambda (x y)
+    (cons x (reverse y)) ))
+@end group
+@end example
+
+and any call to foo will make a list for a variable y.  For example,
+
+@example
+(foo 1 2 3)
+@end example
+
+is converted to
+
+@example
+(foo 1 (cons 2 (cons 3 '()))).
+@end example
+
+All higher-order procedure calls where an argument-term contains
+unbound variables will generate a new instance (provided it
+has not been created already) of this higher-order procedure,
+carrying the right amount of free variables inside to right
+places.
+
+For example, if there is a following definition:
+
+@example
+@group
+(define (member-if fn lst)
+   (if (fn (car lst))
+       lst
+       (member-if fn (cdr lst)) ))
+@end group
+@end example
+
+and a call
+
+@example
+(member-if (lambda (x) (eq? x y)) lst),
+@end example
+
+a new instance of member-if is created (if an analogous one
+has not been created before):
+
+@example
+@group
+(define (member-if_inst1 tmp fn lst)
+   (if (fn tmp (car lst))
+       lst
+       (member-if_inst1 tmp fn (cdr lst)) ))
+@end group
+@end example
+
+and the call is converted to
+
+@example
+(member-if_inst1 y foo lst)
+@end example
+
+and a top-level @t{define}
+
+@example
+(define (foo y x) (eq? x y))
+@end example
+
+In addition, if the higher-order procedure is to be exported,
+an additional instance is created, which uses apply to
+call all argument-procedures, assuming they are defined via interpreter.
+The exportable higher-order procedure will have a name @var{fun}_exporthof,
+where @var{fun} is the name of the original procedure.
+
+
+@node Typing and Constants,  , Higher-order Arglists, Principles of Compilation
+@section Typing and Constants
+
+All C<->Scheme conversions for immediate objects like numbers,
+booleans and characters are introduced.  Internal apply
+is used for undefined procedures.  Some optimizations are performed
+to decrease the amount of C<->Scheme object conversions.
+
+All vector, pair and string constants are replaced by new
+variables.  These variables are instantiated to the right
+values by init_@var{foo*}.
+
+Procedures foo which are to be exported (made accesible to the
+interpreter), and which have an arity different from one of the
+following five templates: x, (), (x), (x y), (x y z), are made
+accessible via an additional procedure foo_wrapper taking a single
+list argument.
+
+@subheading C Code Generation
+
+More or less straightforward.
+
+The type conversion between C objects and immediate Scheme objects of
+the type boolean, char and num is performed by macros.  The scheme
+object @t{'()} is represented by the macro object EOL.
+
+@subheading  Intermediate files
+
+Experiment yourself by defining:
+
+@example
+(define *build-intermediate-files* #t)
+@end example
+
+instead of the default:
+
+@example
+(define *build-intermediate-files* #f).
+@end example
+
+
+@node About Hobbit, Index, Principles of Compilation, Top
+@chapter About Hobbit
+
+@menu
+* The Aims of Developing Hobbit::  
+* Manifest::                    
+* Author and Contributors::     
+* Future Improvements::         
+* Release History::             
+@end menu
+
+@node The Aims of Developing Hobbit, Manifest, About Hobbit, About Hobbit
+@section The Aims of Developing Hobbit
+
+@enumerate
+@item
+Producing maximally fast C code from simple scheme code.
+
+By @dfn{simple} we mean code which does not rely on procedures
+returning procedures (closures) and nontrivial forms of
+higher-order procedures.  All the latter are also compiled,
+but the optimizations specially target simple code fragments.
+Hobbit performs global optimization in order to locate such fragments.
+
+@item
+Producing C code which would preserve as much original scheme
+code structure as possible, to enable using the output C code
+by a human programmer (eg. for introducing special optimizations
+possible in C).  Also, this will hopefully help the C compiler
+to find better optimizations.
+@end enumerate
+
+
+@node Manifest, Author and Contributors, The Aims of Developing Hobbit, About Hobbit
+@section Manifest
+
+@multitable @columnfractions .2 .8
+@item @file{hobbit.scm}
+@tab the hobbit compiler.
+@item @file{scmhob.scm}
+@tab  the file defining some additional procedures recognized
+by hobbit as primitives.  Use it with the interpreter only.
+@item @file{scmhob.h}
+@tab the common headerfile for hobbit-compiled C files.
+@item @file{hobbit.texi}
+@tab documentation for hobbit.
+@end multitable
+
+
+@node Author and Contributors, Future Improvements, Manifest, About Hobbit
+@section Author and Contributors
+
+@quotation
+Tanel Tammet@*
+Department of Computing Science@*
+Chalmers University of Technology@*
+University of Go"teborg@*
+S-41296 Go"teborg Sweden
+@end quotation
+
+A. Jaffer (agj@@alum.mit.edu), the author of SCM, has been of major
+help with a number of suggestions and hacks, especially concerning the
+interface between compiled code and the SCM interpreter.
+
+Several people have helped with suggestions and detailed bug reports,
+e.g. David J. Fiander (davidf@@mks.com), Gordon Oulsnam
+(STCS8004@@IRUCCVAX.UCC.IE), Pertti Kelloma"ki (pk@@cs.tut.fi),
+Dominique de Waleffe (ddw2@@sunbim.be) Terry Moore (tmm@@databook.com),
+Marshall Abrams (ab2r@@midway.uchicago.edu).  Georgy K. Bronnikov
+(goga@@bronnikov.msk.su), Bernard Urban (Bernard.URBAN@@meteo.fr),
+Charlie Xiaoli Huang, Tom Lord (lord@@cygnus.com),
+NMICHAEL@@us.oracle.com, Lee Iverson (leei@@ai.sri.com), Burt
+Leavenworth (EDLSOFT@@aol.com).
+
+
+@page
+@node Future Improvements, Release History, Author and Contributors, About Hobbit
+@section Future Improvements
+
+@enumerate
+@item
+Optimisations:
+
+@itemize
+@item
+the calls to internal apply: we'd like to avoid the excessive consing of
+always building the list of arguments.
+@item
+speeding up the creation of a vector for assignable closure-variables
+@item
+several peephole optimisations.
+@end itemize
+
+@item
+Improve Variable creation and naming to avoid C function name clashes.
+
+@item
+Report 4 macros.
+
+@item
+Better error-checking.
+
+@item
+Better liftability analysis.
+
+@item
+More tailrecursion recognition.
+
+@item
+Better numeric optimizations.
+
+@item
+Fast real-only arithmetics: $eqv, $=, $>, $+, $*, etc.
+@end enumerate
+
+
+@node Release History,  , Future Improvements, About Hobbit
+@section Release History
+
+@quotation
+[In February 2002, hobbit5x was integrated into the SCM distribution.
+Changes since then are recorded in @file{scm/ChangeLog}.]
+@end quotation
+
+@table @asis
+@item hobbit4d:
+@itemize @bullet
+@item
+the incorrect translation of char>?, char-ci>?, char>=?, char-ci>=?
+string>?, string-ci>?, string-ci>=?, string>=? reported by
+Burt Leavenworth (EDLSOFT@@aol.com) was fixed.
+@item
+the name clash bug for new variables new_varN occurring in
+non-liftable closures (reported by Lee Iverson (leei@@ai.sri.com))
+was fixed.
+@item
+the major COPYRIGHT change: differently from all the previous
+versions of Hobbit, hobbit4d is Free Software.
+@end itemize
+
+@item hobbit4c:
+@itemize @bullet
+@item
+a liftability-analysis bug for @t{for-each} and @t{map} reported
+by Lee Iverson (leei@@ai.sri.com) has been fixed.
+@item
+The output C code does not contain the unnecessary ;-s on
+separate lines any more.
+@end itemize
+
+@item hobbit4b:
+The following bugs have been fixed:
+@itemize @bullet
+@item
+Erroneous treatment of [ and ] inside symbols,
+reported by A. Jaffer (agj@@alum.mit.edu).
+@item
+A bug in the liftability analysis,
+reported by A. Jaffer (agj@@alum.mit.edu).
+@item
+A bug occurring in case arguments are evaluated right-to-left,
+which happens with Hobbit compiled by gcc on GNU/Linux.
+Reported and patched by George K. Bronnikov (goga@@bronnikov.msk.su)
+@item
+A closure-building bug sometimes leading to a serious loss of
+efficiency (liftability not recognized),
+reported by NMICHAEL@@us.oracle.com.
+@item
+A bug in the liftability analysis (non-liftable lambda-term
+inside a liftable lambda-term)
+reported by Lee Iverson (leei@@ai.sri.com)
+@end itemize
+
+@item hobbit4a:
+Several bugs found in version4x are fixed.
+
+@item hobbit4x (not public):
+@itemize @bullet
+@item
+A major overhaul: Hobbit is now able to compile full scheme,
+not just the fast liftable-clonable fragment.
+
+The optimizations done by the earlier versions are preserved.
+
+@item
+Numerous bugs found in earlier versions have been fixed.
+@end itemize
+
+@item hobbit3d:
+bugs found in the version 3c are fixed.
+
+@item hobbit3c:
+@itemize @bullet
+@item
+the form
+
+@example
+(define foo (let ((x1 <t1>) @dots{} (xn <tn>)) (lambda @dots{})))
+@end example
+
+is now supported for all terms <ti> except procedures defined
+in the compiled files.
+@item
+macros are partially supported by doing a preprocessing pass using the
+procedures pprint-filter-file and defmacro:expand* defined
+in slib.
+@item
+the file @file{scmhob.scm} defining hobbit-recognized nonstandard
+procedures is created.
+@item
+the documentation is improved (thanks go to Aubrey for suggestions).
+@end itemize
+
+@item hobbit3b:
+@itemize @bullet
+@item
+Aubrey fixed some problems with the version 3.
+@item
+It is now OK to define procedures "by name" on top level.
+@item
+It is now OK to apply "apply", etc to procedures defined
+in the compiled file.  Compiled procedures may now be passed
+to procedures not defined but still called in the compiled files.
+@end itemize
+
+@item hobbit3:
+@itemize @bullet
+@item
+Generic arithmetic supported by SCM (exact and inexact reals,
+bignums) is made available.
+@item
+The #. special syntactic form of SCM is made available.
+@item
+Procedures with chars are compiled open-coded, making them faster.
+@item
+The bug concerning strings containing an embedded \nl char
+is corrected (thanks to Terry Moore, (tmm@@databook.com)).
+@item
+The special declaration compile-stable-vectors for optimizing
+vector access is introduced.
+@item
+Source code may contain top-level computations, top-level
+loads are ignored.
+@item
+The bug causing "or" to (sometimes) lose tailrecursiveness is corrected.
+@item
+Hobbit now allows the following very special form:
+
+@example
+(define foo (let ((bar bar)) (lambda @dots{})))
+@end example
+
+Notice @code{(bar bar)}.  See the section 5 above.  It will produce wrong
+code if bar is redefined.
+
+There were several versions of the 2-series, like 2.x, which were
+not made public.  The changes introduced are present in the version 3.
+@end itemize
+
+@item hobbit2:
+@itemize @bullet
+@item
+The following bitwise procedures in the scheme library file
+@file{logical.scm} are compiled directly to C
+(Scheme library funs in the upper row, C ops below):
+
+@example
+@group
+logand logior logxor lognot logsleft logsright
+   &      |     ^      ~       <<        >>
+@end group
+@end example
+
+Notice that the procedures @t{logsleft}, @t{logsright} are @b{NOT} in
+the the library file @file{logical.scm}: the universal procedure @t{ash}
+is instead.  Procedures @t{ash}, @t{logcount}, @t{integer-length},
+@t{integer-expt}, @t{bit-extract} in @file{logical.scm} are not
+recognized by hobbit.
+@end itemize
+
+@item hobbit1a3 (not public):
+@itemize @bullet
+@item
+the @t{letrec}-sorting bug often resulting in not recognizing procedures
+defined in @t{letrec} (or local @t{define}s) has been corrected.
+@item
+the primitives @t{string} and @t{vector} are now compiled correctly.
+@end itemize
+
+@item hobbit1a2 (not public):
+@itemize @bullet
+@item
+any fixed arity procedure (including primitives) may be passed to any
+higher-order procedure by name.  Variable arity procedures (eg
+primitives @t{list}, @t{+}, @t{display} and defined funs like
+@code{(define (foo x . y) x)}) must not be passed to new defined
+higher-order funs.
+@item
+some optimizations have been introduced for calls to @t{map}
+and @t{for-each}.
+@item
+(map list x y) bug has been corrected.
+@item
+Corrected self-compilation name clash between call_cc and call-cc.
+@end itemize
+
+@item hobbit1a1 (not public):
+@itemize @bullet
+@item
+named let is supported.
+@item
+the inlining bug is fixed: all procedures declared to be
+inlined are fully inlined, except when the flag
+*full-inlining-flag* is defined as #f.
+@item
+the @t{letrec} (or in-procedure define) bug where local procedure
+names were not recognized, is fixed.
+@item
+documentation says explicitly that definitions like
+
+@example
+(define foo (let ((x 0)) (lambda (y) @dots{})))
+@end example
+
+are assumed to be closure-returning procedures and are prohibited.
+@item
+documentation allows more liberty with passing procedures to
+higher-order funs by dropping the general requirement that only unnamed
+lambda-terms may be passed.  Still, primitives and list-taking
+procedures may not be passed by name.
+@item
+documentation prohibits passing lambda-terms with free variables to
+recursive calls of higher-order procedures in the definition of a
+higher-order procedure.
+@end itemize
+
+@item hobbit1:
+the first release
+@end table
+
+
+@node Index,  , About Hobbit, Top
+@unnumbered Index
+
+@printindex fn
+
+@bye

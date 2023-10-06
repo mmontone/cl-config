@@ -1,0 +1,18 @@
+%%%% Starting test vec-test
+Group begin: vec-test
+Test begin:
+Test end:
+  result-kind: pass
+  actual-value: #t
+Test begin:
+Test end:
+  result-kind: pass
+  actual-value: 99
+  expected-value: 99
+Test begin:
+Test end:
+  result-kind: pass
+  actual-value: 7
+  expected-value: 7
+Group end: vec-test
+# of expected passes      3

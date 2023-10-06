@@ -1,0 +1,168 @@
+#! ./scmlit \
+- !#
+;;;; "inc2scm", Convert numeric C #defines to Scheme definitions.
+;; Copyright (C) 1991-1999 Free Software Foundation, Inc.
+;;
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU Lesser General Public License as
+;; published by the Free Software Foundation, either version 3 of the
+;; License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; Lesser General Public License for more details.
+;;
+;; You should have received a copy of the GNU Lesser General Public
+;; License along with this program.  If not, see
+;; <http://www.gnu.org/licenses/>.
+
+;;; Author: Aubrey Jaffer.
+
+(define (inc2scm.script args)
+  (cond ((< 1 (length args))
+	 (apply scm<-usr/includes args))
+	(else (inc2scm.usage))))
+
+(define (inc2scm.usage)
+  (display "\
+\
+Usage: inc2scm defines.scm [pre:] [/usr/include/] file1.h file2.h ...
+\
+  Appends to DEFINES.SCM the Scheme translations of the numeric
+  #define statements in /USR/INCLUDE/FILE1.H, /USR/INCLUDE/FILE2.H, ...
+
+  PRE: is prepended to those scheme names lacking a prefix.
+
+  /USR/INCLUDE/ defaults to /usr/include/.
+
+http://people.csail.mit.edu/jaffer/SCM
+"
+	   (current-error-port))
+  #f)
+
+(require 'string-search)
+(require 'printf)
+(require 'scanf)
+
+(define (StudlyCaps->dashed-name nstr)
+  (do ((idx (+ -1 (string-length nstr)) (+ -1 idx)))
+      ((> 2 idx))
+    (cond ((and (char-upper-case? (string-ref nstr (+ -1 idx)))
+		(char-lower-case? (string-ref nstr idx)))
+	   (set! nstr
+		 (string-append (substring nstr 0 (+ -1 idx))
+				"-"
+				(substring nstr (+ -1 idx)
+					   (string-length nstr)))))
+	  ((and (char-lower-case? (string-ref nstr (+ -1 idx)))
+		(char-upper-case? (string-ref nstr idx)))
+	   (set! nstr
+		 (string-append (substring nstr 0 idx)
+				"-"
+				(substring nstr idx
+					   (string-length nstr)))))))
+  nstr)
+
+;; SCHEMEIFY-NAME:
+;; * Changes _ to -
+;; * Changes the first - to : if it is within the first 3 characters.
+;; * inserts dashes between `StudlyCaps'
+
+(define (schemeify-name pre name)
+  (define nstr (string-subst name "_" "-"))
+  (let ((sid (string-index nstr #\-)))
+    (cond ((and sid (< sid 3)) (string-set! nstr sid #\:)
+	   nstr)
+	  (pre (string-append pre (StudlyCaps->dashed-name nstr)))
+	  (else (StudlyCaps->dashed-name nstr)))))
+
+(define (extract-defineds port)
+  (define sharp (string #\newline #\#))
+  (define defineds '())
+  (do ((find? (find-string-from-port? sharp port)
+	      (find-string-from-port? sharp port)))
+      ((not find?) (reverse defineds))
+    (do ((chr (read-char port) (read-char port)))
+	((or (eof-object? chr) (not (char-whitespace? chr)))
+	 (and (eqv? chr #\d)
+	      (let ((op #f) (va #f))
+		(fscanf port "efine%*[ \t]%s%*[ \t]%s" op va)
+		(if (and op va
+			 (not (string-index op #\())
+			 (not (eqv? #\_ (string-ref op 0)))
+			 (not (equal? "int" va)))
+		    (set! defineds (cons op defineds)))))))))
+
+(define (scm<-includes scmname pre non-local? . filenames)
+  (define tmpprog "tmpprog")
+  (call-with-output-file (string-append tmpprog ".c")
+    (lambda (cport)
+      (for-each (lambda (filename)
+		  (fprintf cport
+			   (if non-local?
+			       "#include <%s>\\n"
+			       "#include \"%s\"\\n")
+			   filename))
+		filenames)
+      (for-each
+       (lambda (args) (apply fprintf cport args))
+       `(("#include <stdio.h>\\n")
+	 ("void pSl(sname, value)\\n")
+	 ("     char sname[];\\n")
+	 ("     int  value;\\n")
+	 ("{\\n")
+	 ("%s\\n" "  printf(\"(define %s %d)\\n\", sname, value);")
+	 ("}\\n")
+	 ("\\n")
+	 ("int main(argc, argv)\\n")
+	 ("     int argc;\\n")
+	 ("     char *argv[];\\n")
+	 ("{\\n")
+	 ))
+      (for-each
+       (lambda (filename)
+	 (if non-local?
+	     (set! filename (string-append non-local? filename)))
+	 (fprintf cport "/* Extract #define values from %s */\\n" filename)
+	 (fprintf cport "%s %s%s\\n"
+		  "  printf(\";;inc2scm extracted #define values from"
+		  filename
+		  "\\n\");")
+	 (for-each
+	  (lambda (name)
+	    (fprintf cport "#ifdef %s\\n  pSl(\"%s\", %s);\\n#endif\\n"
+		     name (schemeify-name pre name) name))
+	  (call-with-input-file filename extract-defineds)))
+       filenames)
+      (fprintf cport "}\\n")))
+  (cond
+   ((not (zero? (system (sprintf #f "cc -o %s %s.c" tmpprog tmpprog)))))
+   ((not (zero? (system (sprintf #f "./%s >> %s" tmpprog scmname)))))))
+
+(define (scm<-usr/includes scmname . filenames)
+  (define pre (let ((first (car filenames)))
+		(cond ((substring-ci? ".h" first) #f)
+		      (else (set! filenames (cdr filenames)) first))))
+  (define include-path "/usr/include/")
+  (let* ((first (car filenames)))
+    (cond ((memv (string-ref first (+ -1 (string-length first))) '(#\\ #\/))
+	   (set! include-path first)
+	   (set! filenames (cdr filenames)))))
+  (apply scm<-includes scmname pre include-path filenames)
+  (delete-file "tmpprog.c")
+  (delete-file "tmpprog"))
+
+(define (scm<-h* scmname . filenames)
+  (define pre (let ((first (car filenames)))
+		(cond ((substring-ci? ".h" first) first)
+		      (else (set! filenames (cdr filenames)) #f))))
+  (apply scm<-includes scmname pre #f filenames)
+  (delete-file "tmpprog.c")
+  (delete-file "tmpprog"))
+(define h2scm scm<-h*)
+
+;;; Local Variables:
+;;; mode:scheme
+;;; End:
+(exit (inc2scm.script (list-tail *argv* *optind*)))

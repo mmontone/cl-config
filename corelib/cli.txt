@@ -1,0 +1,48 @@
+cfg load my_config.xml
+
+cfg set web.host localhost
+cfg set web.port 22
+
+cfg validate my_config
+
+cfg save my_config
+
+cfg print my_config
+
+cfg describe my_config /* describe schema of config */
+
+cfg describe my_config.web /* describe a configuration section and its settings values */
+
+cfg describe my_config.web.host /* describe a configuration setting and value */
+
+/* create a new configuration from schema */
+
+cfg create my_config_schema my_config
+
+/* edit configuration interactively */
+/* display configuration plus options, and ability to edit, from command line, or opening a text editor, etc */
+cfg edit my_config
+
+/* Sections:
+[0] web - Web configuration
+[1] database - Database configuration
+*/
+
+/* Section: web
+[0] host - Webserver host.
+[1] port - Webserver port.
+*/
+
+/* Setting: web.host
+Value: ...
+*/
+
+cfg save my_config
+
+/* set current config */
+cfg set_config my_config
+cfg save
+
+
+/* create a configuration using schema found in current directory */
+cfg configure

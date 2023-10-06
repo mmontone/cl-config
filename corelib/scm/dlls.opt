@@ -1,0 +1,2 @@
+--compiler-options=-Wall
+--linker-options=-Wall

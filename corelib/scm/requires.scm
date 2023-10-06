@@ -1,0 +1,21 @@
+;;; "require.scm" Trampoline to slib/require.scm
+
+(define library-vicinity
+  (let* ((vl (case (software-type)
+	       ((amiga) '(#\: #\/))
+	       ((ms-dos windows atarist os/2) '(#\\ #\/))
+	       ((macos thinkc) '(#\:))
+	       ((nosve) '(#\: #\.))
+	       ((unix coherent plan9) '(#\/))
+	       ((vms) '(#\: #\]))))
+	 (iv (implementation-vicinity))
+	 (vc (and (positive? (string-length iv))
+		  (string-ref iv (+ -1 (string-length iv)))))
+	 (vs (if (memv vc vl) (string vc) "/"))
+	 (lv (let loop ((pos (+ -2 (string-length iv))))
+	       (cond ((or (< pos 0) (not vs))
+		      (string-append iv ".." vs "slib" vs))
+		     ((memv (string-ref iv pos) vl)
+		      (string-append (substring iv 0 (+ 1 pos)) "slib" vs))
+		     (else (loop (- pos 1)))))))
+    (lambda () lv)))

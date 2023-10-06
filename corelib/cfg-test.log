@@ -1,0 +1,7 @@
+%%%% Starting test cfg-test
+Group begin: cfg-test
+Test begin:
+Test end:
+  result-kind: fail
+  actual-value: "testConfig"
+  expected-value: "testConfig"
