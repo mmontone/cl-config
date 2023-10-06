@@ -1,7 +1,16 @@
 (require 'define-record-type)
 
-(define *schemas* '())
-(define *configs* '())
+;;---- Utilities ------------------------------
+
+(define (get-prop key property-list . default)
+  (cond ((null? property-list) (if (not (null? default))
+                                   (car default)
+                                   #f))
+        ((null? (cdr property-list))
+           (error "Malformed property list"))
+        ((equal? key (car property-list))
+           (cadr property-list))
+        (else (apply get-prop key (cons (cdr (cdr property-list)) default)))))
 
 (define (call-with-optional-args args defaults proc)
   (if (> (length args) (length defaults))
@@ -55,6 +64,11 @@
 ;;(assoc-get* '() 'x)
 ;;(assoc-get* '((x . 22)) 'x)
 
+;; ---------- Config library ---------------
+
+(define *schemas* '())
+(define *configs* '())
+
 (define-record-type <config>
   (%make-config name)
   config?
@@ -97,11 +111,37 @@
   (name setting-name set-setting-name!)
   (type setting-type set-setting-type!)
   (required? setting-required? set-setting-required!)
-  (default setting-default set-setting-default)
+  (default setting-default set-setting-default!)
   (doc setting-doc set-setting-doc!))
 
 (define (make-setting name type . options)
-  (list name type options))
+  (let ((setting (%make-setting name type)))
+    (set-setting-required! setting #t)
+    (set-setting-default! setting #f)
+    (set-setting-doc! setting #f)
+    setting))
+
+(define (add-setting schema setting)
+  (set-schema-settings!
+   schema
+   (assoc-set! (schema-settings schema)
+               (setting-name setting)
+               setting)))
+
+(define-record-type <settings-group>
+  (%make-settings-group name)
+  settings-group?
+  (name settings-group-name)
+  (doc settings-group-doc set-settings-group-doc!)
+  (settings settings-group-setting set-settings-group-settings!))
+
+(define (make-settings-group name)
+  (let ((settings-group (%make-settings-group name)))
+    (set-settings-group-doc! settings-group #f)
+    (set-settings-group-settings! settings-group '())
+    settings-group))
+
+;;------ api ----------------------------------
 
 (define (config-set! config attribute-name value)
   (set-config-settings! config
