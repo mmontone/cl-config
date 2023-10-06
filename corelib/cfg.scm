@@ -1,4 +1,4 @@
-(require 'record)
+(require 'define-record-type)
 
 (define *schemas* '())
 (define *configs* '())
@@ -46,6 +46,15 @@
                     #f)
                 #f))))
 
+(define (assoc-get* lst key . default)
+  (call-with-values
+      (lambda () (apply assoc-get lst (cons key default)))
+    (lambda (val found?)
+      val)))
+
+;;(assoc-get* '() 'x)
+;;(assoc-get* '((x . 22)) 'x)
+
 (define-record-type <config>
   (%make-config name)
   config?
@@ -65,14 +74,31 @@
     (set-config-options! cfg '())
     cfg))
 
-(define (make-schema name)
-  (list (cons 'type 'cfg:schema)
-        (cons 'name name)
-        (cons 'settings '())))
+(define-record-type <schema>
+  (%make-schema name)
+  schema?
+  (name schema-name set-schema-name!)
+  (doc schema-doc set-schema-doc!)
+  (settings schema-settings set-schema-settings!)
+  (parent schema-parent set-schema-parent!)
+  (options schema-options set-schema-options!))
 
-(define (schema? x)
-  (and (list? x)
-       (eq? (assoc-get x 'type) 'cfg:schema)))
+(define (make-schema name)
+  (let ((schema (%make-schema name)))
+    (set-schema-doc! schema #f)
+    (set-schema-settings! schema '())
+    (set-schema-parent! schema #f)
+    (set-schema-options! schema '())
+    schema))
+
+(define-record-type <setting>
+  (%make-setting name type)
+  setting?
+  (name setting-name set-setting-name!)
+  (type setting-type set-setting-type!)
+  (required? setting-required? set-setting-required!)
+  (default setting-default set-setting-default)
+  (doc setting-doc set-setting-doc!))
 
 (define (make-setting name type . options)
   (list name type options))
@@ -82,9 +108,7 @@
                         (assoc-set! (settings config) attribute-name value)))
 
 (define (config-get config name)
-  (call-with-values
-      (lambda () (assoc-get (settings config) name (lambda () (error "Invalid setting"))))
-    (lambda (x y) x)))
+  (assoc-get* (settings config) name (lambda () (error "Invalid setting"))))
 
 (define (print-config config)
   (display (config-name config))
@@ -107,7 +131,7 @@
     (assoc-set! *configs* (config-name config) config)))
 
 (define (find-config name)
-  (assoc-get *configs* name))
+  (assoc-get* *configs* name (lambda () (error "Config not found"))))
 
 (define (cfg:save config destination)
   (error "TODO"))
