@@ -31,9 +31,9 @@ libcfgtest: libcfg.so
 	gcc -L. libcfgtest.c -lcfg -ldl -lm -lc -o libcfgtest
 
 clean:
-	rm *.so
-	rm *.o
-	rm cfg.c
+	rm -f *.so
+	rm -f *.o
+	rm -f cfg.c
 
 rebuild: clean all
 
