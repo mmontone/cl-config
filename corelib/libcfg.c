@@ -17,7 +17,7 @@ long cfg_create (char* name) {
 }
 
 char* cfg_name (long config) {
-  return CHARS(config_name(config));
+  return CHARS(apply(GLOBAL(config_name),config,listofnull));
 }
 
 char* cfg_get (long config, char* key) {
