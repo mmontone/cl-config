@@ -2,6 +2,26 @@
 
 ;;---- Utilities ------------------------------
 
+(require 'format)
+
+(define (empty? list)
+  (zero? (length list)))
+
+(define (assert condition . message-and-args)
+  (let ((message (if (empty? message-and-args)
+                     "Assertion failed"
+                     (car message-and-args)))
+        (args (if (empty? message-and-args)
+                  '()
+                  (cdr message-and-args))))
+    (if (not condition)
+        (error (apply format message args)))))
+
+;; (assert #t)
+;; (assert #f)
+;; (assert #f "No")
+;; (assert #f "No: ~a" 'foo)
+
 (define (get-prop key property-list . default)
   (cond ((null? property-list) (if (not (null? default))
                                    (car default)
@@ -161,8 +181,8 @@
               (newline))
             (settings config)))
 
-(define (cfg:validate config schema)
-  (let ((schema (or schema (config-schema config)
+(define (cfg:validate config . optional-schema)
+  (let ((schema (or optional-schema (config-schema config)
                     (error "No config schema"))))
     (error "TODO")))
 
