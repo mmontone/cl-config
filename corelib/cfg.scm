@@ -22,6 +22,13 @@
 ;; (assert #f "No")
 ;; (assert #f "No: ~a" 'foo)
 
+(define (car* lst)
+  (and (not (empty? lst))
+       (car lst)))
+
+(car* '())
+(car* '(a))
+
 (define (get-prop key property-list . default)
   (cond ((null? property-list) (if (not (null? default))
                                    (car default)
@@ -167,8 +174,11 @@
   (set-config-settings! config
                         (assoc-set! (settings config) attribute-name value)))
 
-(define (config-get config name)
-  (assoc-get* (settings config) name (lambda () (error "Invalid setting"))))
+(define (config-get config name . default)
+  (assoc-get* (settings config) name
+              (if (not (empty? default))
+                  (car default)
+                  (lambda () (error "Invalid setting")))))
 
 (define (print-config config)
   (display (config-name config))
@@ -181,10 +191,29 @@
               (newline))
             (settings config)))
 
+(define (validate-setting setting config)
+  (let ((setting-val (config-get config (setting-name setting) 'cfg:unset)))
+    (cond
+     ((and (eq setting-val 'cfg:unset)
+           (setting-required? setting))
+      (error (format "~a is required" (setting-name setting))))
+     ((not (eq setting-val 'cfg:unset))
+      (case (setting-type setting)
+        ('string (assert (string? setting-val)))
+        ('integer (assert (integer? setting-val)))
+        ('boolean (assert (boolean? setting-val)))
+        (else (error (format "Invalid type: ~a" (setting-type setting)))))))))
+
+(define (validate-with-schema config schema)
+  (for-each (lambda (setting)
+              (validate-setting setting config))
+            (schema-settings schema)))
+
 (define (cfg:validate config . optional-schema)
-  (let ((schema (or optional-schema (config-schema config)
+  (let ((schema (or (car* optional-schema)
+                    (config-schema config)
                     (error "No config schema"))))
-    (error "TODO")))
+    (validate-with-schema config schema)))
 
 (define (register-config config)
   (set! *configs*
