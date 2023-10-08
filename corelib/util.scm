@@ -61,3 +61,10 @@
 ;;                                  (car syn)
 ;;                                  (car (cdr syn))
 ;;                                  (cdr (cdr syn))))))))
+
+(define (compose f g)
+  (lambda args
+    (f (apply g args))))
+
+(define (curry f . c)
+  (lambda x (apply f (append c x))))
