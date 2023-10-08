@@ -132,6 +132,27 @@
     (set-schema-options! schema '())
     schema))
 
+(define (make-setting-from-spec spec)
+  (let ((name (car spec))
+        (type (cadr spec))
+        (required? (get-prop ':required? (cddr spec) #t))
+        (default (get-prop ':default (cddr spec) #f))
+        (doc (get-prop ':doc (cddr spec) #f)))
+    (make-setting name type
+                  ':required? required?
+                  ':default default
+                  ':doc doc)))
+
+(define (make-schema-from-spec name spec)
+  (let ((parent (car spec))
+        (settings (map make-setting-from-spec (cadr spec)))
+        (options (cddr spec)))
+    (let ((schema (make-schema name)))
+      (set-schema-parent! schema parent)
+      (set-schema-options! schema options)
+      (set-schema-settings! schema settings)
+      schema)))
+
 (define-record-type <setting>
   (%make-setting name type)
   setting?
@@ -143,9 +164,9 @@
 
 (define (make-setting name type . options)
   (let ((setting (%make-setting name type)))
-    (set-setting-required! setting #t)
-    (set-setting-default! setting #f)
-    (set-setting-doc! setting #f)
+    (set-setting-required! setting (get-prop ':required? options #t))
+    (set-setting-default! setting (get-prop ':default options #f))
+    (set-setting-doc! setting (get-prop ':doc options #f))
     setting))
 
 (define (add-setting schema setting)
