@@ -1,6 +1,7 @@
 ;; parsing of command line arguments using a configuration schema
 
 (require 'regex)
+(require 'srfi-1)
 
 (define (cfgcli:parse arguments schema config)
   (let ((tokens (vector->list (string-split "\\s+" arguments)))
@@ -46,12 +47,13 @@
   (display "Options:")
   (newline)
   (for-each (lambda (setting)
-              (display (format "--~a     ~a"
-                               (setting-name setting)
-                               (setting-doc setting)))
+              (display "--")
+              (display (symbol->string (setting-name setting)))
+              (display "    ")
+              (when (setting-summary setting)
+                (display (setting-summary setting)))
               (newline))
-            (schema-settings schema)))
-  
+            (schema-settings schema))) 
 
 ;; print help about setting
 (define (cfgcli:print-help-setting schema setting)

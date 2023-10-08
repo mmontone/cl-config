@@ -1,5 +1,5 @@
 (require 'regex)
-(requrie 'srfi-1)
+(require 'srfi-1)
 
 (define path-separator "/")
 

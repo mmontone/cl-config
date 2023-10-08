@@ -143,11 +143,13 @@
         (type (cadr spec))
         (required? (get-prop ':required? (cddr spec) #t))
         (default (get-prop ':default (cddr spec) #f))
-        (doc (get-prop ':doc (cddr spec) #f)))
+        (doc (get-prop ':doc (cddr spec) #f))
+        (summary (get-prop ':summary (cddr spec) #f)))
     (make-setting name type
                   ':required? required?
                   ':default default
-                  ':doc doc)))
+                  ':doc doc
+                  ':summary summary)))
 
 (define (make-schema-from-spec name spec)
   (let ((parent (car spec))
@@ -156,7 +158,7 @@
     (let ((schema (make-schema name)))
       (set-schema-parent! schema parent)
       (set-schema-options! schema options)
-      (set-schema-doc! schema (get-prop ':doc options)) 
+      (set-schema-doc! schema (get-prop ':doc options))
       (set-schema-settings! schema settings)
       schema)))
 
@@ -168,6 +170,7 @@
   (required? setting-required? set-setting-required!)
   (default setting-default set-setting-default!)
   (doc setting-doc set-setting-doc!)
+  (summary setting-summary set-setting-summary!)
   (cli-name setting-cli-name set-setting-cli-name!)
   (cli-switch setting-cli-switch set-setting-cli-switch!))
 
@@ -175,6 +178,7 @@
   (let ((setting (%make-setting name type)))
     (set-setting-required! setting (get-prop ':required? options #t))
     (set-setting-default! setting (get-prop ':default options #f))
+    (set-setting-summary! setting (get-prop ':summary options #f))
     (set-setting-doc! setting (get-prop ':doc options #f))
     setting))
 
@@ -263,11 +267,50 @@
   (assoc-get* *configs* name (lambda () (error "Config not found"))))
 
 (define (cfg:save config destination)
-  (error "TODO"))
+  (cond
+   ((string? destination)
+    ;; Assume a pathname
+    (let ((ext (file-extension destination)))
+      (if ext
+          (cond
+           ((string=? ext "json")
+            (save-config->json config destination))
+           ((string=? ext "xml")
+            (save-config->xml config destination))
+           (#t
+            (save-config->sexp config destination)))
+          (cfg:save-sexp config destination))))
+   (#t (error (format "Invalid store destination: ~a" destination)))))
+
+(define (config-spec config)
+  (list* (config-parent config)
+         (settings config)
+         (config-options config)))
+
+(define (save-config->sexp config destination)
+  (call-with-output-file destination
+    (lambda (out)
+      (write (config-spec config) out))))
 
 ;; load config from source
 (define (cfg:load source)
-  (error "TODO"))
+  (cond
+   ((string? source)
+    ;; Assume a pathname
+    (let ((ext (file-extension source)))
+      (if ext
+          (cond
+           ((string=? ext "json")
+            (load-config-from-json source))
+           ((string=? ext "xml")
+            (load-config-from-xml source))
+           (#t
+            (load-config-from-sexp source)))
+          (load-config-from-sexp source))))
+   (#t (error (format "Invalid source: ~a" source)))))
 
-(define (hello-world)
-  (display "hello world"))
+(define (load-config-from-sexp pathname)
+  (call-with-input-file pathname
+    (lambda (in)
+      (let ((spec (read in)))
+        (make-config-from-spec "config" spec)))))
