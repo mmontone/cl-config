@@ -1,5 +1,8 @@
 ;; parsing of command line arguments using a configuration schema
 
+;; TODO:
+;; - Consider a generator of a Bash script that provides the custom completion for the command line.
+
 (require 'regex)
 (require 'srfi-1)
 
