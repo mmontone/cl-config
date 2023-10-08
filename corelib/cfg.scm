@@ -156,6 +156,7 @@
     (let ((schema (make-schema name)))
       (set-schema-parent! schema parent)
       (set-schema-options! schema options)
+      (set-schema-doc! schema (get-prop ':doc options)) 
       (set-schema-settings! schema settings)
       schema)))
 
@@ -166,7 +167,9 @@
   (type setting-type set-setting-type!)
   (required? setting-required? set-setting-required!)
   (default setting-default set-setting-default!)
-  (doc setting-doc set-setting-doc!))
+  (doc setting-doc set-setting-doc!)
+  (cli-name setting-cli-name set-setting-cli-name!)
+  (cli-switch setting-cli-switch set-setting-cli-switch!))
 
 (define (make-setting name type . options)
   (let ((setting (%make-setting name type)))

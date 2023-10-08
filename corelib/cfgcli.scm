@@ -36,8 +36,22 @@
   config)
 
 ;; print command line help using schema
-(define (cfgcli:print-help schema)
-  (error "TODO"))
+(define (cfgcli:print-help schema cli-name)
+  (display (format "Usage: ~a [OPTIONS]" cli-name))
+  (newline)
+  (when (schema-doc schema)
+    (display (schema-doc schema))
+    (newline))
+  (newline)
+  (display "Options:")
+  (newline)
+  (for-each (lambda (setting)
+              (display (format "--~a     ~a"
+                               (setting-name setting)
+                               (setting-doc setting)))
+              (newline))
+            (schema-settings schema)))
+  
 
 ;; print help about setting
 (define (cfgcli:print-help-setting schema setting)
