@@ -38,3 +38,26 @@
    ((string? what)
     (filter (lambda (sym) (regsearch what (symbol->string sym)))
             apropos-defs))))
+
+;; https://pschombe.wordpress.com/2006/03/10/destructuring-bind/
+;; (define-syntax destructuring-bind
+;;   (lambda (x)
+;;     (letrec ((gen-let-bindings
+;;               (lambda (expr form)
+;;                 (cond ((null? form) '())
+;;                       ((pair? form)
+;;                        (if (eq? (car form) '&rest)
+;;                            (list (list (car (cdr form)) expr))
+;;                            (append
+;;                             (gen-let-bindings (list 'car expr) (car form))
+;;                             (gen-let-bindings (list 'cdr expr) (cdr form)))))
+;;                       (else (list (list form  expr))))))
+;;              (finaltransformer
+;;               (lambda (form expr body)
+;;                 (let ((tsym (gensym)))
+;;                   `(let ((,tsym ,expr)) (let ,(gen-let-bindings tsym form) ,@body))))))
+;;       (let ((syn (cdr (syntax-object->datum x))))
+;;         (datum->syntax-object x (finaltransformer
+;;                                  (car syn)
+;;                                  (car (cdr syn))
+;;                                  (cdr (cdr syn))))))))
