@@ -68,3 +68,13 @@
 
 (define (curry f . c)
   (lambda x (apply f (append c x))))
+
+(define-syntax when
+  (syntax-rules ()
+    ((_ condition body ...)
+     (if condition (begin body ...)))))
+
+(define-syntax unless
+  (syntax-rules ()
+    ((_ condition body ...)
+     (if (not condition) (begin body ...)))))
