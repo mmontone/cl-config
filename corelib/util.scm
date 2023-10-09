@@ -1,7 +1,7 @@
 (require 'regex)
 (require 'eval)
 (require 'srfi-1)
-
+(require 'macro)
 (require 'format)
 
 (define (empty? list)
