@@ -16,8 +16,7 @@
    'schema-1
    '(#f
      ((host string :default "localhost")
-      (port integer :default 80))
-     ())))
+      (port integer :default 80)))))
 
 (define cfg-test:config1
   (make-config-from-spec
