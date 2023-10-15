@@ -26,9 +26,6 @@
   (and (not (empty? lst))
        (car lst)))
 
-(car* '())
-(car* '(a))
-
 (define (get-prop key property-list . default)
   (cond ((null? property-list) (if (not (null? default))
                                    (car default)

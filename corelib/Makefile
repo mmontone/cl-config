@@ -6,11 +6,17 @@ libtest:
 libtest2:
 	gcc -L . -I ./scm  -o libtest libtest.c ./scm/libscm.a  -ldl -lm -lc -lcfg
 
+util.c:
+	scm -r compile  -e "(compile-file \"util.scm\")"
+
+util.o: util.c
+	gcc -I ./scm -fPIC -c util.c
+
 cfg.c:
 	scm -r compile -r define-record-type -e "(compile-file \"cfg.scm\")"
 
 cfgcli.c:
-	scm -r compile -e -r define-record-type "(compile-file \"cfgcli.scm\")"
+	scm -r compile -r define-record-type -e "(compile-file \"cfgcli.scm\")"
 
 cfg.o: cfg.c
 	gcc -I ./scm -fPIC -c cfg.c
@@ -24,8 +30,8 @@ libcfg.o:
 # needs compilation of libscm.a using -fPIC
 # (dlll linux "-fPIC -DSUN_DL" "-ldl" #f () ()) in scm/build.scm
 # also add -F record to libscm.opt
-libcfg.so: libcfg.o cfg.o cfgcli.o
-	gcc -shared -o libcfg.so libcfg.o cfg.o cfgcli.o -Wl,--whole-archive ./scm/libscm.a -Wl,--no-whole-archive
+libcfg.so: util.o cfg.o cfgcli.o libcfg.o 
+	gcc -shared -o libcfg.so libcfg.o cfg.o cfgcli.o util.o -Wl,--whole-archive ./scm/libscm.a -Wl,--no-whole-archive
 
 libcfgtest: libcfg.so
 	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
@@ -34,7 +40,7 @@ libcfgtest: libcfg.so
 clean:
 	rm -f *.so
 	rm -f *.o
-	rm -f cfg.c
+	rm -f cfg.c cfgcli.c util.c
 	rm -f libcfgtest
 
 rebuild: clean all

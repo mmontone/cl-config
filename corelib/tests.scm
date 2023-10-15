@@ -3,8 +3,9 @@
 (require 'define-record-type)
 (require 'macro)
 (set! *syntax-rules* #t)
+(load "load.scm")
 (load "scm-testing.scm")
-(load "cfg.scm")
+
 
 (test-begin "testConfig")
 (define cfg-test:c1 (make-config "testConfig"))
