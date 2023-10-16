@@ -24,14 +24,23 @@ cfg.o: cfg.c
 cfgcli.o: cfgcli.c
 	gcc -I ./scm -fpic -c cfgcli.c
 
+cfgall.scm:
+	cat define-record-type.scm cfg.scm > cfgall.scm
+
+cfgall.c: cfgall.scm
+	scm -r compile -e "(compile-file \"cfgall.scm\")"
+
+cfgall.o: cfgall.c
+	gcc -I ./scm -fpic -c cfgall.c
+
 libcfg.o:
 	gcc -I ./scm -c -fPIC libcfg.c
 
 # needs compilation of libscm.a using -fPIC
 # (dlll linux "-fPIC -DSUN_DL" "-ldl" #f () ()) in scm/build.scm
 # also add -F record to libscm.opt
-libcfg.so: util.o cfg.o cfgcli.o libcfg.o 
-	gcc -shared -o libcfg.so libcfg.o cfg.o cfgcli.o util.o -Wl,--whole-archive ./scm/libscm.a -Wl,--no-whole-archive
+libcfg.so: cfgall.o libcfg.o 
+	gcc -shared -o libcfg.so libcfg.o cfgall.o -Wl,--whole-archive ./scm/libscm.a -Wl,--no-whole-archive
 
 libcfgtest: libcfg.so
 	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
@@ -40,8 +49,9 @@ libcfgtest: libcfg.so
 clean:
 	rm -f *.so
 	rm -f *.o
-	rm -f cfg.c cfgcli.c util.c
+	rm -f cfg.c cfgcli.c util.c cfgall.c
 	rm -f libcfgtest
+	rm -f cfgall.scm
 
 rebuild: clean all
 
