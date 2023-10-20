@@ -1,5 +1,17 @@
+struct Setting {
+	name         string
+	setting_type string
+}
+
+struct ConfigSchema {
+	name          string
+	documentation string
+	settings      []&Setting
+}
+
 struct Config {
-	name string
+	name          string
+	documentation string
 mut:
 	values map[string]string
 }
@@ -18,7 +30,7 @@ fn cfg_name(config &Config) string {
 
 [export: 'cfg_get']
 fn cfg_get(config &Config, name &char) string {
-	return config.values[unsafe {name.vstring()}]
+	return config.values[unsafe { name.vstring() }]
 }
 
 [export: 'cfg_set']
