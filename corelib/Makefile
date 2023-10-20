@@ -71,3 +71,7 @@ libcfg.v.so: clean libcfg.v.c
 libcfgtest.v.exe: libcfg.v.so
 	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 	gcc -L. libcfgtest.c -lcfg.v -o libcfgtest.v.exe
+
+libcfgtest2.v.exe: libcfg.v.so
+	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
+	gcc -L. libcfgtest2.c -lcfg.v -o libcfgtest2.v.exe

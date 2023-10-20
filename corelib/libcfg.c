@@ -1,6 +1,6 @@
 /* gcc -o libtest libtest.c libscm.a -ldl -lm -lc */
 /*#include "scm.h"*/
-#include "cfg.h"
+#include "cfgall.h"
 /* include patchlvl.h for SCM's INIT_FILE_NAME. */
 #include "patchlvl.h"
 
@@ -17,7 +17,7 @@ long cfg_create (char* name) {
 }
 
 char* cfg_name (long config) {
-  return CHARS(apply(GLOBAL(config_name),config,listofnull));
+  return CHARS(config_name(config));
 }
 
 char* cfg_get (long config, char* key) {
@@ -34,9 +34,12 @@ void cfg_print(long config) {
 
 void cfg_load_lib (int argc, const char **argv)
 {
-  scm_init_from_argv(argc, argv, 0L, 0, 0);
+  init_scm(1, 0, 100000);
+  init_signals();
 
-  init_cfg();
+  init_cfgall();
 
   /* final_scm(!0);*/  
 }
+
+

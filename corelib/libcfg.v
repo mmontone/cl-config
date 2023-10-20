@@ -34,7 +34,7 @@ type ConfigSchemaSetting = Setting | SettingGroup
 struct ConfigSchema {
 	name string
 mut:
-	parent &Config
+	parent ?&Config
 	doc    string
 
 	settings []&ConfigSchemaSetting
@@ -43,8 +43,8 @@ mut:
 struct Config {
 	name string
 mut:
-	parent &Config
-	schema &ConfigSchema
+	parent ?&Config
+	schema ?&ConfigSchema
 	doc    string
 
 	values map[string]string
