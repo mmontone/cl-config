@@ -1,18 +1,52 @@
+struct StringSettingType {}
+
+struct IntegerSettingType {}
+
+struct BooleanSettingType {}
+
+struct TextSettingType {}
+
+struct ChoiceSettingType {
+	choices []string
+}
+
+type SettingType = BooleanSettingType
+	| ChoiceSettingType
+	| IntegerSettingType
+	| StringSettingType
+	| TextSettingType
+
+struct SettingGroup {
+	name string
+mut:
+	doc string
+
+	settings []&Setting
+}
+
 struct Setting {
 	name         string
 	setting_type string
 }
 
+type ConfigSchemaSetting = Setting | SettingGroup
+
 struct ConfigSchema {
-	name          string
-	documentation string
-	settings      []&Setting
+	name string
+mut:
+	parent &Config
+	doc    string
+
+	settings []&ConfigSchemaSetting
 }
 
 struct Config {
-	name          string
-	documentation string
+	name string
 mut:
+	parent &Config
+	schema &ConfigSchema
+	doc    string
+
 	values map[string]string
 }
 
@@ -46,6 +80,34 @@ fn cfg_print(config &Config) {
 		print(': ')
 		println(value)
 	}
+}
+
+[export: 'cfg_create_schema']
+fn cfg_create_schema(name &char) &ConfigSchema {
+	return &ConfigSchema{
+		name: unsafe { name.vstring() }
+	}
+}
+
+[export: 'cfg_set_schema_doc']
+fn cfg_set_schema_doc(mut schema ConfigSchema, doc &char) {
+	schema.doc = unsafe { doc.vstring() }
+}
+
+[export: 'cfg_cli_help']
+fn cfg_cli_help(schema &ConfigSchema) {
+	println(schema.name)
+	println(schema.doc)
+}
+
+[export: 'cfg_validate']
+fn cfg_validate(config &Config) bool {
+	return true
+}
+
+[export: 'cfg_validate_with_schema']
+fn cfg_validate_with_schema(config &Config, schema &ConfigSchema) bool {
+	return true
 }
 
 [export: 'cfg_load_lib']
