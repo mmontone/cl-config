@@ -9,6 +9,8 @@ int main (int argc, const char **argv) {
   long my_schema = cfg_create_schema("My config schema");
 
   cfg_set_schema_doc(my_schema, "This is a config schema");
+  long localhost_s = cfg_add_string_setting(my_schema, "localhost");
+  cfg_setting_set_doc(localhost_s, "The localhost");
 
   cfg_set(my_config, "host", "localhost");
   cfg_set(my_config, "name", "app");

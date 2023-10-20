@@ -21,15 +21,16 @@ struct SettingGroup {
 mut:
 	doc string
 
-	settings []&Setting
+	settings map[string]&Setting
 }
 
 struct Setting {
 	name         string
-	setting_type string
+	setting_type SettingType
+mut:
+	required bool
+	doc      string
 }
-
-type ConfigSchemaSetting = Setting | SettingGroup
 
 struct ConfigSchema {
 	name string
@@ -37,7 +38,8 @@ mut:
 	parent ?&Config
 	doc    string
 
-	settings []&ConfigSchemaSetting
+	settings   map[string]&Setting
+	subschemas map[string]&ConfigSchema
 }
 
 struct Config {
@@ -45,9 +47,9 @@ struct Config {
 mut:
 	parent ?&Config
 	schema ?&ConfigSchema
-	doc    string
+	doc    string // Configuration documentation
 
-	values map[string]string
+	values map[string]string // A map of values
 }
 
 [export: 'cfg_create']
@@ -92,6 +94,22 @@ fn cfg_create_schema(name &char) &ConfigSchema {
 [export: 'cfg_set_schema_doc']
 fn cfg_set_schema_doc(mut schema ConfigSchema, doc &char) {
 	schema.doc = unsafe { doc.vstring() }
+}
+
+[export: 'cfg_add_string_setting']
+fn cfg_add_string_setting(mut schema ConfigSchema, setting_name &char) &Setting {
+	s_name := unsafe { setting_name.vstring() }
+	setting := &Setting{
+		name: s_name
+		setting_type: StringSettingType{}
+	}
+	schema.settings[s_name] = setting
+	return setting
+}
+
+[export: 'cfg_setting_set_doc']
+fn cfg_setting_set_doc(mut setting Setting, doc &char) {
+	setting.doc = unsafe { doc.vstring() }
 }
 
 [export: 'cfg_cli_help']

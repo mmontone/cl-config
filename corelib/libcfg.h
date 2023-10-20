@@ -12,5 +12,7 @@ extern void cfg_set_schema_doc(long schema, char* doc);
 extern void cfg_cli_help(long schema);
 extern int cfg_validate(long config);
 extern int cfg_validate_with_schema(long config, long schema);
+extern void cfg_setting_set_doc(long setting, char* doc);
+extern long cfg_add_string_setting(long schema, char* name);
 
 #endif // cfg_h__
