@@ -1,20 +1,18 @@
-struct StringSettingType {}
-
-struct IntegerSettingType {}
-
-struct BooleanSettingType {}
-
-struct TextSettingType {}
+import arrays
 
 struct ChoiceSettingType {
 	choices []string
 }
 
-type SettingType = BooleanSettingType
-	| ChoiceSettingType
-	| IntegerSettingType
-	| StringSettingType
-	| TextSettingType
+enum SimpleSettingType {
+	string
+	bool
+	int
+	text
+}
+
+type SettingType = ChoiceSettingType | SimpleSettingType
+type SettingValue = bool | int | string
 
 struct SettingGroup {
 	name string
@@ -49,7 +47,7 @@ mut:
 	schema ?&ConfigSchema
 	doc    string // Configuration documentation
 
-	values map[string]string // A map of values
+	values map[string]SettingValue // A map of values
 }
 
 [export: 'cfg_create']
@@ -66,7 +64,15 @@ fn cfg_name(config &Config) string {
 
 [export: 'cfg_get']
 fn cfg_get(config &Config, name &char) string {
-	return config.values[unsafe { name.vstring() }]
+	val := config.values[unsafe { name.vstring() }] or { 'no' }
+	return match val {
+		string {
+			val
+		}
+		else {
+			'no'
+		}
+	}
 }
 
 [export: 'cfg_set']
@@ -101,7 +107,21 @@ fn cfg_add_string_setting(mut schema ConfigSchema, setting_name &char) &Setting 
 	s_name := unsafe { setting_name.vstring() }
 	setting := &Setting{
 		name: s_name
-		setting_type: StringSettingType{}
+		setting_type: SimpleSettingType.string
+	}
+	schema.settings[s_name] = setting
+	return setting
+}
+
+[export: 'cfg_add_choice_setting']
+fn cfg_add_choice_setting(mut schema ConfigSchema, setting_name &char, choices []&char) &Setting {
+	s_name := unsafe { setting_name.vstring() }
+	s_choices := arrays.map_indexed(choices, fn (idx int, choice &char) string {
+		return unsafe { choice.vstring() }
+	})
+	setting := &Setting{
+		name: s_name
+		setting_type: ChoiceSettingType{s_choices}
 	}
 	schema.settings[s_name] = setting
 	return setting
@@ -116,6 +136,15 @@ fn cfg_setting_set_doc(mut setting Setting, doc &char) {
 fn cfg_cli_help(schema &ConfigSchema) {
 	println(schema.name)
 	println(schema.doc)
+
+	println('Settings:')
+	for name, setting in schema.settings {
+		print(name)
+		print(' - ')
+		print(setting.setting_type)
+		print(' : ')
+		println(setting.doc)
+	}
 }
 
 [export: 'cfg_validate']
