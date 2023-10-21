@@ -132,6 +132,22 @@ fn cfg_setting_set_doc(mut setting Setting, doc &char) {
 	setting.doc = unsafe { doc.vstring() }
 }
 
+fn print_setting_type(setting_type SettingType) {
+	match setting_type {
+		SimpleSettingType {
+			match setting_type {
+				.string { print('string') }
+				.int { print('integer') }
+				.bool { print('boolean') }
+				.text { print('text') }
+			}
+		}
+		ChoiceSettingType {
+			print(setting_type.choices)
+		}
+	}
+}
+
 [export: 'cfg_cli_help']
 fn cfg_cli_help(schema &ConfigSchema) {
 	println(schema.name)
@@ -141,7 +157,7 @@ fn cfg_cli_help(schema &ConfigSchema) {
 	for name, setting in schema.settings {
 		print(name)
 		print(' - ')
-		print(setting.setting_type)
+		print_setting_type(setting.setting_type)
 		print(' : ')
 		println(setting.doc)
 	}

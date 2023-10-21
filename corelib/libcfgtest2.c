@@ -9,8 +9,13 @@ int main (int argc, const char **argv) {
   long my_schema = cfg_create_schema("My config schema");
 
   cfg_set_schema_doc(my_schema, "This is a config schema");
+  
   long localhost_s = cfg_add_string_setting(my_schema, "localhost");
-  cfg_setting_set_doc(localhost_s, "The localhost");
+  cfg_setting_set_doc(localhost_s, "The localhost.");
+  
+  char* choices[] = {"foo", "bar", "baz"};
+  long choices_s = cfg_add_choice_setting(my_schema, "choices", choices);
+  cfg_setting_set_doc(choices_s, "Choice one of foo, bar or baz.");  
 
   cfg_set(my_config, "host", "localhost");
   cfg_set(my_config, "name", "app");
