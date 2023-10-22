@@ -10,8 +10,13 @@ int main (int argc, const char **argv) {
 
   cfg_set_schema_doc(my_schema, "This is a config schema");
   
-  long localhost_s = cfg_add_string_setting(my_schema, "localhost");
-  cfg_setting_set_doc(localhost_s, "The localhost.");
+  long host_s = cfg_add_string_setting(my_schema, "host");
+  cfg_setting_set_doc(host_s, "The host.");
+  cfg_setting_set_string_default(host_s,"localhost");
+
+  long port_s = cfg_add_integer_setting(my_schema, "port");
+  cfg_setting_set_doc(port_s, "The web port");
+  cfg_setting_set_integer_default(port_s, 80);
   
   char* choices[] = {"foo", "bar", "baz"};
   long choices_s = cfg_add_choice_setting(my_schema, "choices", choices);

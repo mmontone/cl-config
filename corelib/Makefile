@@ -44,7 +44,6 @@ libcfg.so: cfgall.o libcfg.o
 	gcc -shared -o libcfg.so libcfg.o cfgall.o -Wl,--whole-archive ./scm/libscm.a -Wl,--no-whole-archive -ldl -lm -lc
 
 libcfgtest: libcfg.so
-	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 	gcc -L. libcfgtest.c -lcfg -o libcfgtest
 
 clean:
@@ -60,18 +59,13 @@ rebuild: clean all
 test:
 	scm -r define-record-type -r macro -f tests.scm
 
-libcfg.v.c:
-	v -o libcfg.v.c libcfg.v
-
-libcfg.v.so: clean libcfg.v.c
-	gcc -shared -fpic -I ~/src/v/thirdparty/cJSON/ libcfg.v.c ~/src/v/thirdparty/cJSON/cJSON.c -lgc -o libcfg.v.so
+libcfg.v.so:
+	v -cc gcc -shared -enable-globals libcfg.v -o libcfg.v.so
 	nm libcfg.v.so | grep cfg
 
 
 libcfgtest.v.exe: libcfg.v.so
-	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 	gcc -L. libcfgtest.c -lcfg.v -o libcfgtest.v.exe
 
 libcfgtest2.v.exe: libcfg.v.so
-	export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 	gcc -L. libcfgtest2.c -lcfg.v -o libcfgtest2.v.exe
