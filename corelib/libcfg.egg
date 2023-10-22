@@ -1,0 +1,8 @@
+;;; libcfg.meta -*- Scheme -*-
+
+((synopsis "Chicken bindings for libcfg, a configuration management library")
+   4  (category configuration)
+   5  (license "LGPL-2.1")
+   6  (author "Mariano Montone")
+   7  (dependencies srfi-1)
+   8  (components (extension libcfg (link-options "-L" "-lcfg"))))
