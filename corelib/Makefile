@@ -73,7 +73,15 @@ libcfgtest2.v.exe: libcfg.v.so
 validation_test: libcfg.v.so
 	gcc -L. validation_test.c -lcfg.v -o validation_test
 
+validation_test2: libcfg.v.so
+	gcc -L. validation_test2.c -lcfg.v -o validation_test2
+
 chicken-libcfg.so:
 	csc -shared chicken-libcfg.scm -L. -L -lcfg.v
+
+install:
+# FIXME: this should not be needed. Only install on /local
+	cp libcfg.v.so /usr/lib 
+	cp libcfg.v.so /usr/local/lib
 
 
