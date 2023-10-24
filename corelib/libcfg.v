@@ -63,12 +63,8 @@ fn cfg_name(config &Config) string {
 	return config.name
 }
 
-fn prv_cfg_get(config &Config, name string) ?SettingValue {
-	if name in config.values {
-		return config.values[name] or { 'should not happen' }
-	} else {
-		return none
-	}
+fn prv_cfg_get(config &Config, name string) SettingValue {
+	return config.values[name] or { 'not found' }
 }
 
 [export: 'cfg_get']
@@ -225,6 +221,25 @@ fn cfg_validate_with_schema(config &Config, schema &ConfigSchema) bool {
 				// The setting is required but there's no value
 				cfg_validation_errors << '${setting.name} is required'
 			}
+		}
+		val := prv_cfg_get(config, setting_name)
+		match val {
+			string {
+				match setting.setting_type {
+					SimpleSettingType {
+						match setting.setting_type {
+							.string {}
+							else {
+								cfg_validation_errors << '${setting.name} if not a string'
+							}
+						}
+					}
+					else {
+						cfg_validation_errors << '${setting.name} if not a string'
+					}
+				}
+			}
+			else {}
 		}
 	}
 
