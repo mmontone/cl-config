@@ -211,6 +211,7 @@ fn cfg_validate(config &Config) bool {
 	return true
 }
 
+[export: 'cfg_is_set']
 fn cfg_is_set(config &Config, setting_name string) bool {
 	return setting_name in config.values
 }
@@ -220,8 +221,7 @@ fn cfg_validate_with_schema(config &Config, schema &ConfigSchema) bool {
 	cfg_validation_errors = []
 	for setting_name, setting in schema.settings {
 		if setting.required && setting.default == none {
-			// if prv_cfg_get(config, setting_name) == none {
-			if cfg_is_set(config, setting_name) {
+			if !cfg_is_set(config, setting_name) {
 				// The setting is required but there's no value
 				cfg_validation_errors << '${setting.name} is required'
 			}
