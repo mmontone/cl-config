@@ -70,5 +70,10 @@ libcfgtest.v.exe: libcfg.v.so
 libcfgtest2.v.exe: libcfg.v.so
 	gcc -L. libcfgtest2.c -lcfg.v -o libcfgtest2.v.exe
 
+validation_test: libcfg.v.so
+	gcc -L. validation_test.c -lcfg.v -o validation_test
+
 chicken-libcfg.so:
 	csc -shared chicken-libcfg.scm -L. -L -lcfg.v
+
+

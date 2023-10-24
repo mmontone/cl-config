@@ -27,6 +27,7 @@ struct Setting {
 	setting_type SettingType
 mut:
 	required bool
+	default  ?SettingValue
 	doc      string
 }
 
@@ -60,6 +61,14 @@ fn cfg_create(name &char) &Config {
 [export: 'cfg_name']
 fn cfg_name(config &Config) string {
 	return config.name
+}
+
+fn prv_cfg_get(config &Config, name string) ?SettingValue {
+	if name in config.values {
+		return config.values[name] or { 'should not happen' }
+	} else {
+		return none
+	}
 }
 
 [export: 'cfg_get']
@@ -113,6 +122,17 @@ fn cfg_add_string_setting(mut schema ConfigSchema, setting_name &char) &Setting 
 	return setting
 }
 
+[export: 'cfg_add_integer_setting']
+fn cfg_add_integer_setting(mut schema ConfigSchema, setting_name &char) &Setting {
+	s_name := unsafe { setting_name.vstring() }
+	setting := &Setting{
+		name: s_name
+		setting_type: SimpleSettingType.int
+	}
+	schema.settings[s_name] = setting
+	return setting
+}
+
 [export: 'cfg_add_choice_setting']
 fn cfg_add_choice_setting(mut schema ConfigSchema, setting_name &char, choices []&char) &Setting {
 	s_name := unsafe { setting_name.vstring() }
@@ -130,6 +150,21 @@ fn cfg_add_choice_setting(mut schema ConfigSchema, setting_name &char, choices [
 [export: 'cfg_setting_set_doc']
 fn cfg_setting_set_doc(mut setting Setting, doc &char) {
 	setting.doc = unsafe { doc.vstring() }
+}
+
+[export: 'cfg_setting_set_default']
+fn cfg_setting_set_default(mut setting Setting, val SettingValue) {
+	setting.default = val
+}
+
+[export: 'cfg_setting_set_integer_default']
+fn cfg_setting_set_integer_default(mut setting Setting, val i64) {
+	setting.default = int(val)
+}
+
+[export: 'cfg_setting_set_string_default']
+fn cfg_setting_set_string_default(mut setting Setting, val &char) {
+	setting.default = SettingValue(unsafe { val.vstring() })
 }
 
 fn print_setting_type(setting_type SettingType) {
@@ -155,22 +190,45 @@ fn cfg_cli_help(schema &ConfigSchema) {
 
 	println('Settings:')
 	for name, setting in schema.settings {
-		print(name)
-		print(' - ')
-		print_setting_type(setting.setting_type)
-		print(' : ')
-		println(setting.doc)
+		print('${name} - ${setting.setting_type}: ${setting.doc}')
+		if setting.default != none {
+			print('Default: ${setting.default.str()}')
+			// print(setting)
+		}
+		println('')
 	}
 }
 
+__global (
+	cfg_validation_errors []string
+)
+
 [export: 'cfg_validate']
 fn cfg_validate(config &Config) bool {
+	if config.schema == none {
+		return false
+	}
 	return true
+}
+
+fn cfg_is_set(config &Config, setting_name string) bool {
+	return setting_name in config.values
 }
 
 [export: 'cfg_validate_with_schema']
 fn cfg_validate_with_schema(config &Config, schema &ConfigSchema) bool {
-	return true
+	cfg_validation_errors = []
+	for setting_name, setting in schema.settings {
+		if setting.required && setting.default == none {
+			// if prv_cfg_get(config, setting_name) == none {
+			if cfg_is_set(config, setting_name) {
+				// The setting is required but there's no value
+				cfg_validation_errors << '${setting.name} is required'
+			}
+		}
+	}
+
+	return cfg_validation_errors.len != 0
 }
 
 [export: 'cfg_load_lib']

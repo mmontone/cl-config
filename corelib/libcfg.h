@@ -1,6 +1,3 @@
-#ifndef cfg_h__
-#define cfg_h__
-
 extern long cfg_create(char *name);
 extern char* cfg_name(long config);
 extern char* cfg_get(long config, char* key);
@@ -14,5 +11,8 @@ extern int cfg_validate(long config);
 extern int cfg_validate_with_schema(long config, long schema);
 extern void cfg_setting_set_doc(long setting, char* doc);
 extern long cfg_add_string_setting(long schema, char* name);
-
-#endif // cfg_h__
+extern long cfg_add_integer_setting(long schema, char* name);
+extern long cfg_add_choice_setting(long schema, char* name, char* choices[]);
+extern void cfg_setting_set_default(long setting, void *val);
+extern void cfg_setting_set_string_default(long setting, char* val);
+extern void cfg_setting_set_integer_default(long setting, short int val);
